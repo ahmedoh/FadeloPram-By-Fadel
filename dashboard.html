@@ -493,6 +493,56 @@
             <!-- Dynamically populated -->
           </ul>
         </div>
+
+        <!-- 🏆 Points & Streak Display -->
+        <div id="points-streak-section" style="margin-top: 10px; display: none;">
+          <div style="
+            background: linear-gradient(135deg, rgba(251,191,36,0.08), rgba(168,85,247,0.08));
+            border: 1px solid rgba(251,191,36,0.2);
+            border-radius: 14px;
+            padding: 15px 18px;
+            direction: rtl;
+          ">
+            <!-- Points Row -->
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 22px;">⭐</span>
+                <div>
+                  <div style="font-size: 11px; color: var(--text-muted);">نقاطك</div>
+                  <div id="trainee-points-display" style="font-size: 20px; font-weight: 900; color: var(--color-gold);">0</div>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 22px;">🔥</span>
+                <div>
+                  <div style="font-size: 11px; color: var(--text-muted);">سلسلة الانتظام</div>
+                  <div id="trainee-streak-display" style="font-size: 20px; font-weight: 900; color: #ef4444;">0 <span style="font-size: 11px; font-weight: 400;">أسبوع</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- Badges Row -->
+            <div id="trainee-badges-row" style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
+              <!-- Dynamically populated badges -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 🏅 Leaderboard Section -->
+        <div id="leaderboard-section" style="margin-top: 10px; display: none;">
+          <h3 class="card-title" style="font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--color-primary);">
+            <i class="fa-solid fa-ranking-star"></i> لوحة التصنيف
+          </h3>
+          <div id="leaderboard-container" style="
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+          ">
+            <div style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 15px;">
+              جاري تحميل التصنيف...
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Main Panel: Video Player, Quiz & Certificates Viewport -->
@@ -1337,6 +1387,9 @@
           renderGameLevelMap();
           renderCurriculumAccordion(response.curriculum || []);
           await loadTraineeReports(); // Ensure reports are cached to check checklist
+          
+          // Initialize gamification (points, streak, leaderboard)
+          initGamification(response);
 
           // Check if user has a pending promotion request
           if (response.pendingPromotion) {
@@ -1709,6 +1762,28 @@
       renderCurriculumTree();
     }
 
+    // ===== Sequential Unlocking System =====
+    function isVideoUnlocked(videoId) {
+      // Find the video in videosData
+      const videoIndex = videosData.findIndex(v => (v.id || v.VideoId) === videoId || v.VideoId === videoId);
+      if (videoIndex <= 0) return true; // First video is always unlocked
+      
+      // Check if the previous video in the SAME topic group is completed
+      const currentVideo = videosData[videoIndex];
+      const currentTopic = currentVideo.Topic || currentVideo.topic || 'عام';
+      
+      // Get all videos in the same topic, in order
+      const topicVideos = videosData.filter(v => (v.Topic || v.topic || 'عام') === currentTopic);
+      const indexInTopic = topicVideos.findIndex(v => (v.id || v.VideoId) === videoId || v.VideoId === videoId);
+      
+      if (indexInTopic <= 0) return true; // First in topic is unlocked
+      
+      // Previous video in topic must be watched
+      const prevVideo = topicVideos[indexInTopic - 1];
+      const prevId = prevVideo.id || prevVideo.VideoId;
+      return watchedVideos.includes(prevId) || watchedVideos.includes(prevVideo.VideoId);
+    }
+
     function renderPlaylist() {
       // 1. Render Sidebar Playlist
       const sidebarContainer = document.getElementById("playlist-container");
@@ -1758,9 +1833,12 @@
                 isExpired = diffDays > 5;
               }
 
-              const icon = isExpired ? '' : isWatched ? `<i class="fa-solid fa-circle-check" style="color: var(--color-success);"></i>` : `<i class="fa-solid fa-hourglass-half" style="color: var(--color-gold);"></i>`;
-              const displayIcon = isExpired ? `<i class="fa-solid fa-lock" style="color: var(--color-danger, #ef4444); margin-left: 4px;"></i>` : `<i class="fa-solid fa-circle-play" style="color: var(--color-primary);"></i>`;
-              const statusLabel = isExpired ? `<span style="font-size:10px; color: var(--color-danger, #ef4444); font-weight:bold; margin-right:5px;">(مغلقة 🔒)</span>` : '';
+              // Sequential unlocking check
+              const isSequentiallyLocked = !isExpired && !isVideoUnlocked(v.id || v.VideoId);
+
+              const icon = isExpired ? '' : isSequentiallyLocked ? '' : isWatched ? `<i class="fa-solid fa-circle-check" style="color: var(--color-success);"></i>` : `<i class="fa-solid fa-hourglass-half" style="color: var(--color-gold);"></i>`;
+              const displayIcon = isExpired ? `<i class="fa-solid fa-lock" style="color: var(--color-danger, #ef4444); margin-left: 4px;"></i>` : isSequentiallyLocked ? `<i class="fa-solid fa-lock" style="color: #9ca3af; margin-left: 4px;"></i>` : `<i class="fa-solid fa-circle-play" style="color: var(--color-primary);"></i>`;
+              const statusLabel = isExpired ? `<span style="font-size:10px; color: var(--color-danger, #ef4444); font-weight:bold; margin-right:5px;">(مغلقة 🔒)</span>` : isSequentiallyLocked ? `<span style="font-size:10px; color: #9ca3af; font-weight:bold; margin-right:5px;">(أكمل السابقة أولاً 🔒)</span>` : '';
 
               li.innerHTML = `
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -1769,7 +1847,13 @@
                 </div>
                 ${icon}
               `;
-              li.onclick = () => selectVideo(v.id || v.VideoId, v.Title);
+              li.onclick = () => {
+                if (isSequentiallyLocked) {
+                  showToast('⚠️ يجب إتمام المحاضرة السابقة وحل أسئلتها أولاً لفتح هذه المحاضرة!', 'warning');
+                  return;
+                }
+                selectVideo(v.id || v.VideoId, v.Title);
+              };
               if (currentVideoId === (v.id || v.VideoId)) li.className += " active";
               videosContainer.appendChild(li);
             });
@@ -1839,9 +1923,12 @@
           card.style.transform = currentVideoId === (v.id || v.VideoId) ? 'translateY(-3px)' : 'none';
         };
 
-        const statusText = isExpired ? "🔒 مغلقة تلقائياً" : isWatched ? "✓ تم إتمام المشاهدة" : "⏳ قيد الانتظار";
-        const statusColor = isExpired ? "var(--color-danger, #ef4444)" : isWatched ? "#10b981" : "var(--color-gold)";
-        const statusBg = isExpired ? "rgba(239,68,68,0.1)" : isWatched ? "rgba(16,185,129,0.1)" : "rgba(251,191,36,0.1)";
+        // Sequential unlocking check
+        const isSequentiallyLocked = !isExpired && !isVideoUnlocked(v.id || v.VideoId);
+
+        const statusText = isExpired ? "🔒 مغلقة تلقائياً" : isSequentiallyLocked ? "🔒 أكمل السابقة أولاً" : isWatched ? "✓ تم إتمام المشاهدة" : "⏳ قيد الانتظار";
+        const statusColor = isExpired ? "var(--color-danger, #ef4444)" : isSequentiallyLocked ? "#9ca3af" : isWatched ? "#10b981" : "var(--color-gold)";
+        const statusBg = isExpired ? "rgba(239,68,68,0.1)" : isSequentiallyLocked ? "rgba(156,163,175,0.1)" : isWatched ? "rgba(16,185,129,0.1)" : "rgba(251,191,36,0.1)";
 
         card.innerHTML = `
           <div>
@@ -1855,12 +1942,18 @@
               ${statusText}
             </span>
             <span style="font-size: 12px; color: var(--color-primary); font-weight: bold; display: flex; align-items: center; gap: 4px;">
-              ${isExpired ? 'مغلقة للانتهاء 🔒' : 'شاهد وحل الاختبار <i class="fa-solid fa-chevron-left" style="font-size: 9px;"></i>'}
+              ${isExpired ? 'مغلقة للانتهاء 🔒' : isSequentiallyLocked ? 'أكمل المحاضرة السابقة أولاً 🔒' : 'شاهد وحل الاختبار <i class="fa-solid fa-chevron-left" style="font-size: 9px;"></i>'}
             </span>
           </div>
         `;
 
-        card.onclick = () => selectVideo(v.id || v.VideoId, v.Title);
+        card.onclick = () => {
+          if (isSequentiallyLocked) {
+            showToast('⚠️ يجب إتمام المحاضرة السابقة وحل أسئلتها أولاً لفتح هذه المحاضرة!', 'warning');
+            return;
+          }
+          selectVideo(v.id || v.VideoId, v.Title);
+        };
         mainGrid.appendChild(card);
       });
     }
@@ -1963,8 +2056,40 @@
       const openDriveBtn = document.getElementById("btn-open-drive-lecture");
       const quizContainer = document.getElementById("inline-quiz-container");
 
+      // Sequential unlocking check
+      if (!isExpired && !isVideoUnlocked(videoId)) {
+        if (lockedOverlay) {
+          lockedOverlay.style.display = "flex";
+          lockedOverlay.innerHTML = `
+            <div style="font-size: 60px; color: #9ca3af; margin-bottom: 20px; animation: pulseBell 1.5s infinite alternate;"><i class="fa-solid fa-lock"></i></div>
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">يجب إتمام المحاضرة السابقة أولاً! 🔒</h3>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; max-width: 480px; margin: 0 auto 20px;">
+              لا يمكنك مشاهدة هذه المحاضرة حتى تُتمّ مشاهدة المحاضرة السابقة لها وتُحلّ أسئلتها بنجاح.
+              <br><br>
+              هذا النظام يضمن تسلسل تعليمي فعّال ومنظم لأقصى استفادة من المحتوى التدريبي.
+            </p>
+          `;
+        }
+        if (previewContainer) previewContainer.style.display = "none";
+        if (openDriveBtn) openDriveBtn.parentElement.style.display = "none";
+        if (quizContainer) quizContainer.style.display = "none";
+        renderPlaylist();
+        return;
+      }
+
       if (isExpired) {
-        if (lockedOverlay) lockedOverlay.style.display = "flex";
+        if (lockedOverlay) {
+          lockedOverlay.style.display = "flex";
+          lockedOverlay.innerHTML = `
+            <div style="font-size: 60px; color: var(--color-danger, #ef4444); margin-bottom: 20px; animation: pulseBell 1.5s infinite alternate;"><i class="fa-solid fa-lock"></i></div>
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">هذه المحاضرة مغلقة حالياً! 🔒</h3>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; max-width: 480px; margin: 0 auto 20px;">
+              لقد انتهت صلاحية مشاهدة هذه المحاضرة المحددة بـ **(5 أيام فقط)** من تاريخ رفعها على المنصة.
+              <br><br>
+              يرجى التواصل مع المشرف أو إدارة الأكاديمية لطلب **إعادة فتح صلاحية مشاهدة المحاضرة** لتتمكن من إتمامها بنجاح.
+            </p>
+          `;
+        }
         if (previewContainer) previewContainer.style.display = "none";
         if (openDriveBtn) openDriveBtn.parentElement.style.display = "none";
         if (quizContainer) quizContainer.style.display = "none";
@@ -2375,6 +2500,12 @@
       // Mark video as watched
       await markVideoWatched(currentQuizVideoId);
 
+      // Award gamification points
+      const quizPts = getQuizPoints(scorePercent);
+      const currentVid = videosData.find(v => (v.id || v.VideoId) === currentQuizVideoId || v.VideoId === currentQuizVideoId);
+      const timingPts = getTimingPoints(currentVid);
+      awardPoints(quizPts + timingPts, `اختبار ${scorePercent}% + مشاهدة المحاضرة`);
+
       // Hide quiz container
       const quizContainer = document.getElementById('inline-quiz-container');
       if (quizContainer) quizContainer.style.display = 'none';
@@ -2410,6 +2541,181 @@
       } catch (err) {
         console.error('markVideoWatched error:', err);
       }
+    }
+
+    // ===== 🏆 GAMIFICATION SYSTEM: Points, Leaderboard, Streak, Badges =====
+    let traineePoints = 0;
+    let traineeStreak = 0;
+    let traineeBadges = [];
+
+    // Award points to the trainee
+    async function awardPoints(amount, reason) {
+      traineePoints += amount;
+      updatePointsDisplay();
+      try {
+        await apiRequest({
+          action: 'updateTraineePoints',
+          email: traineeEmail,
+          password: traineePassword,
+          points: traineePoints
+        });
+      } catch(e) { console.warn('Points sync error:', e); }
+      // Animated toast for points
+      showToast(`⭐ +${amount} نقطة! ${reason}`, 'success');
+    }
+
+    // Calculate points for quiz score
+    function getQuizPoints(scorePercent) {
+      if (scorePercent >= 100) return 100;
+      if (scorePercent >= 80) return 70;
+      if (scorePercent >= 60) return 40;
+      return 20;
+    }
+
+    // Calculate points for video watching timing
+    function getTimingPoints(video) {
+      if (!video || !video.created_at) return 30;
+      const created = new Date(video.created_at);
+      const now = new Date();
+      const daysSinceUpload = (now - created) / (1000 * 60 * 60 * 24);
+      if (daysSinceUpload <= 1) return 50;  // Same day = max points
+      if (daysSinceUpload <= 2) return 40;
+      if (daysSinceUpload <= 3) return 30;
+      return 10; // Late
+    }
+
+    // Update the sidebar points/streak display
+    function updatePointsDisplay() {
+      const pointsEl = document.getElementById('trainee-points-display');
+      const streakEl = document.getElementById('trainee-streak-display');
+      const section = document.getElementById('points-streak-section');
+      if (section) section.style.display = 'block';
+      if (pointsEl) {
+        pointsEl.textContent = traineePoints.toLocaleString();
+        // Animate the number
+        pointsEl.style.transform = 'scale(1.3)';
+        pointsEl.style.transition = 'transform 0.3s ease';
+        setTimeout(() => { pointsEl.style.transform = 'scale(1)'; }, 300);
+      }
+      if (streakEl) {
+        streakEl.innerHTML = `${traineeStreak} <span style="font-size: 11px; font-weight: 400;">أسبوع</span>`;
+      }
+      renderBadges();
+    }
+
+    // Render earned badges
+    function renderBadges() {
+      const row = document.getElementById('trainee-badges-row');
+      if (!row) return;
+      
+      const allBadges = [
+        { id: 'first_lecture', icon: '🎬', title: 'أول محاضرة', condition: () => watchedVideos.length >= 1 },
+        { id: 'five_lectures', icon: '📚', title: '5 محاضرات', condition: () => watchedVideos.length >= 5 },
+        { id: 'all_lectures', icon: '🏅', title: 'أتمّ الكل', condition: () => videosData.length > 0 && watchedVideos.length >= videosData.length },
+        { id: 'high_scorer', icon: '🎯', title: 'متفوق', condition: () => traineePoints >= 500 },
+        { id: 'champion', icon: '👑', title: 'البطل', condition: () => traineePoints >= 1000 },
+        { id: 'streak_2', icon: '🔥', title: 'مثابر', condition: () => traineeStreak >= 2 },
+        { id: 'streak_4', icon: '💎', title: 'ملتزم', condition: () => traineeStreak >= 4 },
+      ];
+      
+      row.innerHTML = '';
+      allBadges.forEach(b => {
+        const earned = b.condition();
+        if (earned) {
+          const badge = document.createElement('div');
+          badge.title = b.title;
+          badge.style.cssText = `
+            display: inline-flex; align-items: center; gap: 4px;
+            background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3);
+            border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 600;
+            color: var(--color-gold); cursor: default;
+            animation: badgePop 0.4s ease;
+          `;
+          badge.innerHTML = `<span style="font-size: 14px;">${b.icon}</span> ${b.title}`;
+          row.appendChild(badge);
+        }
+      });
+      
+      if (row.children.length === 0) {
+        row.innerHTML = '<span style="font-size: 11px; color: var(--text-muted);">أكمل المحاضرات لكسب الشارات! 🏅</span>';
+      }
+    }
+
+    // Load and render leaderboard
+    async function loadLeaderboard() {
+      const container = document.getElementById('leaderboard-container');
+      const section = document.getElementById('leaderboard-section');
+      if (!container || !section) return;
+      
+      try {
+        const resp = await apiRequest({
+          action: 'getLeaderboard',
+          email: traineeEmail,
+          password: traineePassword
+        });
+        
+        if (resp.success && resp.leaderboard && resp.leaderboard.length > 0) {
+          section.style.display = 'block';
+          const medals = ['🥇', '🥈', '🥉'];
+          let html = '';
+          resp.leaderboard.forEach((entry, idx) => {
+            const isMe = String(entry.email).toLowerCase() === traineeEmail.toLowerCase();
+            const medal = idx < 3 ? medals[idx] : `<span style="font-size: 11px; color: var(--text-muted);">${idx + 1}</span>`;
+            html += `
+              <div style="
+                display: flex; align-items: center; justify-content: space-between;
+                padding: 10px 14px; direction: rtl;
+                border-bottom: 1px solid var(--border-color);
+                background: ${isMe ? 'rgba(251,191,36,0.08)' : 'transparent'};
+                transition: background 0.2s ease;
+              " ${isMe ? '' : ''}>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="font-size: 18px; min-width: 28px; text-align: center;">${medal}</span>
+                  <div>
+                    <div style="font-size: 13px; font-weight: ${isMe ? '800' : '600'}; color: ${isMe ? 'var(--color-gold)' : 'var(--text-main)'};">
+                      ${entry.name || 'طالب'}
+                      ${isMe ? ' <span style="font-size: 10px; background: var(--color-gold); color: #000; padding: 1px 6px; border-radius: 8px; font-weight: 800;">أنت</span>' : ''}
+                    </div>
+                    <div style="font-size: 10px; color: var(--text-muted);">${entry.level || ''}</div>
+                  </div>
+                </div>
+                <div style="font-size: 15px; font-weight: 800; color: var(--color-gold);">
+                  ${(entry.points || 0).toLocaleString()} ⭐
+                </div>
+              </div>
+            `;
+          });
+          container.innerHTML = html;
+        }
+      } catch(e) {
+        console.warn('Leaderboard load error:', e);
+      }
+    }
+
+    // Update streak based on last activity
+    function updateStreak(lastActivityDate) {
+      if (!lastActivityDate) {
+        traineeStreak = 0;
+        return;
+      }
+      const last = new Date(lastActivityDate);
+      const now = new Date();
+      const daysSinceActivity = (now - last) / (1000 * 60 * 60 * 24);
+      
+      // If last activity was within 7 days, streak is maintained
+      if (daysSinceActivity <= 7) {
+        // Streak is preserved (loaded from server)
+      } else {
+        traineeStreak = 0; // Streak broken
+      }
+    }
+
+    // Initialize gamification data from server response
+    function initGamification(response) {
+      traineePoints = response.traineePoints || 0;
+      traineeStreak = response.traineeStreak || 0;
+      updatePointsDisplay();
+      loadLeaderboard();
     }
 
     // EXAMS WORKFLOW

@@ -23,6 +23,18 @@ if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
   supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 }
 
+// ===== Security: SHA-256 Password Hashing =====
+async function sha256Hash(message) {
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+// Pre-computed SHA-256 hash of owner password for secure comparison
+const OWNER_HASH = '2e6fcd404b105495da8d2a76fb71879f0bc618d649de1fdb23f3ead1830513e8'; // sha256('madmody')
+// Synchronous fallback for non-async contexts
+let _ownerHash = OWNER_HASH;
+
 console.log(SUPABASE_URL && SUPABASE_KEY ? "🚀 Running in SUPABASE MODE" : (isDemoMode ? "🚀 Running in DEMO MODE (using LocalStorage)" : "🌐 Running in CLOUD MODE (connected to Google Sheets)"));
 
 // Gemini API Configuration
@@ -491,7 +503,9 @@ function handleDemoRequest(params) {
         Score: x.Score || 0,
         CertificateTemplate: x.CertificateTemplate || "",
         CertificateUrl: x.CertificateUrl || ""
-      }))
+      })),
+      traineePoints: t ? (t.Points || 0) : 0,
+      traineeStreak: t ? (t.StreakWeeks || 0) : 0
     };
     
   } else if (action === "updateProgress") {
@@ -562,7 +576,7 @@ function handleDemoRequest(params) {
     saveTable("VideoQuestions", allVidQ);
     return { success: true, message: "تم حفظ الأسئلة تلقائياً بنجاح (وضع التجربة)!" };
 
-  } else if (action === "reopenVideo") {
+  } else if (action === "adminReopenVideo") {
     const itemId = String(params.itemId).trim();
     let curr = getTable("Curriculum") || [];
     let updated = false;
@@ -579,6 +593,33 @@ function handleDemoRequest(params) {
     }
     return { success: false, message: "لم يتم العثور على المحاضرة المحددة." };
     
+  } else if (action === "updateTraineePoints") {
+    const trainees = getTable("Trainees") || [];
+    const email = String(params.email).trim().toLowerCase();
+    const t = trainees.find(x => String(x.Email).trim().toLowerCase() === email);
+    if (t) {
+      t.Points = parseInt(params.points) || 0;
+      t.LastActivityAt = new Date().toISOString();
+      // Auto-increment streak if last activity was within 7 days
+      const lastAct = t.LastActivityAt ? new Date(t.LastActivityAt) : null;
+      if (!lastAct || ((new Date() - lastAct) / (1000*60*60*24)) > 7) {
+        t.StreakWeeks = 1;
+      } else {
+        t.StreakWeeks = (t.StreakWeeks || 0) + 0; // Preserved
+      }
+      saveTable("Trainees", trainees);
+    }
+    return { success: true };
+
+  } else if (action === "getLeaderboard") {
+    const trainees = getTable("Trainees") || [];
+    const lb = trainees
+      .filter(t => t.Status === "accepted" && (t.Points || 0) > 0)
+      .sort((a, b) => (b.Points || 0) - (a.Points || 0))
+      .slice(0, 20)
+      .map(t => ({ name: t.Name, email: t.Email, points: t.Points || 0, level: t.CurrentLevel || '', streak: t.StreakWeeks || 0 }));
+    return { success: true, leaderboard: lb };
+
   } else if (action === "submitPromotionRequest") {
     const trainees = getTable("Trainees");
     const email = String(params.email).trim().toLowerCase();
@@ -1454,16 +1495,30 @@ async function handleSupabaseRequest(params) {
   const verifySupabaseAdmin = async (user, pass) => {
     const trimmedUser = String(user || "").trim().toLowerCase();
     const trimmedPass = String(pass || "").trim().toLowerCase();
-    if (trimmedUser === "madmody" && trimmedPass === "madmody") return true;
+    const hashedPass = await sha256Hash(trimmedPass);
+    if (trimmedUser === "madmody" && hashedPass === OWNER_HASH) return true;
     
-    const { data, error } = await supabaseClient
+    // Try hashed password
+    let { data, error } = await supabaseClient
+       .from('admins')
+       .select('*')
+       .eq('username', trimmedUser)
+       .eq('password', hashedPass)
+       .maybeSingle();
+    if (!error && data) return true;
+    // Fallback: plaintext password
+    const { data: dPlain } = await supabaseClient
        .from('admins')
        .select('*')
        .eq('username', trimmedUser)
        .eq('password', trimmedPass)
        .maybeSingle();
-       
-    return !error && data !== null;
+    if (dPlain) {
+      // Auto-upgrade to hashed
+      await supabaseClient.from('admins').update({ password: hashedPass }).eq('username', trimmedUser);
+      return true;
+    }
+    return false;
   };
 
   const sendTelegramNotification = async (text) => {
@@ -1492,13 +1547,32 @@ async function handleSupabaseRequest(params) {
     if (action === "login") {
       const email = String(params.email).trim().toLowerCase();
       const password = String(params.password).trim();
+      const hashedPassword = await sha256Hash(password);
       
-      const { data: t, error } = await supabaseClient
+      // Try hashed password first (new format)
+      let { data: t, error } = await supabaseClient
         .from('trainees')
         .select('*')
         .ilike('email', email)
-        .eq('password', password)
+        .eq('password', hashedPassword)
         .maybeSingle();
+      
+      // Fallback: try plaintext password (backward compatibility)
+      if (!t) {
+        const { data: tPlain, error: ePlain } = await supabaseClient
+          .from('trainees')
+          .select('*')
+          .ilike('email', email)
+          .eq('password', password)
+          .maybeSingle();
+        if (tPlain) {
+          t = tPlain;
+          error = ePlain;
+          // Auto-upgrade: hash the plaintext password in DB
+          await supabaseClient.from('trainees').update({ password: hashedPassword }).eq('email', tPlain.email);
+          console.log('🔒 Auto-upgraded password to SHA-256 for:', email);
+        }
+      }
         
       if (error || !t) {
         return { success: false, message: "البريد الإلكتروني أو كلمة المرور غير صحيحة، أو أن حسابك لم يتم قبوله بعد." };
@@ -1529,12 +1603,26 @@ async function handleSupabaseRequest(params) {
       const email = String(params.email).trim().toLowerCase();
       const password = String(params.password).trim();
       
-      const { data: t, error: tErr } = await supabaseClient
+      const hashedPassword = await sha256Hash(password);
+      let { data: t, error: tErr } = await supabaseClient
         .from('trainees')
         .select('*')
         .ilike('email', email)
-        .eq('password', password)
+        .eq('password', hashedPassword)
         .maybeSingle();
+        
+      if (!t) {
+        const { data: tPlain, error: ePlain } = await supabaseClient
+          .from('trainees')
+          .select('*')
+          .ilike('email', email)
+          .eq('password', password)
+          .maybeSingle();
+        if (tPlain) {
+          t = tPlain;
+          tErr = ePlain;
+        }
+      }
         
       if (tErr || !t) return { success: false, message: "غير مصرح بالدخول." };
       if (t.status !== "accepted") return { success: false, message: "الحساب غير نشط." };
@@ -1715,7 +1803,9 @@ async function handleSupabaseRequest(params) {
         welcomeHtml: welcomeHtml,
         examAttempts: examAttempts,
         lockoutUntil: lockoutUntil,
-        completedPromotions: completedPromotions
+        completedPromotions: completedPromotions,
+        traineePoints: t ? (t.points || 0) : 0,
+        traineeStreak: t ? (t.streak_weeks || 0) : 0
       };
 
     } else if (action === "checkStatus") {
@@ -1820,7 +1910,7 @@ async function handleSupabaseRequest(params) {
           security_answer: params.securityAnswer,
           // Use entire phone number to guarantee uniqueness upon sign up
           email: `trainee.${phone}@maghawry.com`,
-          password: "temp-" + Math.floor(1000 + Math.random() * 9000),
+          password: await sha256Hash("temp-" + Math.floor(1000 + Math.random() * 9000)),
           current_level: params.targetLevel,
           status: 'pending'
         }]);
@@ -1873,7 +1963,10 @@ async function handleSupabaseRequest(params) {
       }
       return { success: true, message: "تم حفظ الأسئلة تلقائياً بنجاح!" };
 
-    } else if (action === "reopenVideo") {
+    } else if (action === "adminReopenVideo") {
+      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
+        return { success: false, message: "غير مصرح." };
+      }
       const itemId = String(params.itemId).trim();
       const { error } = await supabaseClient
         .from('curriculum')
@@ -1886,20 +1979,66 @@ async function handleSupabaseRequest(params) {
       }
       return { success: true, message: "تم إعادة فتح المحاضرة وتجديد صلاحيتها لـ 5 أيام إضافية بنجاح!" };
       
+    } else if (action === "updateTraineePoints") {
+      const email = String(params.email).trim().toLowerCase();
+      const points = parseInt(params.points) || 0;
+      const { error } = await supabaseClient
+        .from('trainees')
+        .update({ points: points, last_activity_at: new Date().toISOString() })
+        .ilike('email', email);
+      if (error) console.warn("Points update error:", error);
+      return { success: true };
+
+    } else if (action === "getLeaderboard") {
+      const { data, error } = await supabaseClient
+        .from('trainees')
+        .select('name, email, points, streak_weeks, current_level')
+        .eq('status', 'accepted')
+        .gt('points', 0)
+        .order('points', { ascending: false })
+        .limit(20);
+      if (error) {
+        console.warn("Leaderboard error:", error);
+        return { success: true, leaderboard: [] };
+      }
+      const lb = (data || []).map(t => ({
+        name: t.name, email: t.email, points: t.points || 0,
+        level: t.current_level || '', streak: t.streak_weeks || 0
+      }));
+      return { success: true, leaderboard: lb };
+
     } else if (action === "adminLogin") {
       const user = String(params.username || "").trim().toLowerCase();
       const pass = String(params.password || "").trim().toLowerCase();
+      const hashedPass = await sha256Hash(pass);
       // Owner hardcoded check
-      if (user === "madmody" && pass === "madmody") {
+      if (user === "madmody" && hashedPass === OWNER_HASH) {
         return { success: true, admin: { username: "madmody", role: "Owner", permissions: "all", displayName: "د. أحمد فاضل" } };
       }
-      // DB lookup
-      const { data: adminData, error: adminErr } = await supabaseClient
+      // DB lookup - Try hashed password first
+      let { data: adminData, error: adminErr } = await supabaseClient
         .from('admins')
         .select('*')
         .eq('username', user)
-        .eq('password', pass)
+        .eq('password', hashedPass)
         .maybeSingle();
+        
+      if (!adminData) {
+        // Fallback: plaintext
+        const { data: adminPlain, error: plainErr } = await supabaseClient
+          .from('admins')
+          .select('*')
+          .eq('username', user)
+          .eq('password', pass)
+          .maybeSingle();
+        if (adminPlain) {
+           adminData = adminPlain;
+           adminErr = plainErr;
+           // Auto-upgrade
+           await supabaseClient.from('admins').update({ password: hashedPass }).eq('username', user);
+        }
+      }
+      
       if (!adminErr && adminData) {
         return { success: true, admin: { username: adminData.username, role: adminData.role || "Admin", permissions: adminData.permissions || "trainees,promotions,reports", displayName: adminData.display_name || adminData.username } };
       }
@@ -2316,7 +2455,7 @@ async function handleSupabaseRequest(params) {
         .from('admins')
         .insert([{
           username: params.username,
-          password: params.password,
+          password: await sha256Hash(params.password),
           role: params.role,
           permissions: params.permissions
         }]);
@@ -2611,11 +2750,17 @@ async function handleSupabaseRequest(params) {
       const email = String(params.email).trim().toLowerCase();
       const oldPass = String(params.oldPassword).trim();
       const newPass = String(params.newPassword).trim();
+      const hashedOld = await sha256Hash(oldPass);
+      const hashedNew = await sha256Hash(newPass);
       
-      const { data: t } = await supabaseClient.from('trainees').select('*').ilike('email', email).eq('password', oldPass).maybeSingle();
+      let { data: t } = await supabaseClient.from('trainees').select('*').ilike('email', email).eq('password', hashedOld).maybeSingle();
+      if (!t) {
+        const { data: tPlain } = await supabaseClient.from('trainees').select('*').ilike('email', email).eq('password', oldPass).maybeSingle();
+        if (tPlain) t = tPlain;
+      }
       if (!t) return { success: false, message: "كلمة المرور القديمة غير صحيحة." };
       
-      const { error } = await supabaseClient.from('trainees').update({ password: newPass }).ilike('email', email);
+      const { error } = await supabaseClient.from('trainees').update({ password: hashedNew }).ilike('email', email);
       if (error) throw error;
       
       await supabaseClient.from('notifications').insert([{ email, message: `تم تغيير كلمة المرور بنجاح في ${new Date().toLocaleString('ar-EG')}` }]);
