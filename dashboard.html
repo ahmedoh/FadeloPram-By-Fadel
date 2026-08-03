@@ -596,44 +596,119 @@
             </p>
           </div>
 
-          <div id="lecture-preview-container" style="
+          <!-- Smart Protected Video Player Container -->
+          <div id="lecture-preview-container" oncontextmenu="return false;" style="
             position: relative;
             width: 100%;
             aspect-ratio: 16/9;
-            border-radius: 14px;
+            border-radius: 16px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            background: rgba(0,0,0,0.15);
+            background: #000;
             margin-bottom: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.3);
+            user-select: none;
+            -webkit-user-select: none;
           ">
+            <!-- Dynamic Anti-Recording Watermark Overlay -->
+            <div id="player-watermark-overlay" style="
+              position: absolute;
+              top: 20px;
+              right: 20px;
+              z-index: 10;
+              pointer-events: none;
+              color: rgba(255, 255, 255, 0.4);
+              font-size: 11px;
+              font-weight: bold;
+              font-family: monospace;
+              text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+              background: rgba(0,0,0,0.3);
+              padding: 4px 10px;
+              border-radius: 20px;
+              backdrop-filter: blur(4px);
+              transition: all 4s ease-in-out;
+            ">
+              <span id="wm-student-name">د. متدرب</span> | <span id="wm-student-phone">01000000000</span> | Fadelopram Shield 🛡️
+            </div>
+
+            <!-- Video Player Iframe (Sandboxed Encapsulated Player) -->
             <iframe id="lecture-preview-iframe" src="" style="
               width: 100%;
               height: 100%;
               border: none;
-              background: transparent;
-            " allowfullscreen></iframe>
+              background: #000;
+              pointer-events: auto;
+            " allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+
+            <!-- Smart Controls Overlay Bar -->
+            <div id="smart-player-controls-bar" style="
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              z-index: 12;
+              background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
+              padding: 12px 18px;
+              display: flex;
+              flex-direction: column;
+              gap: 8px;
+              transition: opacity 0.3s ease;
+            ">
+              <!-- Smart Progress Bar -->
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <input type="range" id="smart-player-seek" min="0" max="100" value="0" style="
+                  flex: 1;
+                  cursor: pointer;
+                  accent-color: var(--color-gold);
+                  height: 4px;
+                  border-radius: 2px;
+                ">
+                <span id="smart-player-time" style="color: #fff; font-size: 11px; font-weight: bold; font-family: monospace; min-width: 80px; text-align: left;">00:00 / 00:00</span>
+              </div>
+
+              <!-- Action Controls Row -->
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <button type="button" id="btn-player-play" class="btn" style="background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; padding: 0;">
+                    <i class="fa-solid fa-play"></i>
+                  </button>
+                  <button type="button" id="btn-player-rewind" class="btn" title="تراجع 10 ثوانٍ" style="background: none; border: none; color: rgba(255,255,255,0.8); font-size: 14px; cursor: pointer; padding: 0;">
+                    <i class="fa-solid fa-rotate-left"></i> <span style="font-size: 10px;">10s</span>
+                  </button>
+                  <button type="button" id="btn-player-forward" class="btn" title="تقديم 10 ثوانٍ" style="background: none; border: none; color: rgba(255,255,255,0.8); font-size: 14px; cursor: pointer; padding: 0;">
+                    <i class="fa-solid fa-rotate-right"></i> <span style="font-size: 10px;">10s</span>
+                  </button>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <select id="smart-player-speed" style="
+                    background: rgba(255,255,255,0.15);
+                    color: #fff;
+                    border: 1px solid rgba(255,255,255,0.2);
+                    border-radius: 8px;
+                    padding: 2px 6px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    cursor: pointer;
+                  ">
+                    <option value="0.75" style="color: #000;">0.75x</option>
+                    <option value="1.0" selected style="color: #000;">1.0x (عادي)</option>
+                    <option value="1.25" style="color: #000;">1.25x</option>
+                    <option value="1.5" style="color: #000;">1.5x (سريع)</option>
+                    <option value="2.0" style="color: #000;">2.0x (مضاعف)</option>
+                  </select>
+
+                  <button type="button" id="btn-player-fullscreen" class="btn" title="ملء الشاشة" style="background: none; border: none; color: #fff; font-size: 15px; cursor: pointer; padding: 0;">
+                    <i class="fa-solid fa-expand"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div style="text-align: center; margin-bottom: 20px;">
-            <button id="btn-open-drive-lecture" onclick="openDriveLecture()" class="btn btn-secondary" style="
-              font-size: 13px;
-              padding: 8px 24px;
-              border-radius: 20px;
-              cursor: pointer;
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              font-weight: bold;
-              box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.15);
-              background: rgba(var(--color-primary-rgb), 0.08);
-              color: var(--color-primary);
-              border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-            ">
-              <i class="fa-solid fa-up-right-from-square"></i>
-              فتح المحاضرة في نافذة خارجية ↗
-            </button>
+          <!-- Hidden External Button Container (Kept hidden to prevent raw URL leakage) -->
+          <div style="display: none !important;">
+            <button id="btn-open-drive-lecture" onclick="openDriveLecture()"></button>
           </div>
 
 
@@ -2180,10 +2255,50 @@
         if (iframe) {
           iframe.src = getEmbedUrl(v.Url || v.VideoId || "");
         }
+        updateSmartWatermark();
       }
       loadInlineVideoQuiz(videoId, title);
 
       renderPlaylist();
+    }
+
+    // Smart Watermark Animation & Dynamic User Info
+    function updateSmartWatermark() {
+      const wmName = document.getElementById("wm-student-name");
+      const wmPhone = document.getElementById("wm-student-phone");
+      const overlay = document.getElementById("player-watermark-overlay");
+
+      if (wmName) wmName.textContent = traineeName || "د. متدرب";
+      if (wmPhone) wmPhone.textContent = traineeEmail || traineeBranch || "Fadelopram";
+
+      if (overlay && !overlay.dataset.animated) {
+        overlay.dataset.animated = "true";
+        const pos = [
+          { top: '15px', right: '15px', bottom: 'auto', left: 'auto' },
+          { top: '15px', right: 'auto', bottom: 'auto', left: '15px' },
+          { top: 'auto', right: '15px', bottom: '60px', left: 'auto' },
+          { top: 'auto', right: 'auto', bottom: '60px', left: '15px' }
+        ];
+        let idx = 0;
+        setInterval(() => {
+          idx = (idx + 1) % pos.length;
+          Object.assign(overlay.style, pos[idx]);
+        }, 4500);
+      }
+    }
+
+    // Fullscreen Toggle for Protected Player
+    const btnFullscreen = document.getElementById("btn-player-fullscreen");
+    if (btnFullscreen) {
+      btnFullscreen.addEventListener("click", () => {
+        const container = document.getElementById("lecture-preview-container");
+        if (!document.fullscreenElement) {
+          if (container.requestFullscreen) container.requestFullscreen();
+          else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen();
+        }
+      });
     }
 
     function resetViewport() {
