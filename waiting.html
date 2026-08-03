@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>صفحة الانتظار | PharmReady-AlmaghwryBy-Fadel</title>
+  <title>Fadelopram Rx Academy — صفحة الانتظار والتحقق</title>
   <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,12 +46,10 @@
   <!-- App Header -->
   <header class="app-container" style="max-width: 1200px; padding: 0 20px 0;">
     <div class="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color);">
-      <div class="logo-section" style="display: flex; align-items: center; gap: 8px;">
-        <img src="logo_pr.png" alt="PharmReady" class="logo-img" style="height: 40px; width: auto; object-fit: contain;">
-        <i class="fa-solid fa-handshake" style="font-size: 18px; color: var(--color-primary); margin: 0 2px;"></i>
-        <img src="logo.png" alt="شعار صيدليات آل مغاوري" class="logo-img" style="height: 40px; width: auto; object-fit: contain;">
+      <div class="logo-section" style="display: flex; align-items: center; gap: 10px;">
+        <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 44px; width: 44px; border-radius: 10px; object-fit: cover;">
         <div style="border-right: 1px solid var(--border-color); padding-right: 10px; margin-right: 4px;">
-          <h1 style="font-size: 15px; font-weight: 700; line-height: 1.2;" data-i18n="logo_title">صيدليات آل مغاوري &amp; PharmReady</h1>
+          <h1 style="font-size: 16px; font-weight: 900; line-height: 1.2; color: var(--color-gold);" data-i18n="logo_title">منظومة Fadelopram</h1>
           <p style="font-size: 10px; color: var(--text-muted); margin: 0;" data-i18n="logo_sub">بوابة متابعة طلبات المتدربين</p>
         </div>
       </div>
@@ -92,27 +90,25 @@
           <div class="status-card accepted" id="status-accepted" style="display: none; padding: 30px; text-align: center; border-radius: 12px; background: rgba(16,185,129,0.05); border: 1px dashed #10b981;">
             <div style="font-size: 50px; color: #10b981; margin-bottom: 15px;"><i class="fa-solid fa-circle-check"></i></div>
             <h3 data-i18n="accepted_status_title">تهانينا! تم قبول طلبك بنجاح 🎉</h3>
-            <p style="margin-bottom: 20px; margin-top: 10px;"><span data-i18n="welcome_dr">مرحباً بك يا دكتور</span> <span id="trainee-name-accepted" style="font-weight: bold; color: #10b981;">...</span> <span data-i18n="accepted_welcome_msg">كمتدرب رسمي في صيدليات آل مغاوري. إليك بيانات الدخول الخاصة بك:</span></p>
+            <p style="margin-bottom: 20px; margin-top: 10px;"><span data-i18n="welcome_dr">مرحباً بك يا دكتور</span> <span id="trainee-name-accepted" style="font-weight: bold; color: #10b981;">...</span> <span data-i18n="accepted_welcome_msg">كمتدرب رسمي في المنصة. تم تفعيل حسابك ويمكنك الدخول فوراً:</span></p>
             
             <div class="check-box" style="background: var(--bg-primary); text-align: right; max-width: 450px; margin: 15px auto; padding: 15px; border-radius: 10px; border: 1px dashed var(--border-color);">
               <div style="margin-bottom: 12px;">
-                <strong data-i18n="created_email">البريد الإلكتروني المنشأ:</strong>
+                <strong>رقم الهاتف (اسم الدخول):</strong>
                 <div style="font-family: monospace; font-size: 15px; margin-top: 5px; color: var(--text-main); background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed var(--border-color);">
-                  <span id="trainee-email-disp">...</span>
-                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="copyText('trainee-email-disp')"><i class="fa-regular fa-copy"></i> <span data-i18n="btn_copy">نسخ</span></button>
+                  <span id="trainee-phone-disp">...</span>
+                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="copyText('trainee-phone-disp')"><i class="fa-regular fa-copy"></i> <span data-i18n="btn_copy">نسخ</span></button>
                 </div>
               </div>
               <div>
-                <strong data-i18n="temp_pass">كلمة المرور المؤقتة:</strong>
-                <div style="font-family: monospace; font-size: 15px; margin-top: 5px; color: var(--text-main); background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed var(--border-color);">
-                  <span id="trainee-pass-disp">...</span>
-                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="copyText('trainee-pass-disp')"><i class="fa-regular fa-copy"></i> <span data-i18n="btn_copy">نسخ</span></button>
+                <strong>كلمة المرور:</strong>
+                <div style="font-family: monospace; font-size: 14px; margin-top: 5px; color: var(--color-primary); background: rgba(16,185,129,0.08); padding: 8px 12px; border-radius: 6px; font-weight: bold;">
+                  🔒 كلمة المرور السرية التي اخترتها بنفسك أثناء التسجيل
                 </div>
-                <p style="font-size: 11px; margin-top: 8px; color: var(--color-gold);" data-i18n="warn_change_pass"><i class="fa-solid fa-circle-exclamation"></i> يرجى تغيير كلمة المرور المؤقتة فور تسجيل دخولك الأول لزيادة أمان حسابك.</p>
               </div>
             </div>
 
-            <a href="index.html" class="btn btn-primary" style="margin-top: 15px; padding: 12px 25px;"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="btn_go_login">الانتقال لصفحة تسجيل الدخول</span></a>
+            <button class="btn btn-primary" id="btn-auto-enter-dashboard" style="margin-top: 15px; padding: 12px 25px; font-weight: bold; font-size: 15px;" onclick="enterDashboardDirectly()"><i class="fa-solid fa-graduation-cap"></i> دخول الأكاديمية وبدء التدريب الآن 🚀</button>
           </div>
 
           <!-- Rejected status -->
@@ -149,7 +145,7 @@
           <div class="bio-img-placeholder" style="background: linear-gradient(135deg, var(--color-gold), #fff);"><i class="fa-solid fa-code"></i></div>
           <h4 style="font-size: 16px; margin-bottom: 10px;" data-i18n="dev_bio_title">نبذة عن المطور (أحمد فاضل)</h4>
           <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted);" data-i18n="dev_bio_p">
-            أحمد فاضل، هو المهندس والمطور المسؤول عن تصميم وتطوير المنصة الأكاديمية (PharmReady-AlmaghwryBy-Fadel). تم بناء هذا النظام خصيصاً لتسهيل إدارة العملية التدريبية وتأمين المحتوى العلمي المقدم للطلاب. يهدف النظام لتسجيل المتدربين الجدد وإصدار حسابات الدخول الرسمية ومتابعة مستويات التقدم الدراسي إلكترونياً وبطريقة ذكية بدون أي تعقيد تقني أو استهلاك غير مبرر لباقات الإنترنت.
+            أحمد فاضل، هو المهندس والمطور المسؤول عن تصميم وتطوير المنصة الأكاديمية (Fadelopram). تم بناء هذا النظام خصيصاً لتسهيل إدارة العملية التدريبية وتأمين المحتوى العلمي المقدم للطلاب. يهدف النظام لتسجيل المتدربين الجدد وإصدار حسابات الدخول الرسمية ومتابعة مستويات التقدم الدراسي إلكترونياً وبطريقة ذكية بدون أي تعقيد تقني أو استهلاك غير مبرر لباقات الإنترنت.
           </p>
         </div>
       </div>
@@ -158,7 +154,7 @@
   </main>
 
   <footer class="app-footer" style="text-align: center; padding: 20px 0; margin-top: auto; border-top: 1px solid var(--border-color); background: var(--bg-secondary);">
-    <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري</p>
+    <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لمنظومة Fadelopram</p>
     <p style="font-size: 10px; margin-top: 5px; color: rgba(128,128,128,0.4)">Support: 01107118948</p>
   </footer>
 
@@ -194,7 +190,7 @@
         maghawry_history_title: "نبذة عن صيدليات آل مغاوري",
         maghawry_history_p: "تأسست صيدليات آل مغاوري كواحدة من الكيانات الصيدلانية الرائدة في محافظة دمياط. ترتكز رؤية المجموعة على تقديم خدمات صيدلانية متكاملة ورعاية صحية متطورة تليق بالمجتمع. وتولي المجموعة اهتماماً بالغاً بتدريب وتأهيل الأجيال الجديدة من خريجي وطلاب كليات الصيدلة، وتزويدهم بالخبرة العملية المطلوبة للانخراط بكفاءة في سوق العمل الدوائي، معتمدين على أحدث الأساليب التعليمية والمعايير المهنية العالمية. المدير التنفيذي للصيدليات هو الدكتور عبد العزيز المغاوري.",
         dev_bio_title: "نبذة عن المطور (أحمد فاضل)",
-        dev_bio_p: "أحمد فاضل، هو المهندس والمطور المسؤول عن تصميم وتطوير المنصة الأكاديمية (PharmReady-AlmaghwryBy-Fadel). تم بناء هذا النظام خصيصاً لتسهيل إدارة العملية التدريبية وتأمين المحتوى العلمي المقدم للطلاب. يهدف النظام لتسجيل المتدربين الجدد وإصدار حسابات الدخول الرسمية ومتابعة مستويات التقدم الدراسي إلكترونياً وبطريقة ذكية بدون أي تعقيد تقني أو استهلاك غير مبرر لباقات الإنترنت.",
+        dev_bio_p: "أحمد فاضل، هو المهندس والمطور المسؤول عن تصميم وتطوير المنصة الأكاديمية (Fadelopram). تم بناء هذا النظام خصيصاً لتسهيل إدارة العملية التدريبية وتأمين المحتوى العلمي المقدم للطلاب. يهدف النظام لتسجيل المتدربين الجدد وإصدار حسابات الدخول الرسمية ومتابعة مستويات التقدم الدراسي إلكترونياً وبطريقة ذكية بدون أي تعقيد تقني أو استهلاك غير مبرر لباقات الإنترنت.",
         footer_text: "برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري",
         copied_success: "📋 تم نسخ النص للحافظة بنجاح!",
         copied_fail: "فشل في نسخ النص تلقائياً.",
@@ -227,7 +223,7 @@
         maghawry_history_title: "About El-Maghawry Pharmacies Group",
         maghawry_history_p: "El-Maghawry Pharmacies Group was established as a premier pharmacy group in Damietta. Our vision is centered on delivering comprehensive pharmacy care and advanced healthcare services. The group prioritizes the training and qualification of new pharmacy graduates and students, providing them with real-world clinical and practical experiences to integrate successfully into the job market, guided by modern educational tools. The group's CEO is Dr. Abdel Aziz El-Maghawry.",
         dev_bio_title: "About the Developer (Ahmed Fadel)",
-        dev_bio_p: "Ahmed Fadel is the lead software engineer and developer of the PharmReady academy portal (PharmReady-AlmaghwryBy-Fadel). The system is custom-built to organize training workflows, secure scientific video content from recording, and track trainees' academic progress efficiently, operating with zero server subscription fees and minimal internet data consumption.",
+        dev_bio_p: "Ahmed Fadel is the lead software engineer and developer of the Fadelopram academy portal. The system is custom-built to organize training workflows, secure scientific video content from recording, and track trainees' academic progress efficiently, operating with zero server subscription fees and minimal internet data consumption.",
         footer_text: "Engineered by Dr. Ahmed Fadel © 2026 | El-Maghawry Pharmacies Group",
         copied_success: "📋 Copied to clipboard successfully!",
         copied_fail: "Failed to copy text automatically.",
@@ -319,13 +315,28 @@
           } else if (response.status === "accepted") {
             document.getElementById("status-accepted").style.display = "block";
             document.getElementById("trainee-name-accepted").textContent = response.name;
-            document.getElementById("trainee-email-disp").textContent = response.email;
-            document.getElementById("trainee-pass-disp").textContent = response.password;
+            const phoneDisp = document.getElementById("trainee-phone-disp");
+            if (phoneDisp) phoneDisp.textContent = traineePhone;
+
+            // Store accepted user data locally
+            sessionStorage.setItem("trainee_logged_in", "true");
+            sessionStorage.setItem("trainee_email", response.email || `trainee.${traineePhone}@maghawry.com`);
+            sessionStorage.setItem("trainee_password", localStorage.getItem("saved_trainee_password") || response.password || "");
+            sessionStorage.setItem("trainee_name", response.name);
+            sessionStorage.setItem("trainee_branch", response.branch || "الفرع الرئيسي");
+            sessionStorage.setItem("trainee_level", response.currentLevel || "Passengers");
+            sessionStorage.setItem("login_timestamp", Date.now().toString());
+
             clearInterval(pollInterval);
+
+            showToast("🎉 تم تفعيل حسابك! جاري تحويلك تلقائياً لداخل المنصة...", "success");
+            setTimeout(() => {
+              window.location.href = "dashboard.html";
+            }, 2000);
           } else if (response.status === "rejected") {
             document.getElementById("status-rejected").style.display = "block";
             document.getElementById("trainee-name-rejected").textContent = response.name;
-            document.getElementById("trainee-reject-reason").textContent = response.rejectReason || "No reason recorded.";
+            document.getElementById("trainee-reject-reason").textContent = response.rejectReason || "لم يذكر سبب بالتفصيل.";
             clearInterval(pollInterval);
           }
         } else {
@@ -335,6 +346,13 @@
       } catch (err) {
         console.error("Error polling status:", err);
       }
+    }
+
+    function enterDashboardDirectly() {
+      showToast("🚀 جاري توجيهك للمنصة وبدء المحاضرات...", "success");
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1200);
     }
 
     function copyText(elementId) {

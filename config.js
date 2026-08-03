@@ -46,6 +46,20 @@ function updateGeminiConfig() {
 updateGeminiConfig();
 window.updateGeminiConfig = updateGeminiConfig;
 
+// Clinical Career Pathway Levels Metadata
+window.CLINICAL_PATHWAY_LEVELS = {
+  "Passengers": { code: "L0", titleAr: "الصيدلي الواعد", titleEn: "Pharmacy Trainee", icon: "🌱", badgeClass: "level-badge-L0", color: "#9ca3af" },
+  "Starters": { code: "L1", titleAr: "ممارس الـ OTC والتواصل", titleEn: "OTC Specialist", icon: "💊", badgeClass: "level-badge-L1", color: "#10b981" },
+  "Movers": { code: "L2", titleAr: "خبير الروشتات والجرعات", titleEn: "Clinical Dispenser", icon: "🩺", badgeClass: "level-badge-L2", color: "#0ea5e9" },
+  "Flyers": { code: "L3", titleAr: "صيدلي الحالات الحرجة والتركيبات", titleEn: "Advanced Pharmacist", icon: "⚡", badgeClass: "level-badge-L3", color: "#a855f7" },
+  "Beast": { code: "L4", titleAr: "صيدلي أول وممارس متقدم", titleEn: "Senior Pharmacist", icon: "👑", badgeClass: "level-badge-L4", color: "#f59e0b" }
+};
+
+window.getClinicalLevelInfo = function(levelKey) {
+  const normalized = (levelKey || "Passengers").trim();
+  return window.CLINICAL_PATHWAY_LEVELS[normalized] || window.CLINICAL_PATHWAY_LEVELS["Passengers"];
+};
+
 /**
  * API Request Wrapper
  */
@@ -259,6 +273,8 @@ function handleDemoRequest(params) {
       Squad: params.squad,
       University: params.university,
       TrainingBranch: params.trainingBranch,
+      PharmacyGroup: params.pharmacyGroup || "",
+      TrainingGroup: params.trainingGroup || "",
       Status: "pending",
       Email: "",
       Password: "",
@@ -268,6 +284,42 @@ function handleDemoRequest(params) {
     
     saveTable("Trainees", trainees);
     return { success: true, message: "تم تسجيل البيانات بنجاح في نظام المراجعة (وضع التجربة)." };
+
+  } else if (action === "setTrainingGroup") {
+    const trainees = getTable("Trainees");
+    const email = String(params.email).trim().toLowerCase();
+    const group = String(params.group).trim();
+    const tIndex = trainees.findIndex(x => String(x.Email).trim().toLowerCase() === email);
+    if (tIndex !== -1) {
+      trainees[tIndex].TrainingGroup = group;
+      saveTable("Trainees", trainees);
+      return { success: true, message: "تم اختيار الجروب التدريبي بنجاح!" };
+    }
+    return { success: false, message: "لم يتم العثور على حساب المتدرب." };
+
+  } else if (action === "requestGroupJoin") {
+    const trainees = getTable("Trainees");
+    const email = String(params.email).trim().toLowerCase();
+    const password = String(params.password).trim();
+    const requestedGroup = String(params.requestedGroup).trim();
+    
+    const t = trainees.find(x => x.Status === "accepted" && String(x.Email).trim().toLowerCase() === email && String(x.Password).trim() === password);
+    if (!t) return { success: false, message: "غير مصرح." };
+
+    const promotions = getTable("Promotions") || [];
+    promotions.push({
+      Id: "greq-" + Date.now(),
+      Timestamp: new Date().toISOString(),
+      Email: email,
+      TraineeName: t.Name,
+      FromLevel: t.CurrentLevel || "Passengers",
+      ToLevel: `طلب انضمام لـ: ${requestedGroup}`,
+      Type: "group_request",
+      RequestedGroup: requestedGroup,
+      Status: "pending"
+    });
+    saveTable("Promotions", promotions);
+    return { success: true, message: `🎉 تم ارسال طلب الانضمام لـ (${requestedGroup}) إلى مشرف الأكاديمية بنجاح!` };
     
   } else if (action === "checkStatus") {
     const trainees = getTable("Trainees");
@@ -310,7 +362,9 @@ function handleDemoRequest(params) {
             avatar: t.Avatar || "",
             university: t.University || "",
             college: t.College || "",
-            whatsapp: t.WhatsApp || ""
+            whatsapp: t.WhatsApp || "",
+            pharmacyGroup: t.PharmacyGroup || "",
+            trainingGroup: t.TrainingGroup || ""
           }
         };
       }
@@ -613,12 +667,56 @@ function handleDemoRequest(params) {
 
   } else if (action === "getLeaderboard") {
     const trainees = getTable("Trainees") || [];
-    const lb = trainees
-      .filter(t => t.Status === "accepted" && (t.Points || 0) > 0)
+    const accepted = trainees.filter(t => t.Status === "accepted");
+    const lb = [...accepted]
       .sort((a, b) => (b.Points || 0) - (a.Points || 0))
       .slice(0, 20)
-      .map(t => ({ name: t.Name, email: t.Email, points: t.Points || 0, level: t.CurrentLevel || '', streak: t.StreakWeeks || 0 }));
-    return { success: true, leaderboard: lb };
+      .map(t => ({ name: t.Name, email: t.Email, points: t.Points || 0, level: t.CurrentLevel || '', branch: t.TrainingBranch || 'فرع الرئيس', streak: t.StreakWeeks || 0 }));
+    
+    // Compute Branch Standings
+    const branchMap = {};
+    accepted.forEach(t => {
+      const bName = t.TrainingBranch || "فرع آل مغاوري الرئيسي";
+      if (!branchMap[bName]) branchMap[bName] = { name: bName, totalXP: 0, studentCount: 0 };
+      branchMap[bName].totalXP += (t.Points || 0);
+      branchMap[bName].studentCount += 1;
+    });
+    const branchLeague = Object.values(branchMap).sort((a, b) => b.totalXP - a.totalXP);
+
+    return { success: true, leaderboard: lb, branchLeague: branchLeague };
+
+  } else if (action === "submitClinicalCase") {
+    const trainees = getTable("Trainees");
+    const email = String(params.email).trim().toLowerCase();
+    const password = String(params.password).trim();
+    const tIndex = trainees.findIndex(x => x.Status === "accepted" && String(x.Email).trim().toLowerCase() === email && String(x.Password).trim() === password);
+    if (tIndex === -1) {
+      return { success: false, message: "غير مصرح بالعملية." };
+    }
+
+    const reports = getTable("Reports") || [];
+    const newCase = {
+      Id: "case-" + Date.now(),
+      Timestamp: new Date().toISOString(),
+      Email: email,
+      TraineeName: trainees[tIndex].Name,
+      Level: trainees[tIndex].CurrentLevel || "Passengers",
+      Branch: trainees[tIndex].TrainingBranch || "فرع آل مغاوري",
+      Title: `[${params.caseType || 'حالة صيدلانية'}] ${params.title || 'تسجيل حالة ميدانية'}`,
+      Content: params.notes || "",
+      CaseType: params.caseType || "روشتة",
+      Attachment: params.attachment || "",
+      Status: "accepted",
+      PointsAwarded: 25
+    };
+    reports.push(newCase);
+    saveTable("Reports", reports);
+
+    // Award +25 XP to student
+    trainees[tIndex].Points = (trainees[tIndex].Points || 0) + 25;
+    saveTable("Trainees", trainees);
+
+    return { success: true, message: "🎉 تم تسجيل الحالة الإكلينيكية بنجاح وإضافة +25 XP لرصيدك!", newPoints: trainees[tIndex].Points };
 
   } else if (action === "submitPromotionRequest") {
     const trainees = getTable("Trainees");
@@ -1521,15 +1619,19 @@ async function handleSupabaseRequest(params) {
     return false;
   };
 
-  const sendTelegramNotification = async (text) => {
-    const token = localStorage.getItem("maghawry_telegram_token") || "";
-    const chatId = localStorage.getItem("maghawry_telegram_chat_id") || "";
+  const DEFAULT_TELEGRAM_TOKEN = "8640305095:AAHwQqbHAqAt3n8QohwhFJwKNJUlt4hcuaE";
+  const DEFAULT_TELEGRAM_ADMIN_CHAT_ID = "941183558";
+  const DEFAULT_TELEGRAM_BOT_USERNAME = "Fadelopram_bot";
+
+  const sendTelegramNotification = async (text, targetChatId = null) => {
+    const token = localStorage.getItem("maghawry_telegram_token") || DEFAULT_TELEGRAM_TOKEN;
+    const chatId = targetChatId || localStorage.getItem("maghawry_telegram_chat_id") || DEFAULT_TELEGRAM_ADMIN_CHAT_ID;
     if (!token || !chatId) {
       console.warn("Telegram configurations are missing. Skipping notification.");
-      return;
+      return false;
     }
     try {
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1538,8 +1640,11 @@ async function handleSupabaseRequest(params) {
           parse_mode: "Markdown"
         })
       });
+      const data = await res.json();
+      return data.ok;
     } catch (err) {
       console.error("Telegram notification failed:", err);
+      return false;
     }
   };
 
@@ -1876,8 +1981,53 @@ async function handleSupabaseRequest(params) {
       
       return { success: true };
       
+    } else if (action === "checkTelegramVerification") {
+      const code = String(params.code || "").trim();
+      const token = localStorage.getItem("maghawry_telegram_token") || DEFAULT_TELEGRAM_TOKEN;
+      try {
+        const res = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.result)) {
+          // Search backwards for latest match
+          for (let i = data.result.length - 1; i >= 0; i--) {
+            const upd = data.result[i];
+            const msg = upd.message || upd.edited_message;
+            if (msg && msg.text) {
+              if (msg.text.includes(code) || msg.text.includes(`VERIFY_${code}`)) {
+                const chatId = String(msg.chat.id);
+                const username = msg.from.username ? `@${msg.from.username}` : (msg.from.first_name || "المتدرب");
+                
+                // Reply to user on Telegram via bot
+                sendTelegramNotification(
+                  `يرجى استخدام الرمز المرفق أدناه لتأكيد حسابكم لدى منصة Fadelopram\n\n` +
+                  `الرمز ( \`${code}\` )\n\n` +
+                  `لسلامتكم يرجى عدم مشاركته مع أحد`,
+                  chatId
+                ).catch(e => console.error(e));
+
+                return {
+                  success: true,
+                  verified: true,
+                  chatId: chatId,
+                  handle: username,
+                  message: "تم التحقق من حساب التليجرام بنجاح عبر البوت ⚡"
+                };
+              }
+            }
+          }
+        }
+        return { success: false, verified: false, message: "لم يتم استقبال إشارة التوثيق من البوت بعد. يرجى الضغط على زر التفعيل في تليجرام." };
+      } catch (err) {
+        console.error("Telegram updates poll error:", err);
+        return { success: false, verified: false, message: "تعذر الاتصال بسيرفر تليجرام." };
+      }
+
     } else if (action === "register") {
       const phone = String(params.phone).trim();
+      const pharmacyGroup = String(params.pharmacyGroup || params.pharmacy_group || "صيدليات آل مغاوري").trim();
+      const rawPassword = String(params.password || "").trim();
+      const telegramHandle = String(params.telegramHandle || "").trim();
+      const telegramChatId = String(params.telegramChatId || "").trim();
       
       // Check duplicate
       const { data: existing } = await supabaseClient
@@ -1890,9 +2040,8 @@ async function handleSupabaseRequest(params) {
         return { success: false, message: "رقم الهاتف هذا مسجل بالفعل في النظام!" };
       }
       
-      if (String(params.securityAnswer) !== "1") {
-        return { success: false, message: "إجابة سؤال الأمان خاطئة. يرجى التأكد من الإجابة الصحيحة." };
-      }
+      const email = `trainee.${phone}@maghawry.com`;
+      const passToSave = rawPassword ? await sha256Hash(rawPassword) : await sha256Hash("temp-" + Math.floor(1000 + Math.random() * 9000));
       
       const { error } = await supabaseClient
         .from('trainees')
@@ -1906,29 +2055,40 @@ async function handleSupabaseRequest(params) {
           squad: params.squad,
           university: params.university,
           training_branch: params.trainingBranch,
+          pharmacy_group: pharmacyGroup,
           target_level: params.targetLevel,
-          security_answer: params.securityAnswer,
-          // Use entire phone number to guarantee uniqueness upon sign up
-          email: `trainee.${phone}@maghawry.com`,
-          password: await sha256Hash("temp-" + Math.floor(1000 + Math.random() * 9000)),
-          current_level: params.targetLevel,
+          security_answer: params.securityAnswer || "1",
+          telegram_handle: telegramHandle,
+          telegram_chat_id: telegramChatId,
+          email: email,
+          password: passToSave,
+          current_level: params.targetLevel || "Passengers",
           status: 'pending'
         }]);
         
       if (error) throw error;
 
-      // Send real-time Telegram notification to admin
+      // Send real-time Telegram notification to admin (Chat ID: 941183558)
       const notifText = `🔔 *طلب انضمام جديد للمنصة!*\n\n` +
                         `👤 *الاسم:* ${params.name}\n` +
                         `📞 *الهاتف:* ${phone}\n` +
-                        `💬 *واتساب:* ${params.whatsApp || 'غير محدد'}\n` +
-                        `🎓 *الجامعة:* ${params.university || 'غير محدد'}\n` +
+                        `✈️ *تليجرام:* ${telegramHandle || telegramChatId || 'غير محدد'}\n` +
+                        `🏥 *جهة الصيدلية:* ${pharmacyGroup}\n` +
                         `🏢 *الفرع:* ${params.trainingBranch || 'غير محدد'}\n` +
+                        `🎓 *الجامعة والكلية:* ${params.university || ''} - ${params.college || ''}\n` +
                         `📚 *المستوى المطلوب:* ${params.targetLevel || 'Passengers'}\n\n` +
                         `يرجى مراجعة طلب الاشتراك من لوحة الإدارة للقبول أو الرفض.`;
-      sendTelegramNotification(notifText).catch(e => console.error(e));
+      sendTelegramNotification(notifText, DEFAULT_TELEGRAM_ADMIN_CHAT_ID).catch(e => console.error(e));
 
-      return { success: true, message: "تم إرسال طلب الاشتراك بنجاح! يرجى الانتظار لتفعيل الحساب." };
+      // Also send confirmation message to trainee on their Telegram chat if verified!
+      if (telegramChatId) {
+        const traineeWelcome = `🎉 *شكراً لتقديم طلب الانضمام د. ${params.name}!*\n\n` +
+                               `تم استلام طلبك بنجاح وجاري مراجعته من قبل إدارة الأكاديمية.\n` +
+                               `سيصلك إشعار القبول وتفعيل الحساب مباشرة هنا على التليجرام ⚡`;
+        sendTelegramNotification(traineeWelcome, telegramChatId).catch(e => console.error(e));
+      }
+
+      return { success: true, message: "تم إرسال طلب الاشتراك بنجاح! يرجى الانتظار لتفعيل الحساب من الإدارة." };
 
     } else if (action === "saveVideoQuestions") {
       const videoId = String(params.videoId).trim();
@@ -1992,20 +2152,67 @@ async function handleSupabaseRequest(params) {
     } else if (action === "getLeaderboard") {
       const { data, error } = await supabaseClient
         .from('trainees')
-        .select('name, email, points, streak_weeks, current_level')
+        .select('name, email, points, streak_weeks, current_level, training_branch, pharmacy_group')
         .eq('status', 'accepted')
-        .gt('points', 0)
         .order('points', { ascending: false })
-        .limit(20);
+        .limit(30);
       if (error) {
         console.warn("Leaderboard error:", error);
-        return { success: true, leaderboard: [] };
+        return { success: true, leaderboard: [], branchLeague: [] };
       }
       const lb = (data || []).map(t => ({
         name: t.name, email: t.email, points: t.points || 0,
-        level: t.current_level || '', streak: t.streak_weeks || 0
+        level: t.current_level || '', branch: t.training_branch || 'فرع الرئيس', pharmacyGroup: t.pharmacy_group || 'صيدليات آل مغاوري', streak: t.streak_weeks || 0
       }));
-      return { success: true, leaderboard: lb };
+
+      // Compute Branch & Pharmacy League Standings
+      const branchMap = {};
+      (data || []).forEach(t => {
+        const bName = (t.pharmacy_group ? `${t.pharmacy_group} - ` : '') + (t.training_branch || "فرع الرئيسي");
+        if (!branchMap[bName]) branchMap[bName] = { name: bName, totalXP: 0, studentCount: 0 };
+        branchMap[bName].totalXP += (t.points || 0);
+        branchMap[bName].studentCount += 1;
+      });
+      const branchLeague = Object.values(branchMap).sort((a, b) => b.totalXP - a.totalXP);
+
+      return { success: true, leaderboard: lb, branchLeague: branchLeague };
+
+    } else if (action === "submitClinicalCase") {
+      const email = String(params.email).trim().toLowerCase();
+      const password = String(params.password).trim();
+      
+      const { data: t, error: tErr } = await supabaseClient
+        .from('trainees')
+        .select('name, points, current_level, training_branch')
+        .ilike('email', email)
+        .eq('password', password)
+        .maybeSingle();
+
+      if (tErr || !t) return { success: false, message: "غير مصرح." };
+
+      const newCaseTitle = `[${params.caseType || 'حالة صيدلانية'}] ${params.title || 'تسجيل حالة ميدانية'}`;
+      const { error: insErr } = await supabaseClient
+        .from('reports')
+        .insert([{
+          email: email,
+          trainee_name: t.name,
+          title: newCaseTitle,
+          content: params.notes || "",
+          attachment_url: params.attachment || "",
+          level: t.current_level || "Passengers",
+          status: 'accepted'
+        }]);
+
+      if (insErr) console.warn("Case insertion warning:", insErr);
+
+      // Increment XP points
+      const updatedPoints = (t.points || 0) + 25;
+      await supabaseClient
+        .from('trainees')
+        .update({ points: updatedPoints, last_activity_at: new Date().toISOString() })
+        .ilike('email', email);
+
+      return { success: true, message: "🎉 تم تسجيل الحالة الإكلينيكية بنجاح وإضافة +25 XP لرصيدك!", newPoints: updatedPoints };
 
     } else if (action === "adminLogin") {
       const user = String(params.username || "").trim().toLowerCase();
@@ -2062,6 +2269,7 @@ async function handleSupabaseRequest(params) {
           Squad: t.squad,
           University: t.university,
           TrainingBranch: t.training_branch,
+          PharmacyGroup: t.pharmacy_group || "صيدليات آل مغاوري",
           TargetLevel: t.target_level,
           Email: t.email,
           Password: t.password,
@@ -2079,23 +2287,77 @@ async function handleSupabaseRequest(params) {
       }
       
       if (params.actionState === "accept") {
+        const updatePayload = {
+          current_level: params.currentLevel,
+          status: "accepted"
+        };
+        if (params.generatedEmail) updatePayload.email = params.generatedEmail;
+        if (params.generatedPassword) {
+          updatePayload.password = await sha256Hash(params.generatedPassword);
+        }
+        
         const { error } = await supabaseClient
           .from('trainees')
-          .update({
-            email: params.generatedEmail,
-            password: params.generatedPassword,
-            current_level: params.currentLevel,
-            status: "accepted"
-          })
+          .update(updatePayload)
           .eq('phone', params.phone);
         if (error) throw error;
-        return { success: true, message: "تم تفعيل حساب المتدرب بنجاح!" };
+
+        // Fetch trainee details for automated notification
+        const { data: traineeObj } = await supabaseClient
+          .from('trainees')
+          .select('name, phone, whatsapp, pharmacy_group, email, telegram_chat_id, telegram_handle')
+          .eq('phone', params.phone)
+          .maybeSingle();
+
+        const traineeName = traineeObj ? traineeObj.name : "دكتور متدرب";
+        const traineePhone = traineeObj ? traineeObj.phone : params.phone;
+        const msgText = `🎉 *تهانينا د. ${traineeName}!*\n\n` +
+                        `تمت الموافقة على طلب انضمامك لأكاديمية @Fadelopram_bot وتفعيل حسابك بنجاح! 🎓\n\n` +
+                        `📱 *رقم الدخول (اسم الدخول):* \`${traineePhone}\` (يمكنك تسجيل الدخول برقم الهاتف أو البريد الإلكتروني)\n` +
+                        `🔑 *كلمة المرور:* (كلمة المرور التي قمت بكتابتها أثناء إنشاء الحساب)\n\n` +
+                        `🌐 *رابط دخول المنصة:* https://ahmedoh.github.io/PharmReady-By-Fadel/\n\n` +
+                        `استعن بالله ولا تعجز\n\n` +
+                        `Fadelopram\n` +
+                        `< By Fadel >`;
+
+        // 1. Send direct Telegram notification to trainee's personal Telegram account
+        if (traineeObj && traineeObj.telegram_chat_id) {
+          sendTelegramNotification(msgText, traineeObj.telegram_chat_id).catch(e => console.error(e));
+        }
+
+        // 2. Send Telegram notification to Admin Chat ID (941183558)
+        const adminSummary = `⚡ *تم تفعيل حساب متدرب جديد!*\n\n` +
+                             `👤 *الاسم:* ${traineeName}\n` +
+                             `📞 *الهاتف:* ${traineePhone}\n` +
+                             `✈️ *تليجرام:* ${traineeObj ? (traineeObj.telegram_handle || traineeObj.telegram_chat_id) : 'غير محدد'}\n` +
+                             `📚 *المستوى المعتمد:* ${params.currentLevel || 'Passengers'}`;
+        sendTelegramNotification(adminSummary, DEFAULT_TELEGRAM_ADMIN_CHAT_ID).catch(e => console.error(e));
+
+        return { 
+          success: true, 
+          message: "تم تفعيل حساب المتدرب بنجاح وإرسال إشعار التفعيل التلقائي على تليجرام!"
+        };
       } else if (params.actionState === "reject") {
         const { error } = await supabaseClient
           .from('trainees')
-          .update({ status: "rejected" })
+          .update({ status: "rejected", reject_reason: params.rejectReason || "عدم استيفاء شروط الانضمام" })
           .eq('phone', params.phone);
         if (error) throw error;
+
+        // Fetch trainee details for reject notification
+        const { data: traineeObj } = await supabaseClient
+          .from('trainees')
+          .select('name, telegram_chat_id, telegram_handle')
+          .eq('phone', params.phone)
+          .maybeSingle();
+
+        const notifText = `❌ *تحديث بشأن طلب الانضمام*\n\nعذراً د. ${traineeObj ? traineeObj.name : ''}، تعذر قبول طلب الانضمام في الوقت الحالي.\nالسبب: ${params.rejectReason || "عدم استيفاء شروط الانضمام"}.`;
+        
+        if (traineeObj && traineeObj.telegram_chat_id) {
+          sendTelegramNotification(notifText, traineeObj.telegram_chat_id).catch(e => console.error(e));
+        }
+        sendTelegramNotification(`⚠️ تم رفض طلب الانضمام لرقم ${params.phone}. السبب: ${params.rejectReason || 'غير محدد'}`, DEFAULT_TELEGRAM_ADMIN_CHAT_ID).catch(e => console.error(e));
+
         return { success: true, message: "تم رفض طلب المتدرب بنجاح." };
       }
       

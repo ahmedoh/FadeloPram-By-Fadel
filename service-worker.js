@@ -1,12 +1,11 @@
-const CACHE_NAME = 'pharmready-cache-v1';
+const CACHE_NAME = 'fadelopram-cache-v2';
 const ASSETS = [
   'index.html',
   'admin.html',
   'dashboard.html',
   'config.js',
   'style.css',
-  'logo.png',
-  'logo_pr.png'
+  'fadelopram_logo.jpg'
 ];
 
 self.addEventListener('install', (e) => {

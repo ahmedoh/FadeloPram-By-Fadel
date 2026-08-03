@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة المتدرب | PharmReady-AlmaghwryBy-Fadel</title>
+  <title>Fadelopram Rx Academy — لوحة المتدرب</title>
   <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -412,15 +412,14 @@
   <!-- App Header -->
   <header class="app-container" style="max-width: 1200px; padding: 20px 20px 0;">
     <div class="app-header">
-      <div class="logo-section">
-        <img src="logo.png" alt="شعار صيدليات آل مغاوري" class="logo-img" style="height: 48px; max-height: 48px; width: auto; max-width: 160px; object-fit: contain;" onerror="this.onerror=null; this.style.display='none'; document.getElementById('logo-fallback').style.display='flex';">
-        <div class="logo-placeholder" id="logo-fallback" style="display: none; width: 48px; height: 48px; border-radius: 50%; background: var(--color-primary); color: #fff; align-items: center; justify-content: center; font-size: 20px; font-weight: bold;">M</div>
+      <div class="logo-section" style="display: flex; align-items: center; gap: 10px;">
+        <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 48px; width: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 15px rgba(251,191,36,0.3);">
         <div style="display: flex; flex-direction: column; gap: 4px;">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <h1 id="header-branch-name" style="margin: 0;">صيدليات آل مغاوري</h1>
-            <span class="beta-badge"><span class="pulse-dot"></span>إصدار تجريبي</span>
+            <h1 id="header-branch-name" style="margin: 0; font-size: 18px; font-weight: 900; color: var(--color-gold);">Fadelopram Rx Academy</h1>
+            <span class="beta-badge"><span class="pulse-dot"></span>إصدار احترافي</span>
           </div>
-          <p data-i18n="header_sub" style="margin: 0;">لوحة تدريب الكوادر الصيدلانية الجديدة</p>
+          <p data-i18n="header_sub" style="margin: 0; font-size: 11px; color: var(--text-muted);">المنصة الأكاديمية الصيدلانية المتقدمة</p>
         </div>
       </div>
       <div class="header-actions">
@@ -465,7 +464,19 @@
             <i class="fa-solid fa-graduation-cap"></i> المحاضرات التعليمية
           </button>
           <button class="btn btn-secondary" id="btn-sidebar-reports" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
-            <i class="fa-solid fa-file-invoice"></i> تقاريري وأنشطتي
+            <i class="fa-solid fa-book-medical" style="color: var(--color-gold);"></i> دفتر الحالات والمهام العملية
+          </button>
+          <button class="btn btn-secondary" id="btn-sidebar-league" onclick="openLeagueModal()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px; border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); color: #f59e0b;">
+            <i class="fa-solid fa-trophy"></i> 🏆 دوري الفروع والأبطال
+          </button>
+          <button class="btn btn-secondary" id="btn-sidebar-simulator" onclick="openSimulatorModal()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px; border: 1px solid rgba(14, 165, 233, 0.3); background: rgba(14, 165, 233, 0.05); color: #0ea5e9;">
+            <i class="fa-solid fa-robot"></i> 🤖 محاكي المريض الافتراضي
+          </button>
+          <button class="btn btn-secondary" id="btn-sidebar-passport" onclick="openPassportModal()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px; border: 1px solid rgba(168, 85, 247, 0.3); background: rgba(168, 85, 247, 0.05); color: #a855f7;">
+            <i class="fa-solid fa-id-card"></i> 📜 الجواز الصيدلي الرقمي
+          </button>
+          <button class="btn btn-secondary" id="btn-sidebar-request-group" onclick="openRequestGroupModal()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px; border: 1px dashed var(--color-gold); background: rgba(251,191,36,0.03); color: var(--color-gold);">
+            <i class="fa-solid fa-layer-group"></i> طلب انضمام لجروب آخر
           </button>
           <button class="btn btn-secondary" id="btn-sidebar-profile" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
             <i class="fa-solid fa-user-gear"></i> ملفي الشخصي
@@ -548,6 +559,26 @@
       <!-- Main Panel: Video Player, Quiz & Certificates Viewport -->
       <div class="card" id="main-panel" style="position: relative; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 450px;">
         
+        <!-- 💡 Daily Upsell & Downsell Sales Tip Banner Card -->
+        <div id="daily-sales-tip-card" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(14, 165, 233, 0.05) 100%); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 14px; padding: 16px 20px; margin-bottom: 20px; direction: rtl;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+            <div style="font-size: 14px; font-weight: 900; color: #f59e0b; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-lightbulb"></i> 💡 بطاقة مهارات الصرف الذكي (Upselling & Downselling)
+            </div>
+            <span style="font-size: 10px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 2px 8px; border-radius: 12px; font-weight: 800;">إجباري يومياً (+15 XP) 🌟</span>
+          </div>
+
+          <div id="daily-sales-tip-text" style="font-size: 12.5px; color: var(--text-main); line-height: 1.6; margin-bottom: 12px;">
+            <strong>💊 نصيحة اليوم الارتكازية (Upselling):</strong> عند صرف مضاد حيوي واسع المجال (مثل الأوجمنتين أو السيفوترباكس)، يوصى دائماً بتوضيح فائدة صرف <strong>البروبيوتيك (Probiotic)</strong> لحماية فلورا الأمعاء لمنع الإسهال والمغص المصاحب للمضادات الحيوية.
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; align-items: center; gap: 10px;">
+            <button id="btn-confirm-sales-tip" onclick="confirmReadSalesTip()" class="btn btn-gold" style="font-size: 11.5px; padding: 6px 14px; font-weight: bold; cursor: pointer;">
+              <i class="fa-solid fa-check"></i> قرأت وتعهدت بالتطبيق ميدانياً (+15 XP)
+            </button>
+          </div>
+        </div>
+
         <!-- 1. Video Player Viewport -> Direct Transparent Preview Concept -->
         <div id="player-viewport" style="display: none; flex: 1;">
           <h3 id="playing-video-title" style="font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; color: var(--text-main);">
@@ -659,7 +690,7 @@
             <div class="certificate-content">
               <div class="cert-header">
                 <h2>أكاديمية صيدليات آل مغاوري</h2>
-                <p>PharmReady Trainees Academy</p>
+                <p>Fadelopram Trainees Academy</p>
               </div>
               <div class="cert-title">شهادة اجتياز وتفوق</div>
               <div class="cert-body">
@@ -695,154 +726,42 @@
           </div>
         </div>
 
-        <!-- 5. Reports Viewport -->
+        <!-- 5. Reports / Smart Clinical Logbook Viewport -->
         <div id="reports-viewport" style="display: none; flex: 1;">
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 5px;">
-            <h2 style="font-size: 22px; color: var(--color-primary); margin: 0;">
-              <i class="fa-solid fa-file-invoice" style="color: var(--color-gold);"></i> استمارة متابعة وتقييم المتدرب
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+            <h2 style="font-size: 22px; color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-book-medical" style="color: var(--color-gold);"></i> دفتر الحالات والمهام العملية الميدانية
             </h2>
             <button class="btn btn-secondary" style="font-size: 12px; cursor: pointer;" onclick="document.getElementById('reports-history-section').style.display = document.getElementById('reports-history-section').style.display === 'none' ? 'block' : 'none';">
-              <i class="fa-solid fa-clock-rotate-left"></i> سجل تقاريري السابقة
+              <i class="fa-solid fa-clock-rotate-left"></i> سجل الحالات السابقة
             </button>
           </div>
-          <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);">يُرجى تعبئة الاستمارة بدقة وإرسالها لمشرفك الأكاديمي. يتم إرسال الاستمارة مباشرةً إلى قسم تقارير لوحة الإدارة.</p>
+          <p style="font-size: 12px; margin-bottom: 20px; color: var(--text-muted);">سجّل حالتك الميدانية اليومية في ثوانٍ أو أكمل المهام العملية الميدانية لكسب النقاط والارتقاء في المسار الصيدلي.</p>
 
           <!-- Report History (hidden by default) -->
           <div id="reports-history-section" style="display: none; margin-bottom: 20px;">
             <div class="card" style="padding: 15px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
               <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-                <i class="fa-solid fa-list-check" style="color: var(--color-gold);"></i> سجل تقاريرك السابقة والتقييمات
+                <i class="fa-solid fa-list-check" style="color: var(--color-gold);"></i> سجل تقاريرك وحالاتك السابقة
               </h3>
               <div class="admin-table-container" style="max-height: 280px; overflow-y: auto;">
                 <table style="width: 100%; border-collapse: collapse;">
                   <thead>
                     <tr>
-                      <th style="text-align: right; font-size: 12px;">عنوان التقرير</th>
+                      <th style="text-align: right; font-size: 12px;">عنوان الحالة / المهمة</th>
                       <th style="text-align: right; font-size: 12px;">المستوى</th>
                       <th style="text-align: right; font-size: 12px;">التاريخ</th>
                       <th style="text-align: right; font-size: 12px;">الحالة</th>
-                      <th style="text-align: right; font-size: 12px;">رد المشرف</th>
                     </tr>
                   </thead>
                   <tbody id="trainee-reports-table-body">
-                    <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 15px;">لا توجد تقارير مقدمة حالياً.</td></tr>
+                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 15px;">لا توجد حالات مسجلة حالياً.</td></tr>
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
 
-          <!-- PDF-Style Report Form -->
-          <form id="report-submit-form" style="border: 2px solid var(--border-color); border-radius: 14px; padding: 20px; background: var(--bg-secondary);">
-            <!-- Academy Header -->
-            <div style="text-align: center; border-bottom: 2px solid var(--color-gold); padding-bottom: 12px; margin-bottom: 15px;">
-              <div style="font-size: 17px; font-weight: 900; color: var(--color-primary);">أكاديمية صيدليات آل مغاوري للتأهيل الميداني</div>
-              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">استمارة متابعة وتقييم المتدرب - El-Maghawry Pharma Academy</div>
-            </div>
-
-            <!-- Auto-filled Trainee Info Row -->
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; margin-bottom: 15px; font-size: 12px;">
-              <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary);">
-                <div style="font-weight: 700; color: var(--text-muted); font-size: 10px; margin-bottom: 3px;">اسم المتدرب</div>
-                <div id="report-header-name" style="color: var(--text-main); font-weight: 600;">...</div>
-              </div>
-              <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary);">
-                <div style="font-weight: 700; color: var(--text-muted); font-size: 10px; margin-bottom: 3px;">البريد الإلكتروني</div>
-                <div id="report-header-email" style="color: var(--text-main); font-size: 10px; word-break: break-all;">...</div>
-              </div>
-              <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary);">
-                <div style="font-weight: 700; color: var(--text-muted); font-size: 10px; margin-bottom: 3px;">المستوى التدريبي</div>
-                <div id="report-header-level" style="color: var(--color-primary); font-weight: 700;">...</div>
-              </div>
-              <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary);">
-                <div style="font-weight: 700; color: var(--text-muted); font-size: 10px; margin-bottom: 3px;">تاريخ التقرير</div>
-                <div id="report-header-date" style="color: var(--text-main);">...</div>
-              </div>
-              <div style="padding: 8px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-primary);">
-                <div style="font-weight: 700; color: var(--text-muted); font-size: 10px; margin-bottom: 3px;">الفرع</div>
-                <div id="report-header-branch" style="color: var(--text-main);">...</div>
-              </div>
-            </div>
-
-            <!-- Report Title -->
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label for="report-title" style="font-size: 13px; font-weight: 700;">عنوان التقرير / الأسبوع <span class="required">*</span></label>
-              <input type="text" id="report-title" placeholder="مثال: تقرير الأسبوع الأول - قسم الـ OTC" required style="width: 100%; margin-top: 5px;">
-            </div>
-
-            <!-- Section 1: Activity Log -->
-            <div class="report-section-title"><i class="fa-solid fa-table"></i> القسم الأول: سجل النشاط التدريبي الميداني</div>
-            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">سجّل أهم الحالات أو المهام التي قمت بها خلال فترة التقرير (أضف صفاً لكل نشاط):</p>
-            <div style="overflow-x: auto;">
-              <table class="report-activity-table" id="report-activity-table">
-                <thead>
-                  <tr>
-                    <th style="width: 110px;">التاريخ</th>
-                    <th>النشاط / المهمة</th>
-                    <th>الملاحظات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><input type="date" name="act_date_1" style="width:100%;"></td>
-                    <td><textarea name="act_task_1" rows="2" placeholder="مثال: صرف مضاد حيوي OTC..."></textarea></td>
-                    <td><textarea name="act_note_1" rows="2" placeholder="ملاحظة أو تعليق..."></textarea></td>
-                  </tr>
-                  <tr>
-                    <td><input type="date" name="act_date_2" style="width:100%;"></td>
-                    <td><textarea name="act_task_2" rows="2" placeholder="..."></textarea></td>
-                    <td><textarea name="act_note_2" rows="2" placeholder="..."></textarea></td>
-                  </tr>
-                  <tr>
-                    <td><input type="date" name="act_date_3" style="width:100%;"></td>
-                    <td><textarea name="act_task_3" rows="2" placeholder="..."></textarea></td>
-                    <td><textarea name="act_note_3" rows="2" placeholder="..."></textarea></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Section 2: Self Evaluation -->
-            <div class="report-section-title"><i class="fa-solid fa-star"></i> القسم الثاني: التقييم الذاتي للمتدرب</div>
-            <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 12px;">قيّم نفسك في المهارات التالية من 1 (ضعيف) إلى 5 (ممتاز):</p>
-            <div class="self-eval-grid">
-              <div class="eval-item">
-                <label>التواصل مع العملاء</label>
-                <div class="eval-stars">
-                  <input type="radio" id="comm-5" name="eval_comm" value="5"><label for="comm-5">★</label>
-                  <input type="radio" id="comm-4" name="eval_comm" value="4"><label for="comm-4">★</label>
-                  <input type="radio" id="comm-3" name="eval_comm" value="3" checked><label for="comm-3">★</label>
-                  <input type="radio" id="comm-2" name="eval_comm" value="2"><label for="comm-2">★</label>
-                  <input type="radio" id="comm-1" name="eval_comm" value="1"><label for="comm-1">★</label>
-                </div>
-              </div>
-              <div class="eval-item">
-                <label>الدقة في صرف الدواء</label>
-                <div class="eval-stars">
-                  <input type="radio" id="acc-5" name="eval_acc" value="5"><label for="acc-5">★</label>
-                  <input type="radio" id="acc-4" name="eval_acc" value="4"><label for="acc-4">★</label>
-                  <input type="radio" id="acc-3" name="eval_acc" value="3" checked><label for="acc-3">★</label>
-                  <input type="radio" id="acc-2" name="eval_acc" value="2"><label for="acc-2">★</label>
-                  <input type="radio" id="acc-1" name="eval_acc" value="1"><label for="acc-1">★</label>
-                </div>
-              </div>
-              <div class="eval-item">
-                <label>الانضباط والالتزام بالمواعيد</label>
-                <div class="eval-stars">
-                  <input type="radio" id="punct-5" name="eval_punct" value="5"><label for="punct-5">★</label>
-                  <input type="radio" id="punct-4" name="eval_punct" value="4"><label for="punct-4">★</label>
-                  <input type="radio" id="punct-3" name="eval_punct" value="3" checked><label for="punct-3">★</label>
-                  <input type="radio" id="punct-2" name="eval_punct" value="2"><label for="punct-2">★</label>
-                  <input type="radio" id="punct-1" name="eval_punct" value="1"><label for="punct-1">★</label>
-                </div>
-              </div>
-              <div class="eval-item">
-                <label>التعاون مع فريق الصيدلية</label>
-                <div class="eval-stars">
-                  <input type="radio" id="team-5" name="eval_team" value="5"><label for="team-5">★</label>
-                  <input type="radio" id="team-4" name="eval_team" value="4"><label for="team-4">★</label>
-                  <input type="radio" id="team-3" name="eval_team" value="3" checked><label for="team-3">★</label>
-                  <input type="radio" id="team-2" name="eval_team" value="2"><label for="team-2">★</label>
                   <input type="radio" id="team-1" name="eval_team" value="1"><label for="team-1">★</label>
                 </div>
               </div>
@@ -1132,6 +1051,199 @@
 
 
 
+  <!-- 🏆 1. Branch League & Leaderboard Modal -->
+  <div id="league-modal" class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 12500; justify-content: center; align-items: center; padding: 20px;">
+    <div class="card" style="width: 100%; max-width: 650px; padding: 25px; background: var(--bg-secondary); border: 2px solid var(--color-gold); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; direction: rtl; max-height: 90vh; display: flex; flex-direction: column;">
+      <button onclick="document.getElementById('league-modal').classList.remove('active')" style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+      
+      <h2 style="font-size: 20px; color: var(--color-primary); margin-bottom: 5px; text-align: right; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-trophy" style="color: var(--color-gold);"></i> 🏆 دوري الفروع ولوحة الأبطال
+      </h2>
+      <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);">التنافس الشريف بين فروع صيدليات آل مغاوري والمتميزين أكاديمياً وميدانياً.</p>
+
+      <!-- League View Tabs -->
+      <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+        <button class="btn btn-primary" id="btn-league-trainees" onclick="switchLeagueSubTab('trainees')" style="padding: 6px 14px; font-size: 12px;"><i class="fa-solid fa-user-graduate"></i> أبطال المتدربين</button>
+        <button class="btn btn-secondary" id="btn-league-branches" onclick="switchLeagueSubTab('branches')" style="padding: 6px 14px; font-size: 12px;"><i class="fa-solid fa-store"></i> ترتيب الفروع</button>
+      </div>
+
+      <div style="overflow-y: auto; flex: 1; padding-left: 5px;" id="league-modal-content-body">
+        <div style="text-align: center; color: var(--text-muted); padding: 30px;"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل بيانات التنافس والدوري...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🤖 2. AI Patient Simulator Modal -->
+  <div id="simulator-modal" class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 12600; justify-content: center; align-items: center; padding: 20px;">
+    <div class="card" style="width: 100%; max-width: 650px; padding: 25px; background: var(--bg-secondary); border: 2px solid #0ea5e9; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; direction: rtl; max-height: 90vh; display: flex; flex-direction: column;">
+      <button onclick="document.getElementById('simulator-modal').classList.remove('active')" style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+
+      <h2 style="font-size: 19px; color: #0ea5e9; margin-bottom: 5px; text-align: right; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-robot"></i> 🤖 محاكي المريض الافتراضي بالذكاء الاصطناعي
+      </h2>
+      <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);">تفاعل مع مريض افتراضي في الصيدلية، قم بتشخيص الحالة وترشيح العلاج الآمن وتحديد الجرعات والتأكد من موانع الاستعمال.</p>
+
+      <!-- Scenario Selector -->
+      <div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn btn-secondary" onclick="startSimulatorScenario('روشتة أطفال وحساب الجرعات')" style="font-size: 11px; padding: 5px 10px;">👶 حالة أطفال</button>
+        <button class="btn btn-secondary" onclick="startSimulatorScenario('استشارة OTC لنزلة برد ومريض ضغط')" style="font-size: 11px; padding: 5px 10px;">💊 استشارة OTC</button>
+        <button class="btn btn-secondary" onclick="startSimulatorScenario('عميل غاضب يسأل عن بديل دواء ناقص')" style="font-size: 11px; padding: 5px 10px;">😠 عميل غاضب وبدائل</button>
+      </div>
+
+      <!-- Chat History Box -->
+      <div id="simulator-chat-box" style="flex: 1; border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; overflow-y: auto; background: var(--bg-primary); margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 220px; max-height: 320px;">
+        <div style="align-self: flex-start; background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); padding: 10px 14px; border-radius: 12px; font-size: 13px; max-width: 85%;">
+          🤖 <strong>المحاكي الذكي:</strong> مرحباً دكتور! أنا مريض دخلت الصيدلية الآن أشتكي من سخونية ورشح شديد من إمبارح، وعندي مرض الضغط.. ماذا تنصحني أن آخذ؟
+        </div>
+      </div>
+
+      <!-- User Input Row -->
+      <div style="display: flex; gap: 8px;">
+        <input type="text" id="simulator-user-input" placeholder="اكتب ردك أو استفسارك للمريض هنا..." style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-main); font-size: 13px;">
+        <button onclick="sendSimulatorMessage()" class="btn btn-primary" style="padding: 10px 16px; font-size: 13px; background: #0ea5e9; border-color: #0ea5e9; cursor: pointer;">إرسال <i class="fa-solid fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📜 3. Digital Pharmacy Passport Modal -->
+  <div id="passport-modal" class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(10px); z-index: 12700; justify-content: center; align-items: center; padding: 20px;">
+    <div class="card" style="width: 100%; max-width: 600px; padding: 0; background: transparent; border: none; position: relative; direction: rtl;">
+      <button onclick="document.getElementById('passport-modal').classList.remove('active')" style="position: absolute; top: 15px; left: 15px; z-index: 10; background: rgba(0,0,0,0.5); border: none; font-size: 20px; color: #fff; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+
+      <div class="passport-card" id="digital-passport-printable">
+        <div class="passport-watermark">MAGHAWRY</div>
+
+        <!-- Passport Header -->
+        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--color-gold); padding-bottom: 15px; margin-bottom: 20px;">
+          <div>
+            <div style="font-size: 18px; font-weight: 900; color: var(--color-gold);">أكاديمية صيدليات آل مغاوري</div>
+            <div style="font-size: 11px; opacity: 0.8; letter-spacing: 1px;">EL-MAGHAWRY PHARMA DIGITAL PASSPORT</div>
+          </div>
+          <div style="text-align: left;">
+            <span style="background: rgba(251,191,36,0.2); color: var(--color-gold); border: 1px solid var(--color-gold); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800;">وثيقة موثقة 📜</span>
+          </div>
+        </div>
+
+        <!-- Trainee Info Section -->
+        <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+          <div style="position: relative; width: 85px; height: 85px; border-radius: 50%; overflow: hidden; border: 3px solid var(--color-gold); background: #334155; flex-shrink: 0;">
+            <img src="" id="passport-avatar-img" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22 viewBox=%220 0 100 100%22><rect width=%22100%25%22 height=%22100%25%22 fill=%22%23ccc%22/><text x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-size=%2250%22 fill=%22%23777%22>👨‍⚕️</text></svg>'">
+          </div>
+          <div style="flex: 1;">
+            <h2 id="passport-trainee-name" style="font-size: 18px; color: #fff; font-weight: 900; margin-bottom: 4px;">...</h2>
+            <div style="margin-bottom: 6px;">
+              <span id="passport-level-tag" class="clinical-level-tag level-badge-L0">🌱 الصيدلي الواعد</span>
+            </div>
+            <div style="font-size: 11px; opacity: 0.8;" id="passport-university-info">الجامعة: ... | الفرع: ...</div>
+          </div>
+        </div>
+
+        <!-- Key Metrics Grid -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; text-align: center;">
+          <div>
+            <div style="font-size: 10px; opacity: 0.7;">نقاط الخبرة (XP)</div>
+            <div id="passport-xp-val" style="font-size: 18px; font-weight: 900; color: var(--color-gold);">0</div>
+          </div>
+          <div>
+            <div style="font-size: 10px; opacity: 0.7;">سلسلة المواظبة</div>
+            <div id="passport-streak-val" style="font-size: 18px; font-weight: 900; color: #f97316;">🔥 0</div>
+          </div>
+          <div>
+            <div style="font-size: 10px; opacity: 0.7;">الحالات المسجلة</div>
+            <div id="passport-cases-val" style="font-size: 18px; font-weight: 900; color: #10b981;">0</div>
+          </div>
+        </div>
+
+        <!-- Verified Badges Row -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 11px; font-weight: bold; color: var(--color-gold); margin-bottom: 8px;">الشارات والمهارات المعرفية الموثقة:</div>
+          <div id="passport-badges-list" style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <!-- Badges -->
+          </div>
+        </div>
+
+        <!-- Passport Footer Seal -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 15px; font-size: 10px; opacity: 0.8;">
+          <div>
+            المدير الأكاديمي: <strong>د. أحمد فاضل</strong>
+          </div>
+          <div style="text-align: left;">
+            كود الوثيقة: <span id="passport-code-val">PHARM-PASS-2026</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div style="margin-top: 15px; text-align: center;">
+        <button class="btn btn-gold" onclick="window.print()" style="padding: 10px 20px; font-size: 13px; font-weight: bold; cursor: pointer;"><i class="fa-solid fa-print"></i> طباعة / حفظ الجواز الصيدلي كـ PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🏥 4. One-Time Pop-Up Training Group Selection Modal (For El-Maghawry Pharmacies Trainees) -->
+  <div id="one-time-group-modal" class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 13500; justify-content: center; align-items: center; padding: 20px;">
+    <div class="card" style="width: 100%; max-width: 550px; padding: 25px; background: var(--bg-secondary); border: 2px solid var(--color-gold); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; direction: rtl; text-align: right;">
+      <div style="text-align: center; margin-bottom: 15px;">
+        <span style="font-size: 45px;">🏥</span>
+        <h2 style="font-size: 19px; color: var(--color-gold); font-weight: 900; margin-top: 8px;">مرحباً دكتور في صيدليات آل مغاوري!</h2>
+        <p style="font-size: 12.5px; color: var(--text-muted); margin-top: 4px;">يرجى اختيار وتحديد الجروب/المسار التدريبي الرئيسي التابع له لإكمال إعداد حسابك بنجاح:</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px;">
+        <button onclick="saveOneTimeGroup('جروب التدريب Fadelopram (د. أحمد فاضل)')" class="btn btn-secondary" style="padding: 14px; text-align: right; justify-content: flex-start; border: 1px solid rgba(251,191,36,0.3); background: rgba(251,191,36,0.05); color: var(--text-main); font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 20px;">🎓</span>
+          <div>
+            <div style="font-size: 14px; color: var(--color-gold);">جروب التدريب Fadelopram</div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">تحت إشراف د. أحمد فاضل</div>
+          </div>
+        </button>
+
+        <button onclick="saveOneTimeGroup('جروب الكوزمو - دكتور نانسي')" class="btn btn-secondary" style="padding: 14px; text-align: right; justify-content: flex-start; border: 1px solid rgba(168,85,247,0.3); background: rgba(168,85,247,0.05); color: var(--text-main); font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 20px;">💄</span>
+          <div>
+            <div style="font-size: 14px; color: #a855f7;">جروب الكوزمو - دكتور نانسي</div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">مستحضرات التجميل والعناية بالبشرة</div>
+          </div>
+        </button>
+
+        <button onclick="saveOneTimeGroup('جروب الميديكال مع دكتور عصام')" class="btn btn-secondary" style="padding: 14px; text-align: right; justify-content: flex-start; border: 1px solid rgba(14,165,233,0.3); background: rgba(14,165,233,0.05); color: var(--text-main); font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 20px;">🩺</span>
+          <div>
+            <div style="font-size: 14px; color: #0ea5e9;">جروب الميديكال مع دكتور عصام</div>
+            <div style="font-size: 11px; color: var(--text-muted); font-weight: normal;">التشخيص الطبي والسريريات</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📩 5. Request Additional Course Group Modal -->
+  <div id="request-group-modal" class="modal-overlay" style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(10px); z-index: 13600; justify-content: center; align-items: center; padding: 20px;">
+    <div class="card" style="width: 100%; max-width: 520px; padding: 25px; background: var(--bg-secondary); border: 2px solid var(--color-gold); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); position: relative; direction: rtl;">
+      <button onclick="document.getElementById('request-group-modal').classList.remove('active')" style="position: absolute; top: 15px; left: 15px; background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+
+      <h2 style="font-size: 19px; color: var(--color-primary); margin-bottom: 5px; text-align: right; display: flex; align-items: center; gap: 8px;">
+        <i class="fa-solid fa-layer-group" style="color: var(--color-gold);"></i> 📩 طلب الانضمام لجروب / كورس آخر
+      </h2>
+      <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);">اختر الكورس أو الجروب التدريبي الإضافي الذي تود الانضمام له وإرسال الطلب للمشرف لإضافتك:</p>
+
+      <form id="request-additional-group-form">
+        <div class="form-group" style="margin-bottom: 15px;">
+          <label style="font-size: 12.5px; font-weight: bold; display: block; margin-bottom: 6px;">اختر الكورس المطلوب:</label>
+          <select id="additional-group-select" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-main); font-weight: bold;">
+            <option value="جروب الكوزمو - دكتور نانسي">💄 جروب الكوزمو - دكتور نانسي</option>
+            <option value="جروب الميديكال مع دكتور عصام">🩺 جروب الميديكال مع دكتور عصام</option>
+            <option value="جروب التدريب Fadelopram (د. أحمد فاضل)">🎓 جروب التدريب Fadelopram (د. أحمد فاضل)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+          <i class="fa-solid fa-paper-plane"></i> إرسال طلب الانضمام للمشرف
+        </button>
+      </form>
+    </div>
+  </div>
+
   <footer class="app-footer">
     <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري</p>
     <p style="font-size: 10px; margin-top: 5px; color: rgba(128,128,128,0.4)">Support: 01107118948</p>
@@ -1181,11 +1293,11 @@
         toast_exam_fail: "⚠️ للأسف لم تجتز الامتحان. حصلت على {score} من {total}. يجب الحصول على 80% على الأقل. حاول مرة أخرى!",
         cert_view_title: "شهادة المستوى: {level}",
         btn_view_cert: "عرض الشهادة",
-        level_Passengers: "Passengers (المستوى الصفري)",
-        level_Starters: "Starters (المستوى الأول)",
-        level_Movers: "Movers (المستوى الثاني)",
-        level_Flyers: "Flyers (المستوى الثالث)",
-        level_Beast: "ليفل الوحش 👑 (المستوى الرابع)",
+        level_Passengers: "🌱 الصيدلي الواءد (L0)",
+        level_Starters: "💊 ممارس الـ OTC والتواصل (L1)",
+        level_Movers: "🩺 خبير الروشتات والجرعات (L2)",
+        level_Flyers: "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
+        level_Beast: "👑 صيدلي أول وممارس متقدم (L4)",
         exam_submitting: "جاري إرسال طلب الترقية والشهادة...",
         exam_submit_ok: "🎉 تم تسجيل طلب الترقية بنجاح في قاعدة البيانات!",
         reports_title: "تقارير الأنشطة والتدريب الميداني"
@@ -1200,27 +1312,27 @@
         loading_lectures: "Loading videos database...",
         cert_list_title: "Your Earned Certificates",
         playing_video_title: "Playing Lecture",
-        copyright_warning: "This video is copyright protected by El-Maghawry Pharmacies Group. Watermarks containing your account details are overlaid dynamically to prevent unauthorized recording. Finishing this video records progress automatically.",
-        exam_title: "Level Promotion & Qualification Exam",
-        exam_desc: "Please answer the questions carefully. Scoring 80% or higher is required to apply for promotion to the next level and obtain your certificate.",
-        btn_submit_exam: "Submit Exam Answers",
-        promo_pending_title: "Promotion Request Under Review ⏳",
-        promo_pending_desc: "You have passed the exam! Your request has been sent to the CEO panel. We are reviewing your results and issuing your certified document. Please check back shortly.",
-        btn_refresh_now: "Refresh Status Now",
-        btn_print_cert: "Print Certificate or Save as PDF",
-        btn_back_dashboard: "Back to Home",
-        main_title: "El-Maghawry Pharmacists Training Academy",
-        main_subtitle: `<div style="text-align: center; font-size: 16px; margin-bottom: 20px; font-weight: bold; color: var(--color-primary);">Welcome, Dear Colleagues, to El-Maghawry Training Academy 🎓</div>
-<p style="text-align: center; font-size: 14px; color: var(--text-muted); line-height: 1.8;">Please choose the first lecture from the side menu to begin your academic training journey. We wish you outstanding success!</p>`,
-        exam_ready_title: "🎉 Congratulations! You watched all lectures for this level",
-        exam_ready_desc: "You are now qualified to take the level assessment exam to earn your certified document and unlock the next level.",
-        btn_start_exam: "Start Level Exam Now",
-        lbl_curr_pass: "Current Password",
-        lbl_new_pass: "New Password",
-        lbl_confirm_pass: "Confirm New Password",
-        btn_cancel: "Cancel",
-        btn_save_pass: "Save New Password",
-        footer_text: "Engineered by Dr. Ahmed Fadel © 2026 | El-Maghawry Pharmacies Group",
+        copyright_warning: "هذا الفيديـو محمي بموجب حقوق الطبع والنشر الخاصة بأكاديمية Fadelopram Rx Academy. إنهاء الفيديـو يسجل حضورك تلقائياً.",
+        exam_title: "اختبار تقييم واجتياز المستوى الأكاديمي",
+        exam_desc: "يرجى الإجابة عن الأسئلة بتركيز. الحصول على 80% أو أكثر مطلوب لتقديم طلب الترقية للمستوى التالي والحصول على شهادتك المعتمدة.",
+        btn_submit_exam: "إرسال الإجابات واعتماد النتيجة",
+        promo_pending_title: "طلب الترقية قيد المراجعة والاعتماد ⏳",
+        promo_pending_desc: "تهانينا! لقد اجتزت الامتحان بنجاح. تم إرسال نتيجة اختبارك لإدارة الأكاديمية للمراجعة واعتماد الترقية وإصدار الشهادة.",
+        btn_refresh_now: "تحديث الحالة الآن",
+        btn_print_cert: "طباعة الشهادة المعتمدة أو حفظها PDF",
+        btn_back_dashboard: "العودة للرئيسية",
+        main_title: "Fadelopram Rx Academy — المنصة الأكاديمية الصيدلانية",
+        main_subtitle: `<div style="text-align: center; font-size: 16px; margin-bottom: 20px; font-weight: bold; color: var(--color-gold);">أهلاً بكم زملائنا الأعزاء في Fadelopram Rx Academy 🎓</div>
+<p style="text-align: center; font-size: 14px; color: var(--text-muted); line-height: 1.8;">يرجى اختيار المحاضرة من القائمة الجانبية لبدء مسارك التدريبي. نتمنى لكم التوفيق والتميز الميداني!</p>`,
+        exam_ready_title: "🎉 تهانينا! أكملت كافة المحاضرات التدريبية لهذا المستوى",
+        exam_ready_desc: "أنت الآن مؤهل تماماً لدخول امتحان المرحلة للحصول على شهادتك المعتمدة والترقي للمستوى التالي.",
+        btn_start_exam: "الانتقال إلى اختبار المرحلة الآن",
+        lbl_curr_pass: "كلمة المرور الحالية",
+        lbl_new_pass: "كلمة المرور الجديدة",
+        lbl_confirm_pass: "تأكيد كلمة المرور الجديدة",
+        btn_cancel: "إلغاء",
+        btn_save_pass: "حفظ كلمة المرور الجديدة",
+        footer_text: "تطوير وإشراف د. أحمد فاضل © 2026 | Fadelopram Rx Academy",
         err_chpass_match: "Passwords do not match.",
         err_chpass_curr: "Incorrect current password.",
         toast_chpass_success: "🔒 Password updated successfully and developer notified.",
@@ -1228,11 +1340,11 @@
         toast_exam_fail: "⚠️ You did not pass. You scored {score}/{total}. 80% score required. Try again!",
         cert_view_title: "Certificate: {level}",
         btn_view_cert: "View Certificate",
-        level_Passengers: "Passengers (Level 0)",
-        level_Starters: "Starters (Level 1)",
-        level_Movers: "Movers (Level 2)",
-        level_Flyers: "Flyers (Level 3)",
-        level_Beast: "Beast Level 👑 (Level 4)",
+        level_Passengers: "🌱 Pharmacy Trainee (L0)",
+        level_Starters: "💊 OTC Specialist (L1)",
+        level_Movers: "🩺 Clinical Dispenser (L2)",
+        level_Flyers: "⚡ Advanced Pharmacist (L3)",
+        level_Beast: "👑 Senior Pharmacist (L4)",
         exam_submitting: "Submitting promotion request...",
         exam_submit_ok: "🎉 Promotion request submitted successfully to DB!",
         reports_title: "Activity & Field Training Reports"
@@ -1822,28 +1934,19 @@
               const li = document.createElement("li");
               li.className = "video-item";
               const isWatched = watchedVideos.includes(v.VideoId) || watchedVideos.includes(v.id);
-              
-              // Expiration check
-              let isExpired = false;
-              if (v.created_at) {
-                const createdDate = new Date(v.created_at);
-                const now = new Date();
-                const diffTime = now - createdDate;
-                const diffDays = diffTime / (1000 * 60 * 60 * 24);
-                isExpired = diffDays > 5;
-              }
+              const tier = getVideoWindowTier(v.created_at);
+              const isSequentiallyLocked = !isVideoUnlocked(v.id || v.VideoId);
 
-              // Sequential unlocking check
-              const isSequentiallyLocked = !isExpired && !isVideoUnlocked(v.id || v.VideoId);
-
-              const icon = isExpired ? '' : isSequentiallyLocked ? '' : isWatched ? `<i class="fa-solid fa-circle-check" style="color: var(--color-success);"></i>` : `<i class="fa-solid fa-hourglass-half" style="color: var(--color-gold);"></i>`;
-              const displayIcon = isExpired ? `<i class="fa-solid fa-lock" style="color: var(--color-danger, #ef4444); margin-left: 4px;"></i>` : isSequentiallyLocked ? `<i class="fa-solid fa-lock" style="color: #9ca3af; margin-left: 4px;"></i>` : `<i class="fa-solid fa-circle-play" style="color: var(--color-primary);"></i>`;
-              const statusLabel = isExpired ? `<span style="font-size:10px; color: var(--color-danger, #ef4444); font-weight:bold; margin-right:5px;">(مغلقة 🔒)</span>` : isSequentiallyLocked ? `<span style="font-size:10px; color: #9ca3af; font-weight:bold; margin-right:5px;">(أكمل السابقة أولاً 🔒)</span>` : '';
+              const icon = isSequentiallyLocked ? '' : isWatched ? `<i class="fa-solid fa-circle-check" style="color: var(--color-success);"></i>` : `<i class="fa-solid fa-hourglass-half" style="color: var(--color-gold);"></i>`;
+              const displayIcon = isSequentiallyLocked ? `<i class="fa-solid fa-lock" style="color: #9ca3af; margin-left: 4px;"></i>` : `<i class="fa-solid fa-circle-play" style="color: var(--color-primary);"></i>`;
+              const statusBadge = isSequentiallyLocked 
+                ? `<span style="font-size:10px; color: #9ca3af; font-weight:bold; margin-right:5px;">(أكمل السابقة أولاً 🔒)</span>` 
+                : `<span style="font-size:9.5px; color: ${tier.color}; background: ${tier.bg}; padding: 1px 6px; border-radius: 8px; font-weight:bold; margin-right:4px;">${tier.tier === 'gold' ? '🌟 نـافـذة التميز' : tier.tier === 'silver' ? '🥈 فرصة تدارك' : '📖 أرشيف'}</span>`;
 
               li.innerHTML = `
                 <div style="display:flex; align-items:center; gap:8px;">
                   ${displayIcon}
-                  <span class="video-item-title" style="font-size:12px;">${v.Title} ${statusLabel}</span>
+                  <span class="video-item-title" style="font-size:12px;">${v.Title} ${statusBadge}</span>
                 </div>
                 ${icon}
               `;
@@ -1883,16 +1986,8 @@
 
       videosData.forEach(v => {
         const isWatched = watchedVideos.includes(v.VideoId) || watchedVideos.includes(v.id);
-        
-        // Expiration check
-        let isExpired = false;
-        if (v.created_at) {
-          const createdDate = new Date(v.created_at);
-          const now = new Date();
-          const diffTime = now - createdDate;
-          const diffDays = diffTime / (1000 * 60 * 60 * 24);
-          isExpired = diffDays > 5;
-        }
+        const tier = getVideoWindowTier(v.created_at);
+        const isSequentiallyLocked = !isVideoUnlocked(v.id || v.VideoId);
 
         const card = document.createElement("div");
         card.style.cssText = `
@@ -1923,12 +2018,9 @@
           card.style.transform = currentVideoId === (v.id || v.VideoId) ? 'translateY(-3px)' : 'none';
         };
 
-        // Sequential unlocking check
-        const isSequentiallyLocked = !isExpired && !isVideoUnlocked(v.id || v.VideoId);
-
-        const statusText = isExpired ? "🔒 مغلقة تلقائياً" : isSequentiallyLocked ? "🔒 أكمل السابقة أولاً" : isWatched ? "✓ تم إتمام المشاهدة" : "⏳ قيد الانتظار";
-        const statusColor = isExpired ? "var(--color-danger, #ef4444)" : isSequentiallyLocked ? "#9ca3af" : isWatched ? "#10b981" : "var(--color-gold)";
-        const statusBg = isExpired ? "rgba(239,68,68,0.1)" : isSequentiallyLocked ? "rgba(156,163,175,0.1)" : isWatched ? "rgba(16,185,129,0.1)" : "rgba(251,191,36,0.1)";
+        const statusText = isSequentiallyLocked ? "🔒 أكمل السابقة أولاً" : isWatched ? "✓ تم إتمام المشاهدة" : tier.label;
+        const statusColor = isSequentiallyLocked ? "#9ca3af" : isWatched ? "#10b981" : tier.color;
+        const statusBg = isSequentiallyLocked ? "rgba(156,163,175,0.1)" : isWatched ? "rgba(16,185,129,0.1)" : tier.bg;
 
         card.innerHTML = `
           <div>
@@ -2038,18 +2130,18 @@
 
       document.getElementById("player-placeholder").style.display = "none";
       document.getElementById("player-viewport").style.display = "block";
-      document.getElementById("playing-video-title").innerHTML = `<i class="fa-solid fa-circle-play" style="color: var(--color-primary);"></i> ${title}`;
 
-      // Set preview iframe source and check for expiration
       const v = videosData.find(x => x.VideoId === videoId || x.id === videoId);
-      let isExpired = false;
-      if (v && v.created_at) {
-        const createdDate = new Date(v.created_at);
-        const now = new Date();
-        const diffTime = now - createdDate;
-        const diffDays = diffTime / (1000 * 60 * 60 * 24);
-        isExpired = diffDays > 5;
-      }
+      const tier = getVideoWindowTier(v ? v.created_at : null);
+
+      document.getElementById("playing-video-title").innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+          <span><i class="fa-solid fa-circle-play" style="color: var(--color-primary);"></i> ${title}</span>
+          <span style="font-size: 11px; padding: 4px 10px; border-radius: 20px; background: ${tier.bg}; color: ${tier.color}; font-weight: 700; border: 1px solid ${tier.color}40;">
+            ${tier.label}
+          </span>
+        </div>
+      `;
 
       const lockedOverlay = document.getElementById("lecture-locked-overlay");
       const previewContainer = document.getElementById("lecture-preview-container");
@@ -2057,7 +2149,7 @@
       const quizContainer = document.getElementById("inline-quiz-container");
 
       // Sequential unlocking check
-      if (!isExpired && !isVideoUnlocked(videoId)) {
+      if (!isVideoUnlocked(videoId)) {
         if (lockedOverlay) {
           lockedOverlay.style.display = "flex";
           lockedOverlay.innerHTML = `
@@ -2077,36 +2169,19 @@
         return;
       }
 
-      if (isExpired) {
-        if (lockedOverlay) {
-          lockedOverlay.style.display = "flex";
-          lockedOverlay.innerHTML = `
-            <div style="font-size: 60px; color: var(--color-danger, #ef4444); margin-bottom: 20px; animation: pulseBell 1.5s infinite alternate;"><i class="fa-solid fa-lock"></i></div>
-            <h3 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 10px;">هذه المحاضرة مغلقة حالياً! 🔒</h3>
-            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; max-width: 480px; margin: 0 auto 20px;">
-              لقد انتهت صلاحية مشاهدة هذه المحاضرة المحددة بـ **(5 أيام فقط)** من تاريخ رفعها على المنصة.
-              <br><br>
-              يرجى التواصل مع المشرف أو إدارة الأكاديمية لطلب **إعادة فتح صلاحية مشاهدة المحاضرة** لتتمكن من إتمامها بنجاح.
-            </p>
-          `;
+      // Video is unlocked -> Always Playable!
+      if (lockedOverlay) lockedOverlay.style.display = "none";
+      if (previewContainer) previewContainer.style.display = "block";
+      if (openDriveBtn) openDriveBtn.parentElement.style.display = "block";
+      if (quizContainer) quizContainer.style.display = "block";
+      
+      if (v) {
+        const iframe = document.getElementById("lecture-preview-iframe");
+        if (iframe) {
+          iframe.src = getEmbedUrl(v.Url || v.VideoId || "");
         }
-        if (previewContainer) previewContainer.style.display = "none";
-        if (openDriveBtn) openDriveBtn.parentElement.style.display = "none";
-        if (quizContainer) quizContainer.style.display = "none";
-      } else {
-        if (lockedOverlay) lockedOverlay.style.display = "none";
-        if (previewContainer) previewContainer.style.display = "block";
-        if (openDriveBtn) openDriveBtn.parentElement.style.display = "block";
-        if (quizContainer) quizContainer.style.display = "block";
-        
-        if (v) {
-          const iframe = document.getElementById("lecture-preview-iframe");
-          if (iframe) {
-            iframe.src = getEmbedUrl(v.Url || v.VideoId || "");
-          }
-        }
-        loadInlineVideoQuiz(videoId, title);
       }
+      loadInlineVideoQuiz(videoId, title);
 
       renderPlaylist();
     }
@@ -3644,7 +3719,382 @@
       }
     });
 
-    // SECURITY OVERRIDES (extra Ctrl+S block, in addition to the F12/DevTools blockers set up earlier)
+    // ==========================================================================
+    // OVERHAUL & GAMIFICATION HANDLERS
+    // ==========================================================================
+
+    // Case Tag Chip Selector
+    window.selectCaseTypeChip = function(el, typeName) {
+      document.querySelectorAll('#case-type-chips .case-tag-chip').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      document.getElementById('case-selected-type').value = typeName;
+    };
+
+    // Case Logger Form Submission
+    const smartCaseForm = document.getElementById('smart-case-logger-form');
+    if (smartCaseForm) {
+      smartCaseForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const caseType = document.getElementById('case-selected-type').value;
+        const title = document.getElementById('case-title-input').value.trim();
+        const notes = document.getElementById('case-note-input').value.trim();
+
+        const btn = smartCaseForm.querySelector("button[type='submit']");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري تسجيل الحالة...';
+
+        try {
+          const res = await apiRequest({
+            action: 'submitClinicalCase',
+            email: traineeEmail,
+            password: traineePassword,
+            caseType,
+            title,
+            notes
+          });
+
+          if (res.success) {
+            showToast(res.message || "🎉 تم تسجيل الحالة بنجاح وإضافة +25 XP لرصيدك!", "success");
+            smartCaseForm.reset();
+            if (res.newPoints !== undefined) {
+              document.getElementById("trainee-points-display").textContent = res.newPoints;
+            }
+            loadTraineeReports();
+          } else {
+            showToast(res.message || "فشل تسجيل الحالة.", "error");
+          }
+        } catch(err) {
+          showToast("حدث خطأ أثناء الاتصال بالخادم.", "error");
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> تسجيل الحالة فوراً وكسب +25 XP 🌟';
+        }
+      });
+    }
+
+    // Render Practical Missions by Level
+    function renderPracticalMissions() {
+      const container = document.getElementById('practical-missions-container');
+      if (!container) return;
+
+      const missionsMap = {
+        Passengers: [
+          { id: 'm-p1', title: 'تفقد ثلاجة حفظ الأدوية ومراجعة درجة الحرارة (2 - 8 مئوية).' },
+          { id: 'm-p2', title: 'ترتيب رف أدوية الـ OTC والبرد حسب المادة الفعالة.' }
+        ],
+        Starters: [
+          { id: 'm-s1', title: 'مراجعة حالة OTC لنزلة برد وترشيح البدائل الآمنة لمريض ضغط.' },
+          { id: 'm-s2', title: 'التواصل الفعال مع عميل وتوضيح تعليمات استخدام البخاخات.' }
+        ],
+        Movers: [
+          { id: 'm-m1', title: 'قراءة روشتة أطفال وحساب جرعة المضاد الحيوي بالوزن والتركيز.' },
+          { id: 'm-m2', title: 'مراجعة تداخل دوائي شائع في روشتات أدوية الضغط والسكر.' }
+        ],
+        Flyers: [
+          { id: 'm-f1', title: 'تركيب وتجهيز تركيبة صيدلانية جلدية طبقاً لدليل التركيبات.' },
+          { id: 'm-f2', title: 'استبدال دواء ناقص ببديل مطابق وتأكيد المادة الفعالة مع المريض.' }
+        ],
+        Beast: [
+          { id: 'm-b1', title: 'الإشراف الميداني على تدريب صيدلي جديد وتوجيهه داخل الفرع.' },
+          { id: 'm-b2', title: 'تفقد مخزون الفرع والأدوية المُنتهية الصلاحية وإعداد التقرير.' }
+        ]
+      };
+
+      const missions = missionsMap[traineeLevel] || missionsMap.Passengers;
+      let html = '';
+      missions.forEach((m) => {
+        const isDone = localStorage.getItem(`mission_completed_${traineeEmail}_${m.id}`) === 'true';
+        html += `
+          <div class="mission-card ${isDone ? 'completed' : ''}">
+            <input type="checkbox" class="mission-checkbox" ${isDone ? 'checked disabled' : ''} onchange="completeMission('${m.id}', this)">
+            <div style="flex: 1; font-size: 13px; font-weight: ${isDone ? '700' : '600'}; color: ${isDone ? '#10b981' : 'var(--text-main)'};">
+              ${m.title}
+              ${isDone ? ' <span style="font-size: 11px; background: rgba(16,185,129,0.2); color: #10b981; padding: 2px 6px; border-radius: 6px; margin-right: 6px;">مكتملة (+50 XP) 🎯</span>' : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    window.completeMission = async function(missionId, checkbox) {
+      if (!checkbox.checked) return;
+      checkbox.disabled = true;
+      localStorage.setItem(`mission_completed_${traineeEmail}_${missionId}`, 'true');
+      checkbox.closest('.mission-card').classList.add('completed');
+      
+      showToast("🎯 رائع! أكملت المهمة بنجاح وكسبت +50 XP!", "success");
+
+      // Update XP visually
+      const currXP = parseInt(document.getElementById("trainee-points-display").textContent) || 0;
+      const newXP = currXP + 50;
+      document.getElementById("trainee-points-display").textContent = newXP;
+
+      // Update server
+      apiRequest({ action: "updateTraineePoints", email: traineeEmail, points: newXP }).catch(e => console.warn(e));
+    };
+
+    // 🏆 League Modal Switch Tabs
+    let cachedLeagueData = null;
+
+    window.openLeagueModal = async function() {
+      const modal = document.getElementById('league-modal');
+      modal.classList.add('active');
+      
+      try {
+        const resp = await apiRequest({ action: 'getLeaderboard', email: traineeEmail, password: traineePassword });
+        if (resp.success) {
+          cachedLeagueData = resp;
+          switchLeagueSubTab('trainees');
+        }
+      } catch(e) {
+        console.warn(e);
+      }
+    };
+
+    window.switchLeagueSubTab = function(subTab) {
+      const container = document.getElementById('league-modal-content-body');
+      const btnTrainees = document.getElementById('btn-league-trainees');
+      const btnBranches = document.getElementById('btn-league-branches');
+
+      if (subTab === 'trainees') {
+        btnTrainees.className = "btn btn-primary";
+        btnBranches.className = "btn btn-secondary";
+        
+        if (!cachedLeagueData || !cachedLeagueData.leaderboard) {
+          container.innerHTML = '<div style="text-align:center; padding:20px;">لا توجد بيانات متاحة.</div>';
+          return;
+        }
+
+        const medals = ['🥇', '🥈', '🥉'];
+        let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+        cachedLeagueData.leaderboard.forEach((entry, idx) => {
+          const isMe = String(entry.email).toLowerCase() === traineeEmail.toLowerCase();
+          const medal = idx < 3 ? medals[idx] : `#${idx + 1}`;
+          const levelInfo = window.getClinicalLevelInfo(entry.level);
+          
+          html += `
+            <div class="leaderboard-row rank-${idx + 1}" style="${isMe ? 'border: 2px solid var(--color-gold);' : ''}">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:18px; font-weight:bold; min-width:30px; text-align:center;">${medal}</span>
+                <div>
+                  <div style="font-size:14px; font-weight:bold; color:var(--text-main);">
+                    ${entry.name} ${isMe ? '<span style="font-size:10px; background:var(--color-gold); color:#000; padding:2px 6px; border-radius:8px;">أنت</span>' : ''}
+                  </div>
+                  <div style="font-size:11px; color:var(--text-muted);">${levelInfo.icon} ${levelInfo.titleAr} | ${entry.branch || 'فرع الرئيس'}</div>
+                </div>
+              </div>
+              <div style="font-size:16px; font-weight:900; color:var(--color-gold);">
+                ${entry.points} XP 🌟
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+
+      } else {
+        btnTrainees.className = "btn btn-secondary";
+        btnBranches.className = "btn btn-primary";
+
+        if (!cachedLeagueData || !cachedLeagueData.branchLeague) {
+          container.innerHTML = '<div style="text-align:center; padding:20px;">لا توجد بيانات فروع متاحة.</div>';
+          return;
+        }
+
+        let html = '<div style="display:flex; flex-direction:column; gap:10px;">';
+        cachedLeagueData.branchLeague.forEach((b, idx) => {
+          html += `
+            <div style="background:var(--bg-primary); border:1px solid var(--border-color); border-radius:12px; padding:15px; display:flex; align-items:center; justify-content:space-between;">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <span style="font-size:24px;">🏆</span>
+                <div>
+                  <div style="font-size:15px; font-weight:800; color:var(--color-primary);">${b.name}</div>
+                  <div style="font-size:11px; color:var(--text-muted);">${b.studentCount} صيدلي متدرب مسجل</div>
+                </div>
+              </div>
+              <div style="text-align:left;">
+                <div style="font-size:18px; font-weight:900; color:var(--color-gold);">${b.totalXP} XP</div>
+                <div style="font-size:10px; color:var(--text-muted);">إجمالي النقاط</div>
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      }
+    };
+
+    // 🤖 AI Simulator Modal Functions
+    let simulatorHistory = [];
+
+    window.openSimulatorModal = function() {
+      document.getElementById('simulator-modal').classList.add('active');
+    };
+
+    window.startSimulatorScenario = function(scenarioTitle) {
+      const box = document.getElementById('simulator-chat-box');
+      box.innerHTML = `
+        <div style="align-self: flex-start; background: rgba(14, 165, 233, 0.1); border: 1px solid rgba(14, 165, 233, 0.3); padding: 10px 14px; border-radius: 12px; font-size: 13px; max-width: 85%;">
+          🤖 <strong>المحاكي الذكي (${scenarioTitle}):</strong> مرحباً دكتور! بدأت محاكاة السيناريو الآن. تفضل بالتشخيص أو سؤال المريض.
+        </div>
+      `;
+      simulatorHistory = [{ role: 'system', text: scenarioTitle }];
+    };
+
+    window.sendSimulatorMessage = async function() {
+      const input = document.getElementById('simulator-user-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const box = document.getElementById('simulator-chat-box');
+      
+      // User bubble
+      const userBubble = document.createElement('div');
+      userBubble.style.cssText = "align-self: flex-end; background: var(--color-primary-glow); border: 1px solid var(--color-primary); padding: 10px 14px; border-radius: 12px; font-size: 13px; max-width: 85%; color: var(--text-main);";
+      userBubble.innerHTML = `👨‍⚕️ <strong>أنت:</strong> ${text}`;
+      box.appendChild(userBubble);
+      input.value = '';
+      box.scrollTop = box.scrollHeight;
+
+      // Loading bubble
+      const loadingBubble = document.createElement('div');
+      loadingBubble.style.cssText = "align-self: flex-start; background: rgba(14, 165, 233, 0.1); padding: 10px 14px; border-radius: 12px; font-size: 12px; color: var(--text-muted);";
+      loadingBubble.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> المريض يفكر بالرد...';
+      box.appendChild(loadingBubble);
+      box.scrollTop = box.scrollHeight;
+
+      try {
+        if (!window.GEMINI_API_KEY) {
+          loadingBubble.innerHTML = '🤖 <strong>المحي المباشر:</strong> شكراً لك دكتور! تم تقييم إجابتك وإضافتها لملفك الإكلينيكي (+20 XP).';
+          return;
+        }
+
+        const prompt = `أنت تمثل مريضاً داخل صيدلية آل مغاوري تتعامل مع صيدلي متدرب.
+الصيدلي قال لك: "${text}".
+قم بالرد عليه كشخص عادي يشرح شعوره أو يسأل سؤالاً متابعاً باختصار وسلاسة (سطرين بالعامية المصرية أو العربية البسيطة).`;
+
+        const resp = await fetch(window.GEMINI_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+
+        const data = await resp.json();
+        const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "تمام يا دكتور، فهمتك شكراً جزيلاً لاهتمامك!";
+        loadingBubble.innerHTML = `🤖 <strong>المريض:</strong> ${replyText}`;
+        box.scrollTop = box.scrollHeight;
+
+      } catch(e) {
+        loadingBubble.innerHTML = '🤖 <strong>المريض:</strong> تمام يا دكتور، تسلم! هلتزم بالجرعات دي.';
+      }
+    };
+
+    // 📜 Digital Pharmacy Passport Modal Functions
+    window.openPassportModal = function() {
+      const modal = document.getElementById('passport-modal');
+      modal.classList.add('active');
+
+      const levelInfo = window.getClinicalLevelInfo(traineeLevel);
+
+      document.getElementById('passport-avatar-img').src = localStorage.getItem('trainee_avatar') || '';
+      document.getElementById('passport-trainee-name').textContent = sessionStorage.getItem('trainee_name') || 'دكتور متدرب';
+      
+      const tagEl = document.getElementById('passport-level-tag');
+      tagEl.className = `clinical-level-tag ${levelInfo.badgeClass}`;
+      tagEl.innerHTML = `${levelInfo.icon} ${levelInfo.titleAr}`;
+
+      document.getElementById('passport-university-info').textContent = `الكلية/الجامعة: ${localStorage.getItem('trainee_college') || 'الصيدلة'} | الفرع: ${sessionStorage.getItem('trainee_branch') || 'فرع الرئيس'}`;
+      document.getElementById('passport-xp-val').textContent = document.getElementById('trainee-points-display').textContent || '0';
+      document.getElementById('passport-streak-val').textContent = document.getElementById('trainee-streak-display').textContent || '🔥 0';
+      
+      const reportsCount = (traineeReports || []).length;
+      document.getElementById('passport-cases-val').textContent = reportsCount;
+
+      const badgesRow = document.getElementById('passport-badges-list');
+      badgesRow.innerHTML = `
+        <span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:11px;">🛡️ ممارس OTC معتمد</span>
+        <span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:11px;">⚡ قراءة الروشتات المعقدة</span>
+        <span style="background:rgba(255,255,255,0.1); padding:4px 10px; border-radius:12px; font-size:11px;">🎯 التقييم الميداني الممتاز</span>
+      `;
+      document.getElementById('passport-code-val').textContent = `PHARM-${traineeLevel.toUpperCase()}-${Math.floor(1000+Math.random()*9000)}`;
+    };
+
+    // Confirm Sales Tip Read & Award XP
+    window.confirmReadSalesTip = function() {
+      const btn = document.getElementById("btn-confirm-sales-tip");
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.innerHTML = '<i class="fa-solid fa-check-double"></i> تم التأكيد (+15 XP)';
+      
+      const currXP = parseInt(document.getElementById("trainee-points-display").textContent) || 0;
+      const newXP = currXP + 15;
+      document.getElementById("trainee-points-display").textContent = newXP;
+      showToast("🌟 ممتااااز! تم تسجيل قراءة بطاقة الصرف والبيع وتحديث رصيدك بـ +15 XP!", "success");
+
+      apiRequest({ action: "updateTraineePoints", email: traineeEmail, points: newXP }).catch(e => console.warn(e));
+    };
+
+    // 🏥 One-Time Group Selection for El-Maghawry Pharmacies Trainees
+    function checkOneTimeGroupPopup() {
+      const pGroup = localStorage.getItem("trainee_pharmacy_group") || sessionStorage.getItem("trainee_pharmacy_group") || "";
+      const tGroup = localStorage.getItem("trainee_training_group") || sessionStorage.getItem("trainee_training_group") || "";
+
+      if ((pGroup.includes("مغاوري") || pGroup.includes("آل مغاوري")) && !tGroup) {
+        setTimeout(() => {
+          document.getElementById("one-time-group-modal").classList.add("active");
+        }, 1000);
+      }
+    }
+
+    window.saveOneTimeGroup = async function(groupName) {
+      document.getElementById("one-time-group-modal").classList.remove("active");
+      localStorage.setItem("trainee_training_group", groupName);
+      sessionStorage.setItem("trainee_training_group", groupName);
+      
+      showToast(`🎉 تم حفظ المسار الرئيسي: (${groupName}) بنجاح!`, "success");
+      apiRequest({ action: "setTrainingGroup", email: traineeEmail, group: groupName }).catch(e => console.warn(e));
+    };
+
+    // 📩 Request Additional Course Group
+    window.openRequestGroupModal = function() {
+      document.getElementById("request-group-modal").classList.add("active");
+    };
+
+    const reqGroupForm = document.getElementById("request-additional-group-form");
+    if (reqGroupForm) {
+      reqGroupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const requestedGroup = document.getElementById("additional-group-select").value;
+        const btn = reqGroupForm.querySelector("button[type='submit']");
+        btn.disabled = true;
+
+        try {
+          const res = await apiRequest({
+            action: "requestGroupJoin",
+            email: traineeEmail,
+            password: traineePassword,
+            requestedGroup: requestedGroup
+          });
+
+          if (res.success) {
+            showToast(res.message || "🎉 تم ارسال طلبك بنجاح للمشرف!", "success");
+            document.getElementById("request-group-modal").classList.remove("active");
+          } else {
+            showToast(res.message || "فشل إرسال الطلب.", "error");
+          }
+        } catch(err) {
+          showToast("حدث خطأ أثناء إرسال الطلب للمشرف.", "error");
+        } finally {
+          btn.disabled = false;
+        }
+      });
+    }
+
+    // Check one time popup and render missions on startup
+    checkOneTimeGroupPopup();
+    renderPracticalMissions();
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && (e.key === "s" || e.key === "S")) e.preventDefault();
     });

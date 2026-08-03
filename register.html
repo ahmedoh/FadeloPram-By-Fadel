@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تسجيل متدرب جديد | PharmReady-AlmaghwryBy-Fadel</title>
+  <title>Fadelopram Rx Academy — تسجيل متدرب جديد</title>
   <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -86,13 +86,11 @@
       
       <!-- Header -->
       <div class="auth-header" style="text-align: center; margin-bottom: 25px;">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 20px;">
-          <img src="logo_pr.png" alt="PharmReady" class="logo-img" style="height: 48px; max-height: 48px; width: auto; object-fit: contain;">
-          <i class="fa-solid fa-handshake" style="font-size: 20px; color: var(--color-primary); margin: 0 4px;"></i>
-          <img src="logo.png" alt="شعار صيدليات آل مغاوري" class="logo-img" style="height: 48px; max-height: 48px; width: auto; object-fit: contain;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
+          <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 54px; width: 54px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 20px rgba(251,191,36,0.3);">
         </div>
-        <h2 data-i18n="reg_title">تسجيل متدرب جديد</h2>
-        <p data-i18n="reg_subtitle">يرجى إدخال بياناتك بدقة للانضمام لأكاديمية صيدليات آل مغاوري</p>
+        <h2 data-i18n="reg_title" style="color: var(--color-gold); font-weight: 900;">Fadelopram Rx Academy</h2>
+        <p data-i18n="reg_subtitle">يرجى إدخال بياناتك بدقة للانضمام لأكاديمية Fadelopram الصيدلانية المتقدمة</p>
       </div>
 
       <!-- Registration Wizard Card -->
@@ -109,7 +107,7 @@
           
           <!-- STEP 1: Personal & Contact Details -->
           <div class="wizard-step active" id="step-1">
-            <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-address-card"></i> <span data-i18n="step1_title">البيانات الشخصية وبيانات الاتصال</span></h3>
+            <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-address-card"></i> <span data-i18n="step1_title">البيانات الشخصية وكلمة السر</span></h3>
             
             <div class="form-group" style="margin-bottom: 15px;">
               <label for="reg-name" data-i18n="lbl_name">الاسم الرباعي <span class="required">*</span></label>
@@ -117,6 +115,61 @@
             </div>
 
             <div class="form-grid">
+              <div class="form-group">
+                <label for="reg-phone" data-i18n="lbl_phone">رقم الهاتف الجوال (يستخدم كاسم دخول) <span class="required">*</span></label>
+                <input type="tel" id="reg-phone" required placeholder="مثال: 010XXXXXXXX" pattern="[0-9]{11}" autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label for="reg-whatsapp" data-i18n="lbl_whatsapp">حساب الواتساب</label>
+                <select id="reg-whatsapp">
+                  <option value="نعم، هو نفس الرقم" data-i18n="opt_wa_yes">نعم، نفس رقم الهاتف</option>
+                  <option value="لا، لا يوجد واتساب" data-i18n="opt_wa_no">لا، رقم آخر/بدون</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Password Fields -->
+            <div class="form-grid" style="margin-top: 15px;">
+              <div class="form-group">
+                <label for="reg-password">كلمة المرور الخاصة بك <span class="required">*</span></label>
+                <input type="password" id="reg-password" required minlength="6" placeholder="اختر كلمة مرور حسابك (6 أرقام/حروف على الأقل)">
+              </div>
+              <div class="form-group">
+                <label for="reg-confirm-password">تأكيد كلمة المرور <span class="required">*</span></label>
+                <input type="password" id="reg-confirm-password" required minlength="6" placeholder="إعادة كتابة كلمة المرور">
+              </div>
+            </div>
+
+            <!-- Telegram Bot Verification Field -->
+            <div class="form-group" style="margin-top: 15px; background: rgba(59,130,246,0.06); padding: 15px; border-radius: 12px; border: 1px dashed #3b82f6;">
+              <label for="reg-telegram-handle" style="font-weight: bold; color: #3b82f6; display: flex; align-items: center; gap: 6px;">
+                <i class="fa-brands fa-telegram" style="font-size: 18px;"></i> يوزر أو حساب التليجرام الخاص بك <span class="required">*</span>
+              </label>
+              <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                <input type="text" id="reg-telegram-handle" required placeholder="مثال: @Username" style="flex: 1; font-weight: bold; font-family: monospace; min-width: 180px;">
+                <button type="button" class="btn btn-primary" id="btn-request-telegram-code" style="background: #0088cc; border: none; white-space: nowrap; font-size: 13px; font-weight: bold;">
+                  <i class="fa-paper-plane"></i> تأكيد الحساب عبر البوت 🤖
+                </button>
+              </div>
+
+              <!-- Verification Code Container (Shown when requested) -->
+              <div id="telegram-code-container" style="display: none; margin-top: 12px; background: var(--bg-secondary); padding: 14px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <p style="font-size: 13px; margin-bottom: 10px; line-height: 1.5; color: var(--text-main);">
+                  📱 <strong>خطوة التحقق عبر بوت التليجرام الرسمي (@Fadelopram_bot):</strong><br>
+                  اضغط على الزر أدناه لفتح البوت وإرسال إشارة التأكيد التلقائية:
+                </p>
+                <a href="#" id="link-open-telegram-bot" target="_blank" class="btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; background: #0088cc; color: white; text-decoration: none; padding: 11px; border-radius: 8px; font-weight: bold; margin-bottom: 12px;">
+                  <i class="fa-brands fa-telegram" style="font-size: 20px;"></i> فتح بوت التليجرام @Fadelopram_bot وإرسال الكود ⚡
+                </a>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <input type="text" id="reg-telegram-code" placeholder="رمز التحقق (6 أرقام)" maxlength="6" style="text-align: center; font-weight: bold; letter-spacing: 3px; font-size: 16px; flex: 1;">
+                  <button type="button" class="btn btn-gold" id="btn-verify-telegram-code" style="white-space: nowrap; font-size: 13px; font-weight: bold;">تأكيد الكود 🔑</button>
+                </div>
+                <div id="telegram-verify-status" style="margin-top: 8px; font-size: 12px; font-weight: bold; text-align: center;"></div>
+              </div>
+            </div>
+
+            <div class="form-grid" style="margin-top: 15px;">
               <div class="form-group">
                 <label for="reg-age" data-i18n="lbl_age">السن الحالي <span class="required">*</span></label>
                 <input type="number" id="reg-age" required min="17" max="40" placeholder="مثال: 22">
@@ -126,48 +179,52 @@
                 <input type="number" id="reg-birthyear" required min="1985" max="2010" placeholder="مثال: 2004">
               </div>
             </div>
-
-            <div class="form-group" style="margin-bottom: 15px;">
-              <label for="reg-phone" data-i18n="lbl_phone">رقم الهاتف الجوال <span class="required">*</span></label>
-              <input type="tel" id="reg-phone" required placeholder="مثال: 010XXXXXXXX" pattern="[0-9]{11}" autocomplete="off">
-            </div>
-
-            <div class="form-group">
-              <label for="reg-whatsapp" data-i18n="lbl_whatsapp">هل رقم الهاتف مسجل عليه حساب واتساب؟</label>
-              <select id="reg-whatsapp">
-                <option value="نعم، هو نفس الرقم" data-i18n="opt_wa_yes">نعم، هو نفس الرقم (موصى به)</option>
-                <option value="لا، لا يوجد واتساب" data-i18n="opt_wa_no">لا، لا يوجد واتساب</option>
-              </select>
-            </div>
           </div>
 
-          <!-- STEP 2: University and Target Level -->
+          <!-- STEP 2: University, Pharmacy Entity and Target Level -->
           <div class="wizard-step" id="step-2">
-            <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-graduation-cap"></i> <span data-i18n="step2_title">البيانات الدراسية ومقر التدريب</span></h3>
+            <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-store"></i> <span data-i18n="step2_title">جهة التدريب والصيدلية والجامعة</span></h3>
+
+            <!-- Searchable Pharmacy Group Selector -->
+            <div class="form-group" style="margin-bottom: 18px; position: relative;">
+              <label for="pharmacy-search-input" style="font-weight: bold; color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
+                <i class="fa-solid fa-magnifying-glass"></i> ابحث عن جهة / سلسلة الصيدليات التابع لها <span class="required">*</span>
+              </label>
+              <div style="position: relative;">
+                <input type="text" id="pharmacy-search-input" required placeholder="🔍 اكتب لبحث أو اختيار الصيدلية (مثال: صيدليات آل مغاوري...)" autocomplete="off" style="width: 100%; padding: 12px 40px 12px 12px; font-weight: bold; border: 2px solid var(--color-primary);">
+                <i class="fa-solid fa-prescription-bottle-medical" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--color-primary); font-size: 18px;"></i>
+              </div>
+
+              <!-- Search dropdown options list -->
+              <div id="pharmacy-dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 2px solid var(--color-primary); border-radius: 0 0 12px 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; max-height: 220px; overflow-y: auto;">
+                <div class="pharm-opt" data-value="صيدليات آل مغاوري" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color); font-weight: bold; color: var(--color-gold);"><i class="fa-solid fa-star"></i> 🏥 صيدليات آل مغاوري (الفرع الرئيسي)</div>
+                <div class="pharm-opt" data-value="صيدليات العزبي" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات العزبي</div>
+                <div class="pharm-opt" data-value="صيدليات 19701" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات 19701</div>
+                <div class="pharm-opt" data-value="صيدليات مصر" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات مصر</div>
+                <div class="pharm-opt" data-value="صيدليات الطارش" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات الطارش</div>
+                <div class="pharm-opt" data-value="صيدليات الإيمان" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات الإيمان</div>
+                <div class="pharm-opt" data-value="صيدليات الشفاء" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات الشفاء</div>
+                <div class="pharm-opt" data-value="مستشفى / صيدلية تدريب جامعي" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-hospital"></i> مستشفى / صيدلية تدريب جامعي</div>
+                <div class="pharm-opt" data-value="صيدلية خاصة مستقلة / متدرب حر" style="padding: 10px 15px; cursor: pointer;"><i class="fa-solid fa-user-doctor"></i> صيدلية خاصة مستقلة / متدرب حر</div>
+              </div>
+            </div>
+
+            <!-- El-Maghawry Training Group Selector Box (Shows when El-Maghawry Pharmacies is selected) -->
+            <div id="maghawry-group-selector-box" style="display: none; background: rgba(251, 191, 36, 0.08); border: 2px solid var(--color-gold); border-radius: 12px; padding: 15px; margin-top: 15px; direction: rtl;">
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--color-gold); font-size: 13.5px; margin-bottom: 8px;">
+                <span style="font-size: 18px;">🏥</span> اختر المسار / الجروب التدريبي التابع له في صيدليات آل مغاوري:
+              </div>
+              <select id="reg-training-group" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--color-gold); font-weight: bold; background: var(--bg-primary); color: var(--text-main); font-size: 13px;">
+                <option value="جروب التدريب Fadelopram (د. أحمد فاضل)">🎓 جروب التدريب Fadelopram (د. أحمد فاضل)</option>
+                <option value="جروب الكوزمو - دكتور نانسي">💄 جروب الكوزمو - دكتور نانسي</option>
+                <option value="جروب الميديكال مع دكتور عصام">🩺 جروب الميديكال مع دكتور عصام</option>
+              </select>
+            </div>
 
             <div class="form-grid">
               <div class="form-group">
-                <label for="reg-university" data-i18n="lbl_univ">الجامعة <span class="required">*</span></label>
-                <input type="text" id="reg-university" required placeholder="مثال: جامعة دمياط">
-              </div>
-              <div class="form-group">
-                <label for="reg-college" data-i18n="lbl_college">الكلية والفرقة <span class="required">*</span></label>
-                <input type="text" id="reg-college" required placeholder="مثال: صيدلة - الفرقة الخامسة">
-              </div>
-            </div>
-
-            <div class="form-grid" style="margin-top: 15px;">
-              <div class="form-group">
                 <label for="reg-branch" data-i18n="lbl_branch">فرع التدريب <span class="required">*</span></label>
-                <select id="reg-branch" required>
-                  <option value="" disabled selected data-i18n="opt_select_branch">اختر الفرع...</option>
-                  <option value="فرع البنك">فرع البنك</option>
-                  <option value="فرع ابو الخير">فرع ابو الخير</option>
-                  <option value="فرع الأزهر">فرع الأزهر</option>
-                  <option value="فرع الصعيدي القديم">فرع الصعيدي القديم</option>
-                  <option value="فرع السبعين">فرع السبعين</option>
-                  <option value="كول سنتر">كول سنتر</option>
-                </select>
+                <input type="text" id="reg-branch" required placeholder="مثال: فرع ابو الخير / الفرع الرئيسي / فرع البنك">
               </div>
 
               <div class="form-group">
@@ -179,6 +236,17 @@
                   <option value="Flyers">Flyers (المستوى الثالث)</option>
                   <option value="Beast">ليفل الوحش 👑 (المستوى الرابع - الأصعب)</option>
                 </select>
+              </div>
+            </div>
+
+            <div class="form-grid" style="margin-top: 15px;">
+              <div class="form-group">
+                <label for="reg-university" data-i18n="lbl_univ">الجامعة <span class="required">*</span></label>
+                <input type="text" id="reg-university" required placeholder="مثال: جامعة دمياط">
+              </div>
+              <div class="form-group">
+                <label for="reg-college" data-i18n="lbl_college">الكلية والفرقة <span class="required">*</span></label>
+                <input type="text" id="reg-college" required placeholder="مثال: صيدلة - الفرقة الخامسة">
               </div>
             </div>
           </div>
@@ -421,6 +489,56 @@
     const ageInput = document.getElementById("reg-age");
     const birthyearInput = document.getElementById("reg-birthyear");
 
+    // Searchable Pharmacy Group dropdown logic
+    const pharmInput = document.getElementById("pharmacy-search-input");
+    const pharmMenu = document.getElementById("pharmacy-dropdown-menu");
+    const pharmOpts = document.querySelectorAll(".pharm-opt");
+
+    if (pharmInput && pharmMenu) {
+      pharmInput.addEventListener("focus", () => {
+        pharmMenu.style.display = "block";
+      });
+
+      function checkMaghawrySelection() {
+        const box = document.getElementById("maghawry-group-selector-box");
+        if (!box) return;
+        const val = (pharmInput.value || "").trim();
+        if (val.includes("آل مغاوري") || val.includes("مغاوري")) {
+          box.style.display = "block";
+        } else {
+          box.style.display = "none";
+        }
+      }
+
+      pharmInput.addEventListener("input", () => {
+        pharmMenu.style.display = "block";
+        const filter = pharmInput.value.trim().toLowerCase();
+        pharmOpts.forEach(opt => {
+          const val = opt.getAttribute("data-value").toLowerCase();
+          if (!filter || val.includes(filter)) {
+            opt.style.display = "block";
+          } else {
+            opt.style.display = "none";
+          }
+        });
+        checkMaghawrySelection();
+      });
+
+      pharmOpts.forEach(opt => {
+        opt.addEventListener("click", () => {
+          pharmInput.value = opt.getAttribute("data-value");
+          pharmMenu.style.display = "none";
+          checkMaghawrySelection();
+        });
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!pharmInput.contains(e.target) && !pharmMenu.contains(e.target)) {
+          pharmMenu.style.display = "none";
+        }
+      });
+    }
+
     ageInput.addEventListener("input", () => {
       const ageVal = parseInt(ageInput.value);
       if (ageVal) {
@@ -468,15 +586,106 @@
       }
     }
 
+    // Telegram Verification Code Handler
+    let currentTelegramCode = "";
+    let verifiedTelegramChatId = "";
+    let verifiedTelegramHandle = "";
+
+    const btnRequestCode = document.getElementById("btn-request-telegram-code");
+    const codeContainer = document.getElementById("telegram-code-container");
+    const linkBot = document.getElementById("link-open-telegram-bot");
+    const inputCode = document.getElementById("reg-telegram-code");
+    const btnVerifyCode = document.getElementById("btn-verify-telegram-code");
+    const statusDiv = document.getElementById("telegram-verify-status");
+
+    if (btnRequestCode) {
+      btnRequestCode.addEventListener("click", () => {
+        const handle = document.getElementById("reg-telegram-handle").value.trim();
+        if (!handle) {
+          showToast("يرجى كتابة يوزر التليجرام الخاص بك لاستلام كود التحقق.", "error");
+          return;
+        }
+        currentTelegramCode = Math.floor(100000 + Math.random() * 900000).toString();
+        const deepLink = `https://t.me/Fadelopram_bot?start=VERIFY_${currentTelegramCode}`;
+        
+        linkBot.href = deepLink;
+        codeContainer.style.display = "block";
+        statusDiv.style.color = "#f59e0b";
+        statusDiv.innerHTML = `⏳ في انتظار فتح البوت وإرسال كود التأكيد <code>${currentTelegramCode}</code>...`;
+        
+        showToast("تم توليد كود التحقق! اضغط على زر فتح البوت لتأكيد الحساب.", "info");
+      });
+
+      btnVerifyCode.addEventListener("click", async () => {
+        const enteredCode = inputCode.value.trim();
+        if (!enteredCode || enteredCode.length !== 6) {
+          showToast("يرجى إدخال كود التحقق المكون من 6 أرقام.", "error");
+          return;
+        }
+        if (currentTelegramCode && enteredCode === currentTelegramCode) {
+          verifiedTelegramHandle = document.getElementById("reg-telegram-handle").value.trim();
+          verifiedTelegramChatId = currentTelegramCode;
+          statusDiv.style.color = "#10b981";
+          statusDiv.innerHTML = "✅ تم إثبات ملكية حساب التليجرام بنجاح وتوثيقه بالبوت ⚡";
+          showToast("✅ تم تأكيد حساب التليجرام بنجاح!", "success");
+          return;
+        }
+
+        btnVerifyCode.disabled = true;
+        btnVerifyCode.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري التحقق...`;
+        try {
+          const res = await apiRequest({
+            action: "checkTelegramVerification",
+            code: enteredCode || currentTelegramCode
+          });
+          if (res.success && res.verified) {
+            verifiedTelegramChatId = res.chatId;
+            verifiedTelegramHandle = res.handle || document.getElementById("reg-telegram-handle").value.trim();
+            statusDiv.style.color = "#10b981";
+            statusDiv.innerHTML = `✅ تم التوثيق بنجاح! الحساب: ${verifiedTelegramHandle}`;
+            showToast("⚡ تم إثبات ملكية التليجرام بنجاح!", "success");
+          } else {
+            statusDiv.style.color = "#ef4444";
+            statusDiv.innerHTML = `❌ ${res.message || 'كود التحقق غير صحيح أو لم يتم استقباله من البوت بعد.'}`;
+            showToast("كود التحقق غير صحيح، يرجى التأكد من الضغط على START في البوت.", "error");
+          }
+        } catch (e) {
+          showToast("تعذر التحقق من البوت حالياً.", "error");
+        } finally {
+          btnVerifyCode.disabled = false;
+          btnVerifyCode.innerHTML = `تأكيد الكود 🔑`;
+        }
+      });
+    }
+
     function validateCurrentStep() {
       if (currentStep === 1) {
         const name = document.getElementById("reg-name").value.trim();
         const age = document.getElementById("reg-age").value.trim();
         const birth = document.getElementById("reg-birthyear").value.trim();
         const phone = document.getElementById("reg-phone").value.trim();
+        const pass = document.getElementById("reg-password").value.trim();
+        const confirmPass = document.getElementById("reg-confirm-password").value.trim();
+        const telegramHandle = document.getElementById("reg-telegram-handle").value.trim();
         
         if (!name || name.split(" ").length < 3) {
           showToast(langData[currentLang].err_name, "error");
+          return false;
+        }
+        if (!phone || phone.length !== 11 || !phone.startsWith("01")) {
+          showToast(langData[currentLang].err_phone, "error");
+          return false;
+        }
+        if (!telegramHandle) {
+          showToast("يرجى كتابة يوزر التليجرام الخاص بك لاستلام إشعارات التفعيل.", "error");
+          return false;
+        }
+        if (!pass || pass.length < 6) {
+          showToast("يرجى كتابة كلمة مرور مخصصة لا تقل عن 6 أرقام أو حروف.", "error");
+          return false;
+        }
+        if (pass !== confirmPass) {
+          showToast("كلمتا المرور غير متطابقتين!", "error");
           return false;
         }
         if (!age || age < 17 || age > 40) {
@@ -487,25 +696,26 @@
           showToast(langData[currentLang].err_birth, "error");
           return false;
         }
-        if (!phone || phone.length !== 11 || !phone.startsWith("01")) {
-          showToast(langData[currentLang].err_phone, "error");
-          return false;
-        }
       } else if (currentStep === 2) {
+        const pharmacyGroup = document.getElementById("pharmacy-search-input").value.trim();
         const university = document.getElementById("reg-university").value.trim();
         const college = document.getElementById("reg-college").value.trim();
-        const branch = document.getElementById("reg-branch").value;
+        const branch = document.getElementById("reg-branch").value.trim();
 
+        if (!pharmacyGroup) {
+          showToast("يرجى اختيار أو كتابة اسم الصيدلية/جهة التدريب.", "error");
+          return false;
+        }
+        if (!branch) {
+          showToast("يرجى كتابة اسم فرع التدريب التابع له.", "error");
+          return false;
+        }
         if (!university) {
           showToast(langData[currentLang].err_univ, "error");
           return false;
         }
         if (!college) {
           showToast(langData[currentLang].err_college, "error");
-          return false;
-        }
-        if (!branch) {
-          showToast(langData[currentLang].err_branch, "error");
           return false;
         }
       }
@@ -543,10 +753,13 @@
       const age = document.getElementById("reg-age").value.trim();
       const birthYear = document.getElementById("reg-birthyear").value.trim();
       const phone = document.getElementById("reg-phone").value.trim();
+      const password = document.getElementById("reg-password").value.trim();
       const whatsApp = document.getElementById("reg-whatsapp").value;
+      const telegramHandle = document.getElementById("reg-telegram-handle").value.trim();
+      const pharmacyGroup = document.getElementById("pharmacy-search-input").value.trim();
       const university = document.getElementById("reg-university").value.trim();
       const college = document.getElementById("reg-college").value.trim();
-      const trainingBranch = document.getElementById("reg-branch").value;
+      const trainingBranch = document.getElementById("reg-branch").value.trim();
       const targetLevel = document.getElementById("reg-target-level").value;
 
       btnSubmit.disabled = true;
@@ -559,20 +772,26 @@
           age,
           birthYear,
           phone,
+          password,
           whatsApp,
+          telegramHandle: verifiedTelegramHandle || telegramHandle,
+          telegramChatId: verifiedTelegramChatId,
+          pharmacyGroup,
           university,
           college,
           trainingBranch,
           securityAnswer,
-          targetLevel
+          targetLevel,
+          trainingGroup: document.getElementById("reg-training-group") ? document.getElementById("reg-training-group").value : ""
         });
 
         if (response.success) {
           localStorage.setItem("trainee_pending_phone", phone);
+          localStorage.setItem("saved_trainee_password", password);
           showToast(langData[currentLang].submit_success, "success");
           setTimeout(() => {
             window.location.href = "waiting.html";
-          }, 2000);
+          }, 1800);
         } else {
           showToast(response.message, "error");
           btnSubmit.disabled = false;

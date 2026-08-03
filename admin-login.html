@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بوابة المشرفين | PharmReady-AlmaghwryBy-Fadel</title>
+  <title>Fadelopram Rx Academy — دخول إدارة المنصة</title>
   <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,13 +103,11 @@
       
       <!-- Brand Header -->
       <div class="auth-header" style="text-align: center;">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 20px;">
-          <img src="logo_pr.png" alt="PharmReady" class="logo-img" style="height: 48px; max-height: 48px; width: auto; object-fit: contain;">
-          <i class="fa-solid fa-handshake" style="font-size: 20px; color: var(--color-primary); margin: 0 4px;"></i>
-          <img src="logo.png" alt="شعار صيدليات آل مغاوري" class="logo-img" style="height: 48px; max-height: 48px; width: auto; object-fit: contain;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
+          <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 54px; width: 54px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 20px rgba(251,191,36,0.3);">
         </div>
-        <h2 data-i18n="admin_title">صيدليات آل مغاوري &amp; PharmReady</h2>
-        <p data-i18n="admin_subtitle">بوابة الدخول المخصصة للمدير والمطور</p>
+        <h2 data-i18n="admin_title" style="color: var(--color-gold); font-weight: 900;">Fadelopram Rx Academy</h2>
+        <p data-i18n="admin_subtitle">بوابة الدخول المخصصة لإدارة النظام</p>
       </div>
 
       <!-- Login Form Card -->
@@ -139,8 +137,14 @@
               
               <!-- Text mirror and tracker dot -->
               <span id="text-mirror" class="text-mirror"></span>
-              <div id="tracker-dot" class="tracker-dot"></div>
             </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; font-size: 13px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; color: var(--text-main);">
+              <input type="checkbox" id="admin-remember-me" style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer;">
+              <span data-i18n="admin_remember_me">تذكر بيانات الدخول على هذا الجهاز 🔑</span>
+            </label>
           </div>
 
           <button type="submit" class="btn btn-gold" style="width: 100%; padding: 14px;">
@@ -174,18 +178,18 @@
         admin_pass_label: "رمز المرور السري للمسؤول",
         admin_btn_login: "فتح لوحة الإدارة",
         admin_back: "العودة لبوابة المتدربين",
-        footer_text: "برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري",
+        footer_text: "تطوير وإشراف د. أحمد فاضل © 2026 | Fadelopram Rx Academy",
         login_success: "👑 مرحباً بك يا دكتور أحمد فاضل. تم التحقق من الهوية.",
         login_fail: "رمز المرور غير صحيح!",
         connection_error: "حدث خطأ أثناء محاولة الاتصال بالخادم."
       },
       en: {
-        admin_title: "El-Maghawry Pharmacies",
-        admin_subtitle: "Developer & CEO Dedicated Entrance",
+        admin_title: "Fadelopram Rx Academy",
+        admin_subtitle: "System Administrator Panel Entrance",
         admin_pass_label: "Administrator Secret Password",
         admin_btn_login: "Unlock Admin Panel",
         admin_back: "Return to Trainee Gate",
-        footer_text: "Engineered by Dr. Ahmed Fadel © 2026 | El-Maghawry Pharmacies Group",
+        footer_text: "Engineered & Directed by Dr. Ahmed Fadel © 2026 | Fadelopram Rx Academy",
         login_success: "👑 Welcome back, Dr. Ahmed Fadel. Credentials verified.",
         login_fail: "Invalid passcode!",
         connection_error: "Error connecting to database server."
@@ -244,14 +248,30 @@
       applySettings();
     });
 
-    // Initial load apply
+    // Initial load apply & auto-fill remembered credentials
     applySettings();
+    loadSavedAdminCredentials();
+
+    function loadSavedAdminCredentials() {
+      const isRemembered = localStorage.getItem("remember_admin") === "true";
+      const savedUser = localStorage.getItem("saved_admin_username");
+      const savedPass = localStorage.getItem("saved_admin_password");
+      const remBox = document.getElementById("admin-remember-me");
+      if (isRemembered && savedUser && savedPass) {
+        if (remBox) remBox.checked = true;
+        const userInput = document.getElementById("admin-username");
+        const passInput = document.getElementById("admin-password");
+        if (userInput) userInput.value = savedUser;
+        if (passInput) passInput.value = savedPass;
+      }
+    }
 
     // Form Submission
     document.getElementById("admin-login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const username = document.getElementById("admin-username").value.trim().toLowerCase();
       const password = document.getElementById("admin-password").value.trim().toLowerCase();
+      const rememberMe = document.getElementById("admin-remember-me")?.checked;
 
       const btnSubmit = e.target.querySelector("button[type='submit']");
       const originalText = btnSubmit.innerHTML;
@@ -274,6 +294,26 @@
           sessionStorage.setItem("admin_display_name", response.admin.displayName || response.admin.username);
           sessionStorage.setItem("login_timestamp", Date.now().toString());
 
+          if (rememberMe) {
+            localStorage.setItem("remember_admin", "true");
+            localStorage.setItem("saved_admin_username", response.admin.username);
+            localStorage.setItem("saved_admin_password", password);
+            localStorage.setItem("admin_logged_in", "true");
+            localStorage.setItem("admin_username", response.admin.username);
+            localStorage.setItem("admin_password", password);
+            localStorage.setItem("admin_role", response.admin.role);
+            localStorage.setItem("admin_permissions", response.admin.permissions);
+            localStorage.setItem("admin_display_name", response.admin.displayName || response.admin.username);
+            localStorage.setItem("login_timestamp", Date.now().toString());
+          } else {
+            localStorage.removeItem("remember_admin");
+            localStorage.removeItem("saved_admin_username");
+            localStorage.removeItem("saved_admin_password");
+            localStorage.removeItem("admin_logged_in");
+            localStorage.removeItem("admin_username");
+            localStorage.removeItem("admin_password");
+          }
+
           const welcomeAdminMsg = currentLang === "ar"
             ? `👑 مرحباً ${response.admin.displayName || response.admin.username} (دور: ${response.admin.role})`
             : `👑 Welcome ${response.admin.displayName || response.admin.username} (Role: ${response.admin.role})`;
@@ -287,6 +327,24 @@
           sessionStorage.setItem("admin_username", username);
           sessionStorage.setItem("admin_password", password);
           sessionStorage.setItem("login_timestamp", Date.now().toString());
+
+          if (rememberMe) {
+            localStorage.setItem("remember_admin", "true");
+            localStorage.setItem("saved_admin_username", username);
+            localStorage.setItem("saved_admin_password", password);
+            localStorage.setItem("admin_logged_in", "true");
+            localStorage.setItem("admin_username", username);
+            localStorage.setItem("admin_password", password);
+            localStorage.setItem("login_timestamp", Date.now().toString());
+          } else {
+            localStorage.removeItem("remember_admin");
+            localStorage.removeItem("saved_admin_username");
+            localStorage.removeItem("saved_admin_password");
+            localStorage.removeItem("admin_logged_in");
+            localStorage.removeItem("admin_username");
+            localStorage.removeItem("admin_password");
+          }
+
           showToast(`👑 تم تسجيل الدخول: ${username}`, "success");
           setTimeout(() => { window.location.href = "admin.html"; }, 1800);
         } else {

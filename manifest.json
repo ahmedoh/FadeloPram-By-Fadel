@@ -1,17 +1,17 @@
 {
-  "name": "صيدليات آل مغاوري - PharmReady",
-  "short_name": "PharmReady",
-  "description": "منصة تأهيل المتدربين الجدد لسوق العمل - صيدليات آل مغاوري",
+  "name": "Fadelopram Rx Academy",
+  "short_name": "Fadelopram",
+  "description": "Fadelopram Rx Academy — المنصة الأكاديمية الصيدلانية المتقدمة",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#1c1917",
-  "theme_color": "#d97706",
+  "background_color": "#0f172a",
+  "theme_color": "#f59e0b",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "logo.png",
+      "src": "fadelopram_logo.jpg",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/jpeg",
       "purpose": "any maskable"
     }
   ]

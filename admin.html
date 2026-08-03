@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم الكاملة | صيدليات آل مغاوري</title>
+  <title>Fadelopram Rx Academy — لوحة إدارة النظام</title>
   <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -355,12 +355,11 @@
     <aside class="admin-sidebar" id="admin-sidebar-menu">
       <div class="admin-sidebar-header" style="flex-direction: column; align-items: flex-start; gap: 10px;">
         <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 6px; flex-wrap: wrap;">
-          <div style="display: flex; align-items: center; gap: 6px;">
-            <img src="logo_pr.png" alt="PharmReady" style="height: 32px; width: auto; object-fit: contain;">
-            <i class="fa-solid fa-handshake" style="font-size: 14px; color: var(--color-primary);"></i>
-            <img src="logo.png" alt="Logo" style="height: 32px; width: auto; object-fit: contain;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" style="height: 36px; width: 36px; border-radius: 8px; object-fit: cover;">
+            <span style="font-weight: 900; font-size: 13px; color: var(--color-gold);">Fadelopram Rx</span>
           </div>
-          <span class="beta-badge" style="padding: 2px 6px; font-size: 9.5px; font-weight: bold;"><span class="pulse-dot" style="width: 5px; height: 5px;"></span>إصدار تجريبي</span>
+          <span class="beta-badge" style="padding: 2px 6px; font-size: 9.5px; font-weight: bold;"><span class="pulse-dot" style="width: 5px; height: 5px;"></span>إصدار احترافي</span>
         </div>
         <div>
           <h4 id="sidebar-admin-name" style="font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 2px;">جاري التحميل...</h4>
@@ -455,22 +454,31 @@
 
       <!-- Panel 1: Requests -->
       <section class="card admin-section-content active" id="sec-requests">
-        <h3 class="card-title"><i class="fa-solid fa-user-clock"></i> طلبات الاشتراك المعلقة</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+          <h3 class="card-title" style="margin: 0;"><i class="fa-solid fa-user-clock"></i> طلبات الاشتراك المعلقة</h3>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label style="font-size: 13px; font-weight: bold; color: var(--color-gold);"><i class="fa-solid fa-filter"></i> تصفية حسب جهة الصيدلية:</label>
+            <select id="pending-pharmacy-filter" onchange="renderPendingRequests()" style="padding: 6px 12px; border-radius: 8px; font-family: Cairo, sans-serif; background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--color-gold);">
+              <option value="">جميع جهات الصيدليات 🌐</option>
+            </select>
+          </div>
+        </div>
         <div class="admin-table-container">
           <table>
             <thead>
               <tr>
                 <th>اسم المتدرب</th>
+                <th>جهة الصيدلية والفرع</th>
                 <th>السن / الميلاد</th>
                 <th>الهاتف الجوال</th>
                 <th>الكلية والجامعة</th>
-                <th>المستوى / فرع التدريب</th>
+                <th>المستوى المطلوب</th>
                 <th>تاريخ الطلب</th>
                 <th>الإجراءات</th>
               </tr>
             </thead>
             <tbody id="requests-table-body">
-              <tr><td colspan="7" style="text-align: center; color: var(--text-muted);">جاري تحميل طلبات الاشتراك...</td></tr>
+              <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">جاري تحميل طلبات الاشتراك...</td></tr>
             </tbody>
           </table>
         </div>
@@ -499,17 +507,26 @@
 
       <!-- Panel 3: Trainees list -->
       <section class="card admin-section-content" id="sec-students">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
           <h3 class="card-title" style="margin: 0;"><i class="fa-solid fa-users"></i> قاعدة بيانات المتدربين المقبولين</h3>
-          <button class="btn btn-primary" onclick="openAddTraineeModal()"><i class="fa-solid fa-user-plus"></i> إضافة متدرب يدوياً</button>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <label style="font-size: 13px; font-weight: bold; color: var(--color-primary);"><i class="fa-solid fa-filter"></i> تصفية حسب جهة الصيدلية:</label>
+              <select id="approved-pharmacy-filter" onchange="renderApprovedTrainees()" style="padding: 6px 12px; border-radius: 8px; font-family: Cairo, sans-serif; background: var(--bg-secondary); color: var(--text-main); border: 1px solid var(--color-primary);">
+                <option value="">جميع جهات الصيدليات 🌐</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="openAddTraineeModal()"><i class="fa-solid fa-user-plus"></i> إضافة متدرب يدوياً</button>
+          </div>
         </div>
         <div class="admin-table-container">
           <table>
             <thead>
               <tr>
                 <th>الاسم</th>
+                <th>جهة الصيدلية</th>
                 <th>رقم الهاتف</th>
-                <th>البريد الإلكتروني المنشأ</th>
+                <th>البريد الإلكتروني</th>
                 <th>كلمة المرور</th>
                 <th>المستوى الحالي</th>
                 <th>فرع التدريب</th>
@@ -518,7 +535,7 @@
               </tr>
             </thead>
             <tbody id="students-table-body">
-              <tr><td colspan="8" style="text-align: center; color: var(--text-muted);">جاري تحميل المتدربين...</td></tr>
+              <tr><td colspan="9" style="text-align: center; color: var(--text-muted);">جاري تحميل المتدربين...</td></tr>
             </tbody>
           </table>
         </div>
@@ -825,7 +842,7 @@
           </div>
           <div class="form-group" id="notif-target-specific" style="margin-bottom: 15px; display: none;">
             <label style="font-weight: bold; margin-bottom: 5px; display: block;">بريد أو هاتف المتدرب المستهدف:</label>
-            <input type="text" id="notif-target-input" placeholder="01XXXXXXXXX or student@pharmready.com" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--border-color);">
+            <input type="text" id="notif-target-input" placeholder="01XXXXXXXXX or student@fadelopram.com" style="width: 100%; padding: 8px; border-radius: 5px; border: 1px solid var(--border-color);">
           </div>
           <div class="form-group" style="margin-bottom: 15px;">
             <label style="font-weight: bold; margin-bottom: 5px; display: block;">عنوان الإشعار:</label>
@@ -1327,11 +1344,11 @@
         stat_pending_lbl: "طلبات معلقة",
         stat_accepted_lbl: "متدربين مقبولين",
         stat_promotions_lbl: "طلبات ترقية معلقة",
-        level_Passengers: "Passengers (المستوى الصفري)",
-        level_Starters: "Starters (المستوى الأول)",
-        level_Movers: "Movers (المستوى الثاني)",
-        level_Flyers: "Flyers (المستوى الثالث)",
-        level_Beast: "ليفل الوحش 👑 (المستوى الرابع)",
+        level_Passengers: "🌱 الصيدلي الواعد (L0)",
+        level_Starters: "💊 ممارس الـ OTC والتواصل (L1)",
+        level_Movers: "🩺 خبير الروشتات والجرعات (L2)",
+        level_Flyers: "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
+        level_Beast: "👑 استشاري الرعاية الصيدلانية وقائد الفرع (L4)",
         action_accept: "قبول واعتماد",
         action_reject: "رفض الطلب"
       },
@@ -1342,11 +1359,11 @@
         stat_pending_lbl: "Pending requests",
         stat_accepted_lbl: "Accepted trainees",
         stat_promotions_lbl: "Pending promotions",
-        level_Passengers: "Passengers (Level 0)",
-        level_Starters: "Starters (Level 1)",
-        level_Movers: "Movers (Level 2)",
-        level_Flyers: "Flyers (Level 3)",
-        level_Beast: "Beast Level 👑 (Level 4)",
+        level_Passengers: "🌱 Pharmacy Trainee (L0)",
+        level_Starters: "💊 OTC Specialist (L1)",
+        level_Movers: "🩺 Clinical Dispenser (L2)",
+        level_Flyers: "⚡ Advanced Pharmacist (L3)",
+        level_Beast: "👑 Clinical Pharmacy Consultant & Branch Leader (L4)",
         action_accept: "Accept & Verify",
         action_reject: "Reject request"
       }
@@ -1554,12 +1571,43 @@
     }
 
     // Renders
+    function populatePharmacyFilters() {
+      const pendingFilter = document.getElementById("pending-pharmacy-filter");
+      const approvedFilter = document.getElementById("approved-pharmacy-filter");
+      if (!pendingFilter || !approvedFilter) return;
+
+      const currentPendingVal = pendingFilter.value;
+      const currentApprovedVal = approvedFilter.value;
+
+      const groups = new Set();
+      allTrainees.forEach(t => {
+        if (t.PharmacyGroup) groups.add(t.PharmacyGroup);
+      });
+
+      let optionsHtml = `<option value="">جميع جهات الصيدليات 🌐</option>`;
+      groups.forEach(g => {
+        optionsHtml += `<option value="${g}">${g}</option>`;
+      });
+
+      pendingFilter.innerHTML = optionsHtml;
+      approvedFilter.innerHTML = optionsHtml;
+
+      pendingFilter.value = currentPendingVal;
+      approvedFilter.value = currentApprovedVal;
+    }
+
     function renderPendingRequests() {
+      populatePharmacyFilters();
       const tbody = document.getElementById("requests-table-body");
-      const pending = allTrainees.filter(t => t.Status === "pending");
+      const filterVal = document.getElementById("pending-pharmacy-filter") ? document.getElementById("pending-pharmacy-filter").value : "";
+      
+      let pending = allTrainees.filter(t => t.Status === "pending");
+      if (filterVal) {
+        pending = pending.filter(t => (t.PharmacyGroup || "صيدليات آل مغاوري") === filterVal);
+      }
 
       if (pending.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); font-size: 14px; padding: 25px;">لا توجد طلبات اشتراك معلقة حالياً.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); font-size: 14px; padding: 25px;">لا توجد طلبات اشتراك معلقة حالياً لهذه الجهة.</td></tr>`;
         return;
       }
 
@@ -1568,15 +1616,17 @@
         const tr = document.createElement("tr");
         const dateStr = new Date(t.Timestamp).toLocaleDateString("ar-EG", {month: 'short', day: 'numeric'});
         const levelText = langData[currentLang][`level_${t.CurrentLevel}`] || t.CurrentLevel;
+        const pGroup = t.PharmacyGroup || "صيدليات آل مغاوري";
 
         tr.innerHTML = `
           <td><strong>${t.Name}</strong></td>
+          <td><span style="font-weight: bold; color: var(--color-gold); font-size: 12px;"><i class="fa-solid fa-store"></i> ${pGroup}</span><br><span style="font-size: 11px; color: var(--text-muted);">${t.TrainingBranch || ''}</span></td>
           <td>${t.Age} / ${t.BirthYear}</td>
           <td>
             <a href="https://wa.me/20${t.Phone.replace(/^0/, '')}" target="_blank" style="color: #10b981;"><i class="fa-brands fa-whatsapp"></i> ${t.Phone}</a>
           </td>
           <td>${t.University}<br><span style="font-size: 11px; color: var(--text-muted);">${t.College} - ${t.Squad}</span></td>
-          <td><span class="status-badge level-badge-${t.CurrentLevel || 'Passengers'}">${levelText}</span><br><span style="font-size: 10px; color: var(--text-muted);">${t.TrainingBranch}</span></td>
+          <td><span class="status-badge level-badge-${t.CurrentLevel || 'Passengers'}">${levelText}</span></td>
           <td style="font-size: 11px; color: var(--text-muted);">${dateStr}</td>
           <td style="text-align: center; display: flex; gap: 8px; justify-content: center;">
             <button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; cursor: pointer;" onclick="openAcceptModal('${t.Phone}', '${t.Name}', '${t.CurrentLevel || 'Passengers'}')">${langData[currentLang].action_accept}</button>
@@ -1588,11 +1638,17 @@
     }
 
     function renderApprovedTrainees() {
+      populatePharmacyFilters();
       const tbody = document.getElementById("students-table-body");
-      const approved = allTrainees.filter(t => t.Status === "accepted" || t.Status === "blocked");
+      const filterVal = document.getElementById("approved-pharmacy-filter") ? document.getElementById("approved-pharmacy-filter").value : "";
+
+      let approved = allTrainees.filter(t => t.Status === "accepted" || t.Status === "blocked");
+      if (filterVal) {
+        approved = approved.filter(t => (t.PharmacyGroup || "صيدليات آل مغاوري") === filterVal);
+      }
 
       if (approved.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted); font-size: 14px; padding: 25px;">لا يوجد متدربين مقبولين.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="text-align: center; color: var(--text-muted); font-size: 14px; padding: 25px;">لا يوجد متدربين مقبولين لهذه الجهة.</td></tr>`;
         return;
       }
 
@@ -1601,12 +1657,14 @@
         const tr = document.createElement("tr");
         const levelText = langData[currentLang][`level_${t.CurrentLevel}`] || t.CurrentLevel;
         const isBlocked = t.Status === "blocked";
+        const pGroup = t.PharmacyGroup || "صيدليات آل مغاوري";
         
         tr.innerHTML = `
           <td><strong style="color: var(--color-primary); cursor: pointer; border-bottom: 1px dashed var(--color-primary);" onclick="openTraineeSlider('${t.Email}', '${t.Phone}')">${t.Name}</strong></td>
+          <td><span style="font-weight: bold; color: var(--color-gold); font-size: 12px;"><i class="fa-solid fa-store"></i> ${pGroup}</span></td>
           <td><a href="https://wa.me/20${t.Phone.replace(/^0/, '')}" target="_blank" style="color: #10b981;"><i class="fa-brands fa-whatsapp"></i> ${t.Phone}</a></td>
           <td style="font-family: monospace;">${t.Email}</td>
-          <td style="font-family: monospace;">${t.Password}</td>
+          <td style="font-family: monospace;">🔒 كلمة المتدرب السرية</td>
           <td><span class="status-badge level-badge-${t.CurrentLevel || 'Passengers'}">${levelText}</span></td>
           <td>${t.TrainingBranch}</td>
           <td>
@@ -1713,24 +1771,48 @@
       const tbody = document.getElementById("promotions-table-body");
       const pending = allPromotions.filter(p => p.Status === "pending");
       if (pending.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد طلبات ترقية معلقة حالياً.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 20px;">لا توجد طلبات ترقية أو انضمام معلقة حالياً.</td></tr>`;
         return;
       }
       tbody.innerHTML = "";
       pending.forEach(p => {
+        const isGroupRequest = p.Type === "group_request" || (p.ToLevel && p.ToLevel.includes("طلب انضمام"));
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td><strong>${p.TraineeName}</strong></td>
-          <td>${p.CurrentLevel}</td>
-          <td>${p.TargetLevel}</td>
-          <td><span style="color:#10b981; font-weight:700;">${p.Score}%</span></td>
-          <td style="display: flex; gap: 8px;">
-            <button class="btn btn-gold" style="padding: 6px 12px; font-size: 11px; cursor: pointer;" onclick="openPromotionReviewModal('${p.Email}')"><i class="fa-solid fa-graduation-cap"></i> مراجعة واعتماد</button>
-          </td>
-        `;
+        if (isGroupRequest) {
+          tr.innerHTML = `
+            <td><strong>${p.TraineeName}</strong><br><span style="font-size:10px; color:var(--text-muted);">${p.Email}</span></td>
+            <td><span class="status-badge" style="background:rgba(251,191,36,0.15); color:var(--color-gold);">طلب انضمام لجروب</span></td>
+            <td><strong>${p.RequestedGroup || p.ToLevel}</strong></td>
+            <td><span style="color:#0ea5e9; font-weight:700;">طلب جديد 📩</span></td>
+            <td style="display: flex; gap: 8px;">
+              <button class="btn btn-primary" style="padding: 6px 12px; font-size: 11px; cursor: pointer;" onclick="approveGroupRequest('${p.Email}', '${p.RequestedGroup || p.ToLevel}')"><i class="fa-solid fa-check"></i> قبول وإضافة للجروب</button>
+            </td>
+          `;
+        } else {
+          tr.innerHTML = `
+            <td><strong>${p.TraineeName}</strong></td>
+            <td>${p.CurrentLevel || p.FromLevel || '-'}</td>
+            <td>${p.TargetLevel || p.ToLevel || '-'}</td>
+            <td><span style="color:#10b981; font-weight:700;">${p.Score || 0}%</span></td>
+            <td style="display: flex; gap: 8px;">
+              <button class="btn btn-gold" style="padding: 6px 12px; font-size: 11px; cursor: pointer;" onclick="openPromotionReviewModal('${p.Email}')"><i class="fa-solid fa-graduation-cap"></i> مراجعة واعتماد</button>
+            </td>
+          `;
+        }
         tbody.appendChild(tr);
       });
     }
+
+    window.approveGroupRequest = async function(email, groupName) {
+      if (!confirm(`هل أنت متأكد من قبول إضافة الطالب (${email}) إلى ${groupName}؟`)) return;
+      try {
+        await apiRequest({ action: "setTrainingGroup", email: email, group: groupName });
+        showToast("🎉 تم قبول إضافة الطالب للجروب التدريبي بنجاح!", "success");
+        loadAdminDashboardData();
+      } catch(e) {
+        showToast("فشل قبول الطلب.", "error");
+      }
+    };
 
     function renderReports() {
       const tbody = document.getElementById("reports-table-body");
@@ -2201,35 +2283,24 @@
 
     // WhatsApp Message Builder
     function buildWhatsAppMessage() {
-      const email    = document.getElementById("generated-email")?.value    || "";
-      const password = document.getElementById("generated-password")?.value || "";
-      const level    = document.getElementById("generated-level")?.value    || "";
       const name     = _acceptTraineeName || "";
-      const siteUrl  = window.location.origin || "https://ahmedoh.github.io";
-      
-      const whatsappSupport = "01107118948"; // رقم الواتساب الخاص بالدعم
-      const telegramSupport = "https://t.me/PharmReady"; // رابط التليجرام الخاص بالخدمة
+      const phone    = _acceptTraineePhone || "";
+      const siteUrl  = "https://ahmedoh.github.io/PharmReady-By-Fadel/";
 
-      
       return [
-        `مبارك عليك د. ${name} لقد تم قبولك في لوحة التدريب الخاصة بصيدليات آل مغاوري والتي تتم إدارتها من قبل منصة PharmReady 🌸`,
+        `🎉 تهانينا د. ${name}!`,
         ``,
-        `يرجى العلم بأن :`,
-        `--------------------------------------------------------`,
-        `البريد الالكتروني الخاص بكم هو : ${email}`,
+        `تمت الموافقة على طلب انضمامك لأكاديمية @Fadelopram_bot وتفعيل حسابك بنجاح! 🎓`,
         ``,
-        `كلمة المرور هي : ${password}`,
+        `📱 رقم الدخول (اسم الدخول): ${phone}`,
+        `🔑 كلمة المرور: (كلمة المرور التي قمت بكتابتها أثناء إنشاء الحساب)`,
         ``,
-        `رابط تسجيل الدخول للمنصة : ${siteUrl}`,
-        `----------------------------------------------------------`,
+        `🌐 رابط دخول المنصة : ${siteUrl}`,
         ``,
-        `المستوى المعتمد هو : ${level}`,
+        `استعن بالله ولا تعجز`,
         ``,
-        `⚠️ يُرجى حفظ هذه البيانات جيداً وعدم مشاركتها مع أحد.`,
-        ``,
-        `*********************`,
-        `رقم الواتساب للدعم: ${whatsappSupport}`,
-        `معرف التليجرام للدعم: ${telegramSupport}`
+        `Fadelopram`,
+        `< By Fadel >`
       ].join("\n");
     }
 
@@ -2252,15 +2323,9 @@
         });
 
         if (response.success) {
-          const msg   = buildWhatsAppMessage();
-          const phone = _acceptTraineePhone ? "20" + _acceptTraineePhone.replace(/^0/, "") : "";
-          const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-
-          showToast("🎉 تم قبول واشراك المتدرب! جاري فتح واتساب لإرسال بيانات الدخول...", "success");
+          showToast("⚡ تم قبول الطالب وتفعيل حسابه وإرسال التنبيه التلقائي بنجاح!", "success");
           document.getElementById("accept-modal").classList.remove("active");
           loadAdminDashboardData();
-
-          setTimeout(() => window.open(waUrl, "_blank"), 600);
         } else {
           if (response.message && (response.message.includes("unique constraint") || response.message.includes("duplicate"))) {
             showToast("⚠️ البريد الإلكتروني المولَّد موجود بالفعل لمتدرب آخر. يرجى توليد بريد مختلف بالضغط على زر التوليد 🔄 ثم المحاولة مرة أخرى.", "error");
@@ -2703,7 +2768,7 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `pharmready_backup_${new Date().toISOString().slice(0, 10)}.json`;
+        a.download = `fadelopram_backup_${new Date().toISOString().slice(0, 10)}.json`;
         a.click();
         showToast("🎉 تم تصدير النسخة الاحتياطية بنجاح!", "success");
       } catch (err) {
@@ -4116,11 +4181,11 @@
       const ctx = canvas.getContext("2d");
       
       const nextLevels = {
-        "Passengers": "المستوى الصِفري (Passengers)",
-        "Starters": "المستوى الأول (Starters)",
-        "Movers": "المستوى الثاني (Movers)",
-        "Flyers": "المستوى الثالث (Flyers)",
-        "Beast": "المستوى الاحترافي (Beast)"
+        "Passengers": "🌱 الصيدلي الواعد (L0)",
+        "Starters": "💊 ممارس الـ OTC والتواصل (L1)",
+        "Movers": "🩺 خبير الروشتات والجرعات (L2)",
+        "Flyers": "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
+        "Beast": "👑 استشاري الرعاية الصيدلانية وقائد الفرع (L4)"
       };
       const resolvedLevel = nextLevels[levelName] || levelName;
 
@@ -4172,11 +4237,11 @@
       
       // Academy Header
       ctx.font = "bold 26px Cairo, 'Segoe UI', Arial";
-      ctx.fillText("أكاديمية آل مغاوري لتأهيل الصيادلة الجدد", 600, 110);
+      ctx.fillText("أكاديمية Fadelopram الصيدلانية المتقدمة", 600, 110);
       
       ctx.font = "16px Cairo, 'Segoe UI', Arial";
       ctx.fillStyle = styleName === "classic" ? "#555" : "#8ba3b8";
-      ctx.fillText("PharmReady Training Academy", 600, 145);
+      ctx.fillText("Fadelopram Rx Academy", 600, 145);
       
       // Certificate Title
       ctx.font = "bold 45px Cairo, 'Segoe UI', Arial";
@@ -4216,10 +4281,10 @@
       ctx.font = "bold 18px Cairo, 'Segoe UI', Arial";
       ctx.fillStyle = styleName === "classic" ? "#333" : "#ffffff";
       ctx.fillText("المشرف الأكاديمي", 250, 690);
-      ctx.fillText("د. أحمد مغاوري", 250, 720);
+      ctx.fillText("د. أحمد فاضل", 250, 720);
       
       ctx.fillText("المدير العام للأكاديمية", 950, 690);
-      ctx.fillText("أ.د. عبد العزيز المغاوري", 950, 720);
+      ctx.fillText("د. أحمد فاضل", 950, 720);
       
       return canvas.toDataURL("image/png");
     }

@@ -2574,3 +2574,213 @@ th {
   }
 }
 
+/* ==========================================================================
+   PharmReady Overhaul: Clinical Pathway & Gamification Components
+   ========================================================================== */
+
+/* Level Badges for Clinical Pathway */
+.clinical-level-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  direction: rtl;
+}
+
+.level-badge-Passengers, .level-badge-L0 {
+  background: rgba(107, 114, 128, 0.15);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+.level-badge-Starters, .level-badge-L1 {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.level-badge-Movers, .level-badge-L2 {
+  background: rgba(14, 165, 233, 0.15);
+  color: #0ea5e9;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.level-badge-Flyers, .level-badge-L3 {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.level-badge-Beast, .level-badge-L4 {
+  background: rgba(245, 158, 11, 0.18);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
+}
+
+/* Gamification & Streaks */
+.streak-counter-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(245, 158, 11, 0.02) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 12px;
+  margin-top: 12px;
+}
+
+.streak-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.streak-flame {
+  color: #f97316;
+  font-size: 18px;
+  animation: flame-pulse 1.8s infinite alternate;
+}
+
+@keyframes flame-pulse {
+  0% { transform: scale(1); filter: drop-shadow(0 0 2px #f97316); }
+  100% { transform: scale(1.15); filter: drop-shadow(0 0 8px #ea580c); }
+}
+
+.xp-star {
+  color: var(--color-gold);
+  font-size: 18px;
+}
+
+/* Smart Clinical Case Logger */
+.case-logger-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.case-tag-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.case-tag-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.case-tag-chip:hover, .case-tag-chip.selected {
+  background: var(--color-primary-glow);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.case-log-item {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+.case-log-item:hover {
+  border-color: var(--color-gold);
+}
+
+/* Weekly Missions Checklist */
+.mission-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+}
+
+.mission-card.completed {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.03);
+}
+
+.mission-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+/* Leaderboard & Branch League */
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  margin-bottom: 8px;
+}
+
+.leaderboard-row.rank-1 {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, var(--bg-primary) 100%);
+}
+
+.leaderboard-row.rank-2 {
+  border-color: rgba(156, 163, 175, 0.4);
+  background: linear-gradient(90deg, rgba(156, 163, 175, 0.08) 0%, var(--bg-primary) 100%);
+}
+
+.leaderboard-row.rank-3 {
+  border-color: rgba(180, 83, 9, 0.4);
+  background: linear-gradient(90deg, rgba(180, 83, 9, 0.08) 0%, var(--bg-primary) 100%);
+}
+
+/* Digital Passport */
+.passport-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: #fff;
+  border: 2px solid var(--color-gold);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.passport-watermark {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  font-size: 140px;
+  font-weight: 900;
+  opacity: 0.03;
+  color: #fff;
+  pointer-events: none;
+}
+
