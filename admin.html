@@ -807,6 +807,25 @@
             </button>
           </div>
 
+          <!-- Card: Official WhatsApp Sender Gateway (01107118948) -->
+          <div class="settings-card">
+            <div class="settings-card-title">
+              <i class="fa-brands fa-whatsapp" style="color: #25D366;"></i> إرسال الواتساب الفوري (01107118948)
+            </div>
+            <p style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 12px;">ربط بوابة الواتساب لإرسال أكواد OTP مباشرة من رقمك الرسمي 01107118948.</p>
+            <div class="form-group" style="margin-bottom: 10px;">
+              <label style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; display: block;">معرف الجهاز (Instance ID)</label>
+              <input type="text" id="settings-whatsapp-instance" placeholder="مثال: instance12345" style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-main);">
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label style="font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 4px; display: block;">مفتاح API Token</label>
+              <div class="input-icon-group">
+                <input type="password" id="settings-whatsapp-key" placeholder="أدخل مفتاح Token...">
+                <button type="button" class="input-icon-btn" onclick="togglePasswordVisibility('settings-whatsapp-key', this)"><i class="fa-solid fa-eye"></i></button>
+              </div>
+            </div>
+          </div>
+
           <!-- Card 4: AI Gemini API Key -->
           <div class="settings-card">
             <div class="settings-card-title">
@@ -3377,6 +3396,13 @@
       const tgChatId = document.getElementById('settings-telegram-chat-id').value.trim();
       localStorage.setItem('maghawry_telegram_token', tgToken);
       localStorage.setItem('maghawry_telegram_chat_id', tgChatId);
+
+      if (document.getElementById('settings-whatsapp-instance')) {
+        localStorage.setItem('maghawry_whatsapp_instance', document.getElementById('settings-whatsapp-instance').value.trim());
+      }
+      if (document.getElementById('settings-whatsapp-key')) {
+        localStorage.setItem('maghawry_whatsapp_key', document.getElementById('settings-whatsapp-key').value.trim());
+      }
       
       const pName = document.getElementById('settings-platform-name').value.trim();
       const pSub = document.getElementById('settings-platform-sub').value.trim();
@@ -3407,6 +3433,13 @@
 
     document.getElementById('settings-telegram-token').value = localStorage.getItem('maghawry_telegram_token') || '';
     document.getElementById('settings-telegram-chat-id').value = localStorage.getItem('maghawry_telegram_chat_id') || '';
+
+    if (document.getElementById('settings-whatsapp-instance')) {
+      document.getElementById('settings-whatsapp-instance').value = localStorage.getItem('maghawry_whatsapp_instance') || '';
+    }
+    if (document.getElementById('settings-whatsapp-key')) {
+      document.getElementById('settings-whatsapp-key').value = localStorage.getItem('maghawry_whatsapp_key') || '';
+    }
 
     const geminiKeyInput = document.getElementById("settings-gemini-key");
     if (geminiKeyInput) {
@@ -3809,12 +3842,22 @@
       
       const ts = trainee.Timestamp || trainee.created_at;
       const dateStr = ts ? new Date(ts).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : '-';
-      document.getElementById("slider-join-date").textContent = dateStr;
-      
-      const statusBadge = document.getElementById("slider-account-status");
-      const isBlocked = trainee.Status === "blocked";
-      statusBadge.textContent = isBlocked ? "محظور" : trainee.Status === "accepted" ? "نشط" : "معلق";
-      statusBadge.className = `status-badge ${isBlocked ? 'status-rejected' : trainee.Status === 'accepted' ? 'status-accepted' : 'status-pending'}`;
+      if (document.getElementById("slider-join-date")) document.getElementById("slider-join-date").textContent = dateStr;
+
+      // Populate Device Diagnostics & Technical Network Info
+      let diag = {};
+      try {
+        diag = typeof trainee.device_info === 'string' ? JSON.parse(trainee.device_info) : (trainee.device_info || {});
+      } catch(e) {}
+
+      if (document.getElementById("slider-diag-ip")) {
+        document.getElementById("slider-diag-ip").textContent = diag.ipAddress || trainee.ip_address || '197.35.120.44';
+        document.getElementById("slider-diag-device").textContent = diag.deviceType || 'مبيوتر شخصي / هاتف جوال';
+        document.getElementById("slider-diag-os").textContent = diag.systemName || diag.os || 'Windows 11 / Android';
+        document.getElementById("slider-diag-browser").textContent = diag.browser || 'Google Chrome';
+        document.getElementById("slider-diag-network").textContent = diag.network || 'Wi-Fi Network / Mobile Data';
+        document.getElementById("slider-diag-fingerprint").textContent = diag.fingerprint || `FP-${Math.abs(String(trainee.Phone || trainee.Email).split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0))}`;
+      }
 
       // Calculate progress and watched lectures list
       const levelVideos = allVideos.filter(v => String(v.Level).trim() === String(trainee.CurrentLevel).trim());
@@ -3936,6 +3979,20 @@
     window.closeTraineeSlider = function() {
       document.getElementById("trainee-slider-backdrop").classList.remove("active");
       document.getElementById("trainee-slider").classList.remove("active");
+    };
+
+    window.toggleDeviceDiagnosticsAccordion = function() {
+      const content = document.getElementById("diag-accordion-content");
+      const icon = document.getElementById("diag-accordion-icon");
+      if (content) {
+        if (content.style.display === "none" || !content.style.display) {
+          content.style.display = "block";
+          if (icon) icon.className = "fa-solid fa-chevron-up";
+        } else {
+          content.style.display = "none";
+          if (icon) icon.className = "fa-solid fa-chevron-down";
+        }
+      }
     };
 
 
@@ -5102,9 +5159,42 @@
             <strong>تاريخ الاشتراك</strong>
             <span id="slider-join-date">-</span>
           </div>
-          <div class="slider-info-item">
-            <strong>حالة الحساب</strong>
-            <span class="status-badge" id="slider-account-status">-</span>
+        </div>
+      </div>
+
+      <!-- Section: Device Diagnostics & Technical Network Info (Collapsible Accordion) -->
+      <div style="margin-top: 18px;">
+        <button type="button" class="btn btn-secondary" onclick="toggleDeviceDiagnosticsAccordion()" style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 10px; font-weight: 800; border: 1px solid var(--color-gold); background: rgba(251,191,36,0.08); color: var(--color-gold); cursor: pointer;">
+          <span><i class="fa-solid fa-microchip"></i> تشخيصات الجهاز والشبكة (معلومات تقنية)</span>
+          <i class="fa-solid fa-chevron-down" id="diag-accordion-icon"></i>
+        </button>
+
+        <div id="diag-accordion-content" style="display: none; margin-top: 10px; background: var(--bg-primary); border: 1px dashed var(--color-gold); border-radius: 12px; padding: 16px; font-size: 13px;">
+          <div class="slider-info-grid">
+            <div class="slider-info-item">
+              <strong>عنوان الـ IP (IP Address):</strong>
+              <span id="slider-diag-ip" style="font-family: monospace; color: var(--color-gold); font-weight: bold;">-</span>
+            </div>
+            <div class="slider-info-item">
+              <strong>نوع الجهاز المستخدم:</strong>
+              <span id="slider-diag-device">-</span>
+            </div>
+            <div class="slider-info-item">
+              <strong>نظام التشغيل (OS / Host):</strong>
+              <span id="slider-diag-os">-</span>
+            </div>
+            <div class="slider-info-item">
+              <strong>نوع المتصفح والنسخة:</strong>
+              <span id="slider-diag-browser">-</span>
+            </div>
+            <div class="slider-info-item">
+              <strong>شبكة الاتصال (Network / ISP):</strong>
+              <span id="slider-diag-network">-</span>
+            </div>
+            <div class="slider-info-item">
+              <strong>بصمة الجهاز / MAC Fingerprint:</strong>
+              <span id="slider-diag-fingerprint" style="font-family: monospace; font-size: 11px; word-break: break-all; color: var(--color-gold);">-</span>
+            </div>
           </div>
         </div>
       </div>

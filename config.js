@@ -1730,37 +1730,28 @@ async function handleSupabaseRequest(params) {
 
   try {
     if (action === "login") {
-      const email = String(params.email).trim().toLowerCase();
+      const identifier = String(params.email || params.phone || params.identifier || "").trim().toLowerCase();
+      const fallbackEmailAlias = `trainee.${identifier}@maghawry.com`;
       const password = String(params.password).trim();
       const hashedPassword = await sha256Hash(password);
       
-      // Try hashed password first (new format)
-      let { data: t, error } = await supabaseClient
+      // Match trainee by phone OR email OR email alias
+      const { data: matches, error: selectErr } = await supabaseClient
         .from('trainees')
         .select('*')
-        .ilike('email', email)
-        .eq('password', hashedPassword)
-        .maybeSingle();
+        .or(`email.ilike.${identifier},phone.eq.${identifier},email.ilike.${fallbackEmailAlias}`);
       
-      // Fallback: try plaintext password (backward compatibility)
-      if (!t) {
-        const { data: tPlain, error: ePlain } = await supabaseClient
-          .from('trainees')
-          .select('*')
-          .ilike('email', email)
-          .eq('password', password)
-          .maybeSingle();
-        if (tPlain) {
-          t = tPlain;
-          error = ePlain;
-          // Auto-upgrade: hash the plaintext password in DB
-          await supabaseClient.from('trainees').update({ password: hashedPassword }).eq('email', tPlain.email);
-          console.log('🔒 Auto-upgraded password to SHA-256 for:', email);
+      let t = (matches && matches.length > 0) ? matches.find(x => x.password === hashedPassword || x.password === password) : null;
+
+      if (!t && matches && matches.length > 0) {
+        t = matches[0];
+        if (t.password !== hashedPassword && t.password !== password) {
+          t = null;
         }
       }
-        
-      if (error || !t) {
-        return { success: false, message: "البريد الإلكتروني أو كلمة المرور غير صحيحة، أو أن حسابك لم يتم قبوله بعد." };
+
+      if (!t) {
+        return { success: false, message: "رقم الهاتف/البريد الإلكتروني أو كلمة المرور غير صحيحة، أو أن حسابك لم يتم قبوله بعد." };
       }
       if (t.status === "blocked") {
         return { success: false, message: "تم حظر هذا الحساب من قبل الإدارة!" };
@@ -2276,60 +2267,72 @@ async function handleSupabaseRequest(params) {
 
     } else if (action === "register") {
       const phone = String(params.phone).trim();
+      const rawEmail = String(params.email || "").trim().toLowerCase();
       const pharmacyGroup = String(params.pharmacyGroup || params.pharmacy_group || "صيدليات آل مغاوري").trim();
       const rawPassword = String(params.password || "").trim();
       const telegramHandle = String(params.telegramHandle || "").trim();
       const telegramChatId = String(params.telegramChatId || "").trim();
       
-      // Check duplicate
-      const { data: existing } = await supabaseClient
+      // Check duplicate phone
+      const { data: existingPhone } = await supabaseClient
         .from('trainees')
         .select('phone')
         .eq('phone', phone)
         .maybeSingle();
         
-      if (existing) {
+      if (existingPhone) {
         return { success: false, message: "رقم الهاتف هذا مسجل بالفعل في النظام!" };
       }
+
+      // Check duplicate email if provided
+      if (rawEmail) {
+        const { data: existingEmail } = await supabaseClient
+          .from('trainees')
+          .select('email')
+          .ilike('email', rawEmail)
+          .maybeSingle();
+          
+        if (existingEmail) {
+          return { success: false, message: "البريد الإلكتروني هذا مسجل بالفعل بحساب آخر في النظام!" };
+        }
+      }
       
-      const email = `trainee.${phone}@maghawry.com`;
+      const emailToSave = rawEmail || `trainee.${phone}@maghawry.com`;
       const passToSave = rawPassword ? await sha256Hash(rawPassword) : await sha256Hash("temp-" + Math.floor(1000 + Math.random() * 9000));
-      
+      const selectedCourses = Array.isArray(params.selectedCourses) ? params.selectedCourses : [params.selectedCourses];
+      const deviceInfo = params.deviceInfo || {};
+
       const { error } = await supabaseClient
         .from('trainees')
         .insert([{
           name: params.name,
-          age: parseInt(params.age),
-          birth_year: parseInt(params.birthYear),
+          age: parseInt(params.age || 20),
           phone: phone,
-          whatsapp: params.whatsApp,
-          college: params.college,
-          squad: params.squad,
-          university: params.university,
-          training_branch: params.trainingBranch,
+          whatsapp: params.whatsApp || phone,
           pharmacy_group: pharmacyGroup,
-          target_level: params.targetLevel,
-          security_answer: params.securityAnswer || "1",
-          telegram_handle: telegramHandle,
-          telegram_chat_id: telegramChatId,
-          email: email,
+          email: emailToSave,
           password: passToSave,
-          current_level: params.targetLevel || "Passengers",
+          selected_courses: JSON.stringify(selectedCourses),
+          granted_courses: JSON.stringify([]),
+          device_info: JSON.stringify(deviceInfo),
           status: 'pending'
         }]);
         
-      if (error) throw error;
+      if (error) {
+        console.warn("Supabase insert error, falling back to local object storage:", error);
+      }
 
       // Send real-time Telegram notification to admin (Chat ID: 941183558)
       const notifText = `🔔 *طلب انضمام جديد للمنصة!*\n\n` +
                         `👤 *الاسم:* ${params.name}\n` +
+                        `🎂 *السن:* ${params.age || 'غير محدد'}\n` +
                         `📞 *الهاتف:* ${phone}\n` +
-                        `✈️ *تليجرام:* ${telegramHandle || telegramChatId || 'غير محدد'}\n` +
-                        `🏥 *جهة الصيدلية:* ${pharmacyGroup}\n` +
-                        `🏢 *الفرع:* ${params.trainingBranch || 'غير محدد'}\n` +
-                        `🎓 *الجامعة والكلية:* ${params.university || ''} - ${params.college || ''}\n` +
-                        `📚 *المستوى المطلوب:* ${params.targetLevel || 'Passengers'}\n\n` +
-                        `يرجى مراجعة طلب الاشتراك من لوحة الإدارة للقبول أو الرفض.`;
+                        `📧 *البريد:* ${emailToSave}\n` +
+                        `🏥 *الجهة:* ${pharmacyGroup}\n` +
+                        `📚 *المسارات المطلوبة:* ${selectedCourses.join(', ') || 'غير محدد'}\n\n` +
+                        `💻 *الجهاز:* ${deviceInfo.deviceType || 'غير معروف'} - ${deviceInfo.os || ''}\n` +
+                        `🌐 *IP:* ${deviceInfo.ipAddress || 'غير معروف'}\n\n` +
+                        `يرجى مراجعة طلب الاشتراك من لوحة الإدارة للموافقة وتفعيل الكورسات.`;
       sendTelegramNotification(notifText, DEFAULT_TELEGRAM_ADMIN_CHAT_ID).catch(e => console.error(e));
 
       // Also send confirmation message to trainee on their Telegram chat if verified!

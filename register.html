@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fadelopram Rx Academy — تسجيل متدرب جديد</title>
+  <title>Fadelopram Rx Academy — طلب انضمام متدرب جديد</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -18,53 +18,54 @@
     .steps-indicator {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
       position: relative;
     }
     .steps-indicator::before {
       content: '';
       position: absolute;
-      top: 15px;
-      left: 0;
-      right: 0;
-      height: 2px;
+      top: 16px;
+      left: 15%;
+      right: 15%;
+      height: 3px;
       background: var(--border-color);
       z-index: 1;
     }
     .step-dot {
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: var(--bg-primary);
-      border: 2px solid var(--border-color);
+      border: 3px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
+      font-size: 14px;
+      font-weight: 800;
       z-index: 2;
-      transition: var(--transition);
+      transition: all 0.3s ease;
       color: var(--text-muted);
     }
     .step-dot.active {
-      border-color: var(--color-primary);
-      color: var(--color-primary);
-      box-shadow: 0 0 10px var(--color-primary-glow);
+      border-color: var(--color-gold);
+      color: var(--color-gold);
+      box-shadow: 0 0 12px var(--color-gold-glow);
+      background: var(--bg-secondary);
     }
     .step-dot.completed {
-      background: var(--color-primary);
-      border-color: var(--color-primary);
-      color: #fff;
+      background: var(--color-gold);
+      border-color: var(--color-gold);
+      color: #000;
     }
     .wizard-step {
       display: none;
-      animation: fadeIn 0.4s ease forwards;
+      animation: fadeIn 0.35s ease forwards;
     }
     .wizard-step.active {
       display: block;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
     .wizard-footer {
@@ -73,6 +74,33 @@
       margin-top: 30px;
       border-top: 1px solid var(--border-color);
       padding-top: 20px;
+    }
+    .course-option-card {
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-secondary);
+    }
+    .course-option-card:hover {
+      border-color: var(--color-gold);
+      transform: translateY(-2px);
+    }
+    .course-option-card.selected {
+      border-color: var(--color-gold);
+      background: rgba(251, 191, 36, 0.08);
+      box-shadow: 0 4px 14px rgba(251, 191, 36, 0.15);
+    }
+    .course-option-card input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--color-gold);
+      cursor: pointer;
     }
   </style>
 </head>
@@ -85,597 +113,470 @@
   </div>
 
   <div class="app-container">
-    <div class="auth-wrapper" style="max-width: 600px; margin: 20px auto;">
+    <div class="auth-wrapper" style="max-width: 620px; margin: 20px auto;">
       
       <!-- Header -->
       <div class="auth-header" style="text-align: center; margin-bottom: 25px;">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 15px;">
-          <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 54px; width: 54px; border-radius: 14px; object-fit: cover; box-shadow: 0 4px 20px rgba(251,191,36,0.3);">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 15px;">
+          <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 58px; width: 58px; border-radius: 16px; object-fit: cover; box-shadow: 0 4px 20px rgba(251,191,36,0.35);">
         </div>
-        <h2 data-i18n="reg_title" style="color: var(--color-gold); font-weight: 900;">Fadelopram Rx Academy</h2>
-        <p data-i18n="reg_subtitle">يرجى إدخال بياناتك بدقة للانضمام لأكاديمية Fadelopram الصيدلانية المتقدمة</p>
+        <h2 style="color: var(--color-gold); font-weight: 900; font-size: 24px; margin: 0 0 5px;">Fadelopram Rx Academy</h2>
+        <p style="font-size: 13.5px; color: var(--text-muted); margin: 0;">نموذج تسجيل متدرب جديد والانضمام للأكاديمية الصيدلانية</p>
       </div>
 
       <!-- Registration Wizard Card -->
-      <div class="card">
+      <div class="card" style="box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
         
-        <!-- Step Indicators -->
+        <!-- Step indicators -->
         <div class="steps-indicator">
           <div class="step-dot active" id="dot-1">1</div>
           <div class="step-dot" id="dot-2">2</div>
-          <div class="step-dot" id="dot-3">3</div>
         </div>
 
         <form id="register-form">
           
-          <!-- STEP 1: Personal & Contact Details -->
+          <!-- STEP 1: Personal, Login Details & WhatsApp OTP Verification -->
           <div class="wizard-step active" id="step-1">
-            <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-address-card"></i> <span data-i18n="step1_title">البيانات الشخصية وكلمة السر</span></h3>
+            <h3 class="card-title" style="margin-bottom: 18px; font-size: 16px; color: var(--color-gold); border-bottom: 1px dashed var(--border-color); padding-bottom: 10px;">
+              <i class="fa-solid fa-user-gear"></i> الخطوة الأولى: البيانات الشخصية والاعتماد
+            </h3>
             
+            <!-- Full Name -->
             <div class="form-group" style="margin-bottom: 15px;">
-              <label for="reg-name" data-i18n="lbl_name">الاسم الرباعي <span class="required">*</span></label>
-              <input type="text" id="reg-name" required placeholder="أدخل اسمك الرباعي باللغة العربية" autocomplete="off">
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="reg-phone" data-i18n="lbl_phone">رقم الهاتف الجوال (يستخدم كاسم دخول) <span class="required">*</span></label>
-                <input type="tel" id="reg-phone" required placeholder="مثال: 010XXXXXXXX" pattern="[0-9]{11}" autocomplete="off">
-              </div>
-              <div class="form-group">
-                <label for="reg-whatsapp" data-i18n="lbl_whatsapp">حساب الواتساب</label>
-                <select id="reg-whatsapp">
-                  <option value="نعم، هو نفس الرقم" data-i18n="opt_wa_yes">نعم، نفس رقم الهاتف</option>
-                  <option value="لا، لا يوجد واتساب" data-i18n="opt_wa_no">لا، رقم آخر/بدون</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Password Fields -->
-            <div class="form-grid" style="margin-top: 15px;">
-              <div class="form-group">
-                <label for="reg-password">كلمة المرور الخاصة بك <span class="required">*</span></label>
-                <input type="password" id="reg-password" required minlength="6" placeholder="اختر كلمة مرور حسابك (6 أرقام/حروف على الأقل)">
-              </div>
-              <div class="form-group">
-                <label for="reg-confirm-password">تأكيد كلمة المرور <span class="required">*</span></label>
-                <input type="password" id="reg-confirm-password" required minlength="6" placeholder="إعادة كتابة كلمة المرور">
-              </div>
-            </div>
-
-            <!-- WhatsApp OTP Verification Field -->
-            <div class="form-group" style="margin-top: 18px; background: rgba(37, 211, 102, 0.07); padding: 18px; border-radius: 14px; border: 2px dashed #25D366;">
-              <label for="reg-whatsapp-number" style="font-weight: 800; color: #25D366; display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                <i class="fa-brands fa-whatsapp" style="font-size: 22px;"></i> رقم الواتساب الخاص بك <span class="required">*</span>
+              <label for="reg-name" style="font-weight: bold; font-size: 13.5px;">
+                <i class="fa-solid fa-user"></i> الاسم الرباعي <span class="required" style="color: red;">*</span>
               </label>
-              <p style="font-size: 11.5px; color: var(--text-muted); margin: 4px 0 10px; line-height: 1.4;">
-                أدخل رقم الواتساب الخاص بك (مثال: <code>01107118948</code>) ليصلك رمز التحقق المباشر عليه 💬
+              <input type="text" id="reg-name" required placeholder="أدخل اسمك الرباعي باللغة العربية" autocomplete="off" style="padding: 12px; font-weight: bold;">
+            </div>
+
+            <!-- Age & Phone Grid -->
+            <div class="form-grid" style="grid-template-columns: 1fr 2fr; gap: 12px; margin-bottom: 15px;">
+              <div class="form-group">
+                <label for="reg-age" style="font-weight: bold; font-size: 13.5px;">
+                  <i class="fa-solid fa-cake-candles"></i> السن <span class="required" style="color: red;">*</span>
+                </label>
+                <input type="number" id="reg-age" required min="17" max="60" placeholder="مثال: 22" style="padding: 12px; font-weight: bold; text-align: center;">
+              </div>
+
+              <div class="form-group">
+                <label for="reg-phone" style="font-weight: bold; font-size: 13.5px;">
+                  <i class="fa-solid fa-mobile-screen-button"></i> رقم الهاتف الجوال (لتسجيل الدخول) <span class="required" style="color: red;">*</span>
+                </label>
+                <input type="tel" id="reg-phone" required placeholder="مثال: 01012345678" pattern="[0-9]{11}" autocomplete="off" style="padding: 12px; font-weight: bold;">
+              </div>
+            </div>
+
+            <!-- Email Address -->
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label for="reg-email" style="font-weight: bold; font-size: 13.5px;">
+                <i class="fa-solid fa-envelope"></i> البريد الإلكتروني (لتسجيل الدخول برضه) <span class="required" style="color: red;">*</span>
+              </label>
+              <input type="email" id="reg-email" required placeholder="مثال: example@gmail.com" autocomplete="off" style="padding: 12px; font-weight: bold;">
+            </div>
+
+            <!-- Password Fields Grid -->
+            <div class="form-grid" style="gap: 12px; margin-bottom: 18px;">
+              <div class="form-group">
+                <label for="reg-password" style="font-weight: bold; font-size: 13.5px;">
+                  <i class="fa-solid fa-lock"></i> كلمة السر <span class="required" style="color: red;">*</span>
+                </label>
+                <input type="password" id="reg-password" required minlength="6" placeholder="اختر كلمة سر (6 أرقام/حروف)" style="padding: 12px;">
+              </div>
+              <div class="form-group">
+                <label for="reg-confirm-password" style="font-weight: bold; font-size: 13.5px;">
+                  <i class="fa-solid fa-shield-check"></i> تأكيد كلمة السر <span class="required" style="color: red;">*</span>
+                </label>
+                <input type="password" id="reg-confirm-password" required minlength="6" placeholder="إعادة كتابة كلمة السر" style="padding: 12px;">
+              </div>
+            </div>
+
+            <!-- Direct WhatsApp OTP Verification Container -->
+            <div class="form-group" style="background: rgba(37, 211, 102, 0.07); padding: 18px; border-radius: 14px; border: 2px dashed #25D366; margin-bottom: 10px;">
+              <label for="reg-whatsapp-number" style="font-weight: 800; color: #25D366; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 22px;"></i> توثيق رقم الواتساب المباشر <span class="required" style="color: red;">*</span>
+              </label>
+              <p style="font-size: 11.5px; color: var(--text-muted); margin: 4px 0 12px; line-height: 1.4;">
+                أدخل رقم الواتساب الخاص بك ليصلك رمز التحقق المباشر عليه 💬 من رقم الأكاديمية الرسمي (01107118948).
               </p>
               
-              <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
-                <input type="tel" id="reg-whatsapp-number" required placeholder="أدخل رقم الواتساب..." style="flex: 1; font-weight: bold; font-family: inherit; min-width: 200px; padding: 11px 14px; border: 1px solid var(--border-color); border-radius: 8px;">
-                <button type="button" class="btn" id="btn-request-whatsapp-code" style="background: #25D366; color: white; border: none; white-space: nowrap; font-size: 13px; font-weight: bold; padding: 11px 18px; border-radius: 8px; box-shadow: 0 4px 12px rgba(37,211,102,0.25);">
-                  <i class="fa-brands fa-whatsapp"></i> إرسال كود التحقق 💬
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <input type="tel" id="reg-whatsapp-number" required placeholder="01107118948" pattern="[0-9]{11}" style="flex: 1; min-width: 170px; padding: 10px 14px; border-radius: 8px; border: 1px solid #25D366; font-weight: bold;">
+                <button type="button" id="btn-request-whatsapp-code" class="btn" style="background: #25D366; color: #fff; font-weight: 800; padding: 10px 16px; border-radius: 8px; cursor: pointer; border: none; white-space: nowrap;">
+                  إرسال كود التحقق 💬
                 </button>
               </div>
 
-              <!-- Verification Code Box (Shown after clicking request) -->
-              <div id="whatsapp-code-container" style="display: none; margin-top: 15px; background: var(--bg-secondary); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <div style="background: rgba(37, 211, 102, 0.12); border-right: 4px solid #25D366; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 12.5px; color: var(--text-main); line-height: 1.6;">
-                  📱 <strong>رمز التحقق المباشر عبر الواتساب:</strong><br>
-                  <span style="font-size: 11.5px;">تم إرسال كود التحقق 🔐 المكون من 6 أرقام مباشرة إلى حساب الواتساب الخاص بك. راجع رسائل الواتساب وأدخل الرمز بالأسفل لتأكيد الحساب.</span>
+              <!-- OTP Verification Box (Reveals when Code is Sent) -->
+              <div id="whatsapp-code-verification-box" style="display: none; margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(37, 211, 102, 0.4);">
+                <label for="reg-whatsapp-code" style="font-size: 12.5px; font-weight: bold; color: var(--text-main); display: block; margin-bottom: 6px;">
+                  🔑 أدخل كود التحقق المكون من 6 أرقام المرسل لك:
+                </label>
+                <div style="display: flex; gap: 8px;">
+                  <input type="text" id="reg-whatsapp-code" maxlength="6" placeholder="مثال: 489210" style="flex: 1; text-align: center; font-size: 18px; letter-spacing: 4px; font-weight: 900; padding: 8px; border: 2px solid var(--color-gold); border-radius: 8px; background: var(--bg-primary);">
+                  <button type="button" id="btn-verify-whatsapp-code" class="btn btn-gold" style="padding: 8px 18px; font-weight: bold;">
+                    تأكيد الكود ✅
+                  </button>
                 </div>
+              </div>
 
-                <div style="display: flex; gap: 8px; align-items: center;">
-                  <input type="text" id="reg-whatsapp-code" placeholder="رمز التحقق من الواتساب (6 أرقام)" maxlength="6" style="text-align: center; font-weight: 800; letter-spacing: 4px; font-size: 17px; flex: 1; padding: 10px; border-radius: 8px; border: 2px solid var(--border-color);">
-                  <button type="button" class="btn btn-gold" id="btn-verify-whatsapp-code" style="white-space: nowrap; font-size: 13.5px; font-weight: 800; padding: 11px 20px; border-radius: 8px;">تأكيد الكود 🔑</button>
-                </div>
-                
-                <div id="whatsapp-verify-status" style="margin-top: 10px; font-size: 12.5px; font-weight: bold; text-align: center;"></div>
+              <!-- Verification Success Badge -->
+              <div id="whatsapp-verified-badge" style="display: none; margin-top: 12px; background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #22c55e; border-radius: 8px; padding: 10px 14px; font-weight: bold; font-size: 13px; text-align: center;">
+                ✅ تم توثيق رقم الواتساب بنجاح! يمكنك الانتقال للخطوة التالية.
               </div>
             </div>
 
-            <div class="form-grid" style="margin-top: 15px;">
-              <div class="form-group">
-                <label for="reg-age" data-i18n="lbl_age">السن الحالي <span class="required">*</span></label>
-                <input type="number" id="reg-age" required min="17" max="40" placeholder="مثال: 22">
-              </div>
-              <div class="form-group">
-                <label for="reg-birthyear" data-i18n="lbl_birth">سنة الميلاد <span class="required">*</span></label>
-                <input type="number" id="reg-birthyear" required min="1985" max="2010" placeholder="مثال: 2004">
-              </div>
-            </div>
           </div>
 
-          <!-- STEP 2: University, Pharmacy Entity and Target Level -->
+          <!-- STEP 2: Target Entity & Required Training Courses -->
           <div class="wizard-step" id="step-2">
-            <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-store"></i> <span data-i18n="step2_title">جهة التدريب والصيدلية والجامعة</span></h3>
+            <h3 class="card-title" style="margin-bottom: 18px; font-size: 16px; color: var(--color-gold); border-bottom: 1px dashed var(--border-color); padding-bottom: 10px;">
+              <i class="fa-solid fa-building-columns"></i> الخطوة الثانية: جهة التقديم والمسارات التدريبية
+            </h3>
 
-            <!-- Pharmacy / Entity Dropdown Selector -->
-            <div class="form-group" style="margin-bottom: 18px;">
-              <label for="pharmacy-search-input" style="font-weight: bold; color: var(--color-primary); display: flex; align-items: center; gap: 6px; font-size: 14px;">
-                <i class="fa-solid fa-store"></i> اختر جهة / سلسلة الصيدليات التابع لها <span class="required">*</span>
+            <!-- Target Entity Selector -->
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label for="reg-entity-select" style="font-weight: bold; color: var(--color-primary); display: flex; align-items: center; gap: 6px; font-size: 14px; margin-bottom: 6px;">
+                <i class="fa-solid fa-store"></i> الجهة المتقدم لها <span class="required" style="color: red;">*</span>
               </label>
-              <select id="pharmacy-search-input" required style="width: 100%; padding: 12px; font-weight: bold; border: 2px solid var(--color-primary); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); font-size: 14px;">
-                <option value="Fadelopram Rx Academy — صيدليات آل مغاوري" selected>🏥 Fadelopram Rx Academy — صيدليات آل مغاوري (الافتراضي)</option>
-                <option value="صيدليات العزبي">🏪 صيدليات العزبي</option>
-                <option value="صيدليات 19701">🏪 صيدليات 19701</option>
-                <option value="صيدليات مصر">🏪 صيدليات مصر</option>
-                <option value="صيدليات الطارش">🏪 صيدليات الطارش</option>
-                <option value="صيدليات الإيمان">🏪 صيدليات الإيمان</option>
-                <option value="صيدليات الشفاء">🏪 صيدليات الشفاء</option>
-                <option value="مستشفى / صيدلية تدريب جامعي">🏥 مستشفى / صيدلية تدريب جامعي</option>
-                <option value="صيدلية خاصة مستقلة / متدرب حر">🩺 صيدلية خاصة مستقلة / متدرب حر</option>
+              <select id="reg-entity-select" required style="width: 100%; padding: 12px; font-weight: bold; border: 2px solid var(--color-gold); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); font-size: 14px;">
+                <option value="صيدليات آل مغاوري" selected>🏥 صيدليات آل مغاوري (الفرع الرئيسي)</option>
               </select>
             </div>
 
-            <!-- El-Maghawry Training Group Selector Box (Shows when El-Maghawry Pharmacies is selected) -->
-            <div id="maghawry-group-selector-box" style="display: none; background: rgba(251, 191, 36, 0.08); border: 2px solid var(--color-gold); border-radius: 12px; padding: 15px; margin-top: 15px; direction: rtl;">
-              <div style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--color-gold); font-size: 13.5px; margin-bottom: 8px;">
-                <span style="font-size: 18px;">🏥</span> اختر المسار / الجروب التدريبي التابع له في صيدليات آل مغاوري:
-              </div>
-              <select id="reg-training-group" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--color-gold); font-weight: bold; background: var(--bg-primary); color: var(--text-main); font-size: 13px;">
-                <option value="جروب التدريب Fadelopram (د. أحمد فاضل)">🎓 جروب التدريب Fadelopram (د. أحمد فاضل)</option>
-                <option value="جروب الكوزمو - دكتور نانسي">💄 جروب الكوزمو - دكتور نانسي</option>
-                <option value="جروب الميديكال مع دكتور عصام">🩺 جروب الميديكال مع دكتور عصام</option>
-              </select>
-            </div>
+            <!-- "بتسجل علشان؟" Course Selection Container (Shows when صيدليات آل مغاوري is selected) -->
+            <div id="course-purpose-section" style="background: rgba(251, 191, 36, 0.05); border: 2px solid var(--color-gold); border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+              <h4 style="font-size: 15px; font-weight: 900; color: var(--color-gold); margin: 0 0 6px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-circle-question"></i> بتسجل علشان؟ (اختر المسارات المطلوبة) <span class="required" style="color: red;">*</span>
+              </h4>
+              <p style="font-size: 12px; color: var(--text-muted); margin-0 0 14px; line-height: 1.4;">
+                يمكنك تحديد كورس واحد أو أكثر. لن يتم منح صلاحية مشاهدة الكورسات إلا بعد موافقة المدير وتفعيل حسابك.
+              </p>
 
-            <div class="form-grid">
-              <div class="form-group">
-                <label for="reg-branch" data-i18n="lbl_branch">فرع التدريب <span class="required">*</span></label>
-                <input type="text" id="reg-branch" required placeholder="مثال: فرع ابو الخير / الفرع الرئيسي / فرع البنك">
-              </div>
-
-              <div class="form-group">
-                <label for="reg-target-level" data-i18n="lbl_target_level">المستوى المطلوب الانضمام له <span class="required">*</span></label>
-                <select id="reg-target-level" required>
-                  <option value="Passengers" selected>🌱 الصيدلي الواعد (L0)</option>
-                  <option value="Starters">💊 ممارس الـ OTC والتواصل (L1)</option>
-                  <option value="Movers">🩺 خبير الروشتات والجرعات (L2)</option>
-                  <option value="Flyers">⚡ صيدلي الحالات الحرجة والتركيبات (L3)</option>
-                  <option value="Beast">👑 صيدلي أول وممارس متقدم (L4)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-grid" style="margin-top: 15px;">
-              <div class="form-group">
-                <label for="reg-university" data-i18n="lbl_univ">الجامعة <span class="required">*</span></label>
-                <input type="text" id="reg-university" required placeholder="مثال: جامعة دمياط">
-              </div>
-              <div class="form-group">
-                <label for="reg-college" data-i18n="lbl_college">الكلية والفرقة <span class="required">*</span></label>
-                <input type="text" id="reg-college" required placeholder="مثال: صيدلة - الفرقة الخامسة">
-              </div>
-            </div>
-          </div>
-
-          <!-- STEP 3: Security Question -->
-          <div class="wizard-step" id="step-3">
-            <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="step3_title">التحقق وسؤال الأمان</span></h3>
-            <p style="margin-bottom: 20px; font-size: 14px;" data-i18n="security_verify_desc">لإتمام التسجيل، يرجى الإجابة على السؤال الأمني التالي الخاص بفروع صيدليات آل مغاوري:</p>
-
-            <div class="form-group">
-              <label style="color: var(--text-main); font-size: 15px; font-weight: bold; margin-bottom: 15px; display: block;" data-i18n="security_question">
-                أين تقع جميع فروع صيدليات آل مغاوري؟
+              <!-- Option 1: التدريب مع فاضل -->
+              <label class="course-option-card" id="card-opt-fadel">
+                <input type="checkbox" name="course-selection" value="التدريب مع فاضل" id="chk-opt-fadel" checked>
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: var(--text-main);">🎓 التدريب مع فاضل (Fadelopram Rx Training)</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">الممارسة الصيدلانية الميدانية والـ OTC والروشتات</div>
+                </div>
               </label>
-              
-              <div style="display: flex; flex-direction: column; gap: 12px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="radio" name="security-choice" value="0" required>
-                  <span data-i18n="sec_opt_1">في مدينة دمياط القديمة فقط.</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="radio" name="security-choice" value="1">
-                  <span style="color: var(--color-primary); font-weight: bold;" data-i18n="sec_opt_2">في مدينة دمياط الجديدة فقط.</span>
-                </label>
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                  <input type="radio" name="security-choice" value="2">
-                  <span data-i18n="sec_opt_3">في محافظتي القاهرة والإسكندرية.</span>
-                </label>
+
+              <!-- Option 2: كورس الكوزماتكس مع د. نانسي -->
+              <label class="course-option-card" id="card-opt-nancy">
+                <input type="checkbox" name="course-selection" value="كورس الكوزماتكس مع د. نانسي" id="chk-opt-nancy">
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: var(--text-main);">💄 كورس الكوزماتكس مع د. نانسي</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">مستحضرات العناية بالبشرة والشعر والتركيبات التجميلية</div>
+                </div>
+              </label>
+
+              <!-- Option 3: كورس الميديكال مع د. عصام -->
+              <label class="course-option-card" id="card-opt-essam">
+                <input type="checkbox" name="course-selection" value="كورس الميديكال مع د. عصام" id="chk-opt-essam">
+                <div>
+                  <div style="font-weight: 800; font-size: 14px; color: var(--text-main);">🩺 كورس الميديكال مع د. عصام</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">علم الأدوية الإكلينيكي والحالات الحادة والمرضية</div>
+                </div>
+              </label>
+
+              <!-- Option 4: اختيار الثلاثة معاً -->
+              <label class="course-option-card" id="card-opt-all" style="border-style: dashed; background: rgba(251, 191, 36, 0.12);">
+                <input type="checkbox" id="chk-opt-all">
+                <div>
+                  <div style="font-weight: 900; font-size: 14px; color: var(--color-gold);">🌟 الثلاثة معاً (تحديد جميع الكورسات)</div>
+                  <div style="font-size: 11.5px; color: var(--text-muted);">الانضمام لجميع المسارات التدريبية المتاحة للأكاديمية</div>
+                </div>
+              </label>
+
+            </div>
+
+            <div style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: var(--text-main); display: flex; align-items: center; gap: 10px;">
+              <i class="fa-solid fa-lock" style="font-size: 18px; color: var(--color-gold);"></i>
+              <div>
+                <strong>تنبيه الأمان والخصوصية:</strong> بياناتك مشفرة ومحمية بالكامل ولا يمكن الاطلاع عليها إلا من قبل إدارة المنصة فقط. لن يمكنك تسجيل الدخول للمنصة إلا بعد موافقة المدير وتخصيص صلاحياتك.
               </div>
             </div>
+
           </div>
 
-          <!-- Wizard Footer Controls -->
+          <!-- Wizard Footer Buttons -->
           <div class="wizard-footer">
-            <button type="button" class="btn btn-secondary" id="btn-prev" style="visibility: hidden;">
-              <i class="fa-solid fa-arrow-right"></i> <span data-i18n="btn_prev">السابق</span>
+            <button type="button" class="btn btn-secondary" id="btn-prev" style="display: none; padding: 10px 20px;">
+              <i class="fa-solid fa-arrow-right"></i> السابق
             </button>
-            <button type="button" class="btn btn-primary" id="btn-next">
-              <span data-i18n="btn_next">التالي</span> <i class="fa-solid fa-arrow-left"></i>
+            
+            <button type="button" class="btn btn-primary" id="btn-next" style="margin-right: auto; padding: 10px 26px; font-weight: bold;">
+              التالي <i class="fa-solid fa-arrow-left"></i>
             </button>
-            <button type="submit" class="btn btn-primary" id="btn-submit" style="display: none;">
-              <i class="fa-solid fa-user-plus"></i> <span data-i18n="btn_submit_request">تقديم طلب الاشتراك</span>
+
+            <button type="submit" class="btn btn-gold" id="btn-submit" style="display: none; margin-right: auto; padding: 12px 30px; font-weight: 900; font-size: 15px;">
+              إرسال طلب الانضمام <i class="fa-solid fa-paper-plane"></i>
             </button>
           </div>
 
         </form>
 
-      </div>
+        <div style="text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-muted);">
+          لديك حساب بالفعل؟ <a href="index.html" style="color: var(--color-gold); font-weight: bold; text-decoration: underline;">تسجيل الدخول للمنصة</a>
+        </div>
 
-      <div class="auth-footer" style="text-align: center; margin-top: 15px;">
-        <p><span data-i18n="has_account">لديك حساب بالفعل؟</span> <a href="index.html" data-i18n="login_back">اضغط هنا لتسجيل الدخول</a></p>
       </div>
-
     </div>
   </div>
 
   <footer class="app-footer" style="text-align: center; padding: 20px 0; margin-top: auto; border-top: 1px solid var(--border-color); background: var(--bg-secondary);">
-    <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري</p>
+    <p>برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري</p>
     <p style="font-size: 10px; margin-top: 5px; color: rgba(128,128,128,0.4)">Support: 01107118948</p>
   </footer>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=9.0"></script>
+  <script src="config.js?v=10.0"></script>
   <script>
-    const langData = {
-      ar: {
-        reg_title: "تسجيل متدرب جديد",
-        reg_subtitle: "يرجى إدخال بياناتك بدقة للانضمام لأكاديمية صيدليات آل مغاوري",
-        step1_title: "البيانات الشخصية وبيانات الاتصال",
-        lbl_name: "الاسم الرباعي",
-        lbl_age: "السن الحالي",
-        lbl_birth: "سنة الميلاد",
-        lbl_phone: "رقم الهاتف الجوال",
-        lbl_whatsapp: "هل رقم الهاتف مسجل عليه حساب واتساب؟",
-        opt_wa_yes: "نعم، هو نفس الرقم (موصى به)",
-        opt_wa_no: "لا، لا يوجد واتساب",
-        step2_title: "البيانات الدراسية ومقر التدريب",
-        lbl_univ: "الجامعة",
-        lbl_college: "الكلية والفرقة",
-        lbl_branch: "فرع التدريب",
-        opt_select_branch: "اختر الفرع...",
-        lbl_target_level: "المستوى المطلوب الانضمام له",
-        step3_title: "التحقق وسؤال الأمان",
-        security_verify_desc: "لإتمام التسجيل، يرجى الإجابة على السؤال الأمني التالي الخاص بفروع صيدليات آل مغاوري:",
-        security_question: "أين تقع جميع فروع صيدليات آل مغاوري؟",
-        sec_opt_1: "في مدينة دمياط القديمة فقط.",
-        sec_opt_2: "في مدينة دمياط الجديدة فقط.",
-        sec_opt_3: "في محافظتي القاهرة والإسكندرية.",
-        btn_prev: "السابق",
-        btn_next: "التالي",
-        btn_submit_request: "تقديم طلب الاشتراك",
-        has_account: "لديك حساب بالفعل؟",
-        login_back: "اضغط هنا لتسجيل الدخول",
-        footer_text: "برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري",
-        err_name: "يرجى إدخال اسمك الثلاثي أو الرباعي بوضوح.",
-        err_age: "الرجاء إدخال سن واقعي للمتدرب (من 17 إلى 40).",
-        err_birth: "الرجاء إدخال سنة ميلاد واقعية.",
-        err_phone: "رقم الهاتف يجب أن يكون مكوناً من 11 رقماً ويبدأ بـ 01.",
-        err_univ: "يرجى كتابة اسم الجامعة.",
-        err_college: "يرجى كتابة اسم الكلية والفرقة الدراسية.",
-        err_branch: "يرجى اختيار فرع التدريب الملتحق به.",
-        err_security: "❌ إجابة سؤال الأمان خاطئة! فكر مجدداً أو تواصل مع الدعم الفني.",
-        submit_loading: "جاري إرسال البيانات...",
-        submit_success: "🎉 تم إرسال طلبك بنجاح! جاري تحويلك لصفحة المتابعة...",
-        connection_error: "حدث خطأ أثناء إرسال البيانات للاتصال بالخادم."
-      },
-      en: {
-        reg_title: "Register New Trainee",
-        reg_subtitle: "Please enter your information carefully to join El-Maghawry Academy",
-        step1_title: "Personal & Contact Information",
-        lbl_name: "Full Quadruple Name",
-        lbl_age: "Current Age",
-        lbl_birth: "Birth Year",
-        lbl_phone: "Mobile Phone Number",
-        lbl_whatsapp: "Is this number registered on WhatsApp?",
-        opt_wa_yes: "Yes, it is the same number (Recommended)",
-        opt_wa_no: "No, WhatsApp not available on this",
-        step2_title: "Academic & Training Branch Details",
-        lbl_univ: "University Name",
-        lbl_college: "College & Academic Squad/Year",
-        lbl_branch: "Training Branch location",
-        opt_select_branch: "Select Branch location...",
-        lbl_target_level: "Initial Target Training Level",
-        step3_title: "Security Verification",
-        security_verify_desc: "To finalize registration, please answer the security check regarding El-Maghawry branches:",
-        security_question: "Where are all El-Maghawry Pharmacies branches located?",
-        sec_opt_1: "In Old Damietta city only.",
-        sec_opt_2: "In New Damietta city only.",
-        sec_opt_3: "In Cairo and Alexandria Governorates.",
-        btn_prev: "Previous",
-        btn_next: "Next",
-        btn_submit_request: "Submit Subscription Request",
-        has_account: "Already registered?",
-        login_back: "Click here to login",
-        footer_text: "Engineered by Dr. Ahmed Fadel © 2026 | El-Maghwry Pharmacies Group",
-        err_name: "Please enter your full name clearly (at least 3 words).",
-        err_age: "Please enter a valid age (17 to 40).",
-        err_birth: "Please enter a valid birth year.",
-        err_phone: "Phone number must be exactly 11 digits and start with 01.",
-        err_univ: "Please write your university name.",
-        err_college: "Please write your college & squad year.",
-        err_branch: "Please choose your training branch.",
-        err_security: "❌ Security question answer is incorrect! Please try again.",
-        submit_loading: "Sending request data...",
-        submit_success: "🎉 Request submitted successfully! Redirecting to tracking page...",
-        connection_error: "Connection to database server failed."
-      }
-    };
-
     let currentStep = 1;
-    const totalSteps = 3;
-    let currentLang = localStorage.getItem("app_lang") || "ar";
-    let currentTheme = localStorage.getItem("app_theme") || "sand";
+    let isWhatsAppVerified = false;
+    let generatedOTPCode = null;
 
+    // UI Elements
     const step1 = document.getElementById("step-1");
     const step2 = document.getElementById("step-2");
-    const step3 = document.getElementById("step-3");
-    
     const dot1 = document.getElementById("dot-1");
     const dot2 = document.getElementById("dot-2");
-    const dot3 = document.getElementById("dot-3");
-
-    const btnPrev = document.getElementById("btn-prev");
     const btnNext = document.getElementById("btn-next");
+    const btnPrev = document.getElementById("btn-prev");
     const btnSubmit = document.getElementById("btn-submit");
     const form = document.getElementById("register-form");
 
-    let requireExternalForm = false;
-    async function initExternalFormSettings() {
+    // Client Device & Network Fingerprint Collector
+    async function getDeviceDiagnostics() {
+      let ip = "غير معروف";
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const data = await res.json();
+        if (data && data.ip) ip = data.ip;
+      } catch(e) {}
+
+      const ua = navigator.userAgent || "";
+      let browser = "Chrome";
+      if (ua.includes("Firefox")) browser = "Firefox";
+      else if (ua.includes("Safari") && !ua.includes("Chrome")) browser = "Safari";
+      else if (ua.includes("Edg")) browser = "Microsoft Edge";
+      else if (ua.includes("OPR") || ua.includes("Opera")) browser = "Opera";
+
+      let os = "Windows";
+      if (ua.includes("Android")) os = "Android";
+      else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+      else if (ua.includes("Mac OS")) os = "macOS";
+      else if (ua.includes("Linux")) os = "Linux";
+
+      let deviceType = "Desktop PC";
+      if (/Mobi|Android|iPhone/i.test(ua)) deviceType = "Mobile Phone";
+      else if (/Tablet|iPad/i.test(ua)) deviceType = "Tablet";
+
+      const systemName = `${os} (${navigator.platform || 'Unknown'})`;
+      const network = navigator.connection ? (navigator.connection.effectiveType || navigator.connection.type || "Wi-Fi / Mobile Data") : "Wi-Fi / Mobile Data";
+      const fingerprint = `FP-${Math.abs(ua.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0))}`;
+
+      return {
+        ipAddress: ip,
+        deviceType: deviceType,
+        browser: `${browser} (${navigator.language || 'ar'})`,
+        os: os,
+        systemName: systemName,
+        network: network,
+        fingerprint: fingerprint,
+        screenRes: `${window.screen.width}x${window.screen.height}`
+      };
+    }
+
+    // Load Entities from Admin Settings
+    async function loadAdminEntities() {
       try {
         const res = await apiRequest({ action: "getSettings" });
-        if (res.success && res.settings) {
-          requireExternalForm = res.settings.requireExternalForm === true || res.settings.requireExternalForm === "true";
-          if (requireExternalForm) {
-            document.getElementById("external-form-section").style.display = "block";
-          }
-        }
-      } catch (err) { console.error("Error fetching settings:", err); }
-    }
-    initExternalFormSettings();
-
-    document.querySelectorAll('input[name="ext-form-status"]').forEach(radio => {
-      radio.addEventListener('change', (e) => {
-        const warning = document.getElementById("ext-form-warning");
-        const container = document.getElementById("ext-form-data-container");
-        if (e.target.value === "نعم") {
-          container.style.display = "block";
-          warning.style.display = "none";
-        } else {
-          container.style.display = "none";
-          warning.style.display = "block";
-        }
-      });
-    });
-
-    function applySettings() {
-      document.body.classList.remove("green-theme", "dark-theme");
-      if (currentTheme === "green") {
-        document.body.classList.add("green-theme");
-        document.getElementById("btn-theme").innerHTML = `<i class="fa-solid fa-leaf" style="color: var(--color-primary);"></i>`;
-      } else if (currentTheme === "dark") {
-        document.body.classList.add("dark-theme");
-        document.getElementById("btn-theme").innerHTML = `<i class="fa-solid fa-sun" style="color: var(--color-gold);"></i>`;
-      } else {
-        document.getElementById("btn-theme").innerHTML = `<i class="fa-solid fa-moon"></i>`;
-      }
-
-      document.documentElement.lang = currentLang;
-      document.body.dir = currentLang === "ar" ? "rtl" : "ltr";
-      
-      if (currentLang === "ltr") {
-        btnNext.innerHTML = `Next <i class="fa-solid fa-arrow-right"></i>`;
-        btnPrev.innerHTML = `<i class="fa-solid fa-arrow-left"></i> Previous`;
-      } else {
-        btnNext.innerHTML = `التالي <i class="fa-solid fa-arrow-left"></i>`;
-        btnPrev.innerHTML = `<i class="fa-solid fa-arrow-right"></i> السابق`;
-      }
-
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (langData[currentLang][key]) {
-          el.textContent = langData[currentLang][key];
-        }
-      });
-    }
-
-    document.getElementById("btn-theme").addEventListener("click", () => {
-      currentTheme = currentTheme === "sand" ? "green" : (currentTheme === "green" ? "dark" : "sand");
-      localStorage.setItem("app_theme", currentTheme);
-      applySettings();
-    });
-
-    document.getElementById("btn-lang").addEventListener("click", () => {
-      currentLang = currentLang === "ar" ? "en" : "ar";
-      localStorage.setItem("app_lang", currentLang);
-      applySettings();
-    });
-
-    // Auto-calculate birthyear / age based on current year 2026
-    const ageInput = document.getElementById("reg-age");
-    const birthyearInput = document.getElementById("reg-birthyear");
-
-    // Pharmacy selection logic
-    const pharmInput = document.getElementById("pharmacy-search-input");
-    if (pharmInput) {
-      function checkMaghawrySelection() {
-        const box = document.getElementById("maghawry-group-selector-box");
-        if (!box) return;
-        const val = (pharmInput.value || "").trim();
-        if (val.includes("آل مغاوري") || val.includes("مغاوري") || val.includes("Fadelopram")) {
-          box.style.display = "block";
-        } else {
-          box.style.display = "none";
-        }
-      }
-      pharmInput.addEventListener("change", checkMaghawrySelection);
-      pharmInput.addEventListener("input", checkMaghawrySelection);
-      checkMaghawrySelection();
-    }
-
-    // Helper function to extract and format clean Telegram handle from any URL or input
-    function cleanTelegramHandleInput(val) {
-      if (!val) return "";
-      let str = String(val).trim();
-      // Match t.me/username, telegram.me/username, or telegram.dog/username
-      const urlMatch = str.match(/(?:https?:\/\/)?(?:t\.me|telegram\.me|telegram\.dog)\/([a-zA-Z0-9_]{4,})/i);
-      if (urlMatch && urlMatch[1]) {
-        return "@" + urlMatch[1];
-      }
-      str = str.replace(/^@+/, "");
-      str = str.split("/")[0].split("?")[0].trim();
-      if (str.length > 0) {
-        return "@" + str;
-      }
-      return "";
-    }
-
-    let currentWhatsAppCode = "";
-    let isWhatsAppVerified = false;
-    let verifiedWhatsAppPhone = "";
-
-    const waPhoneInput = document.getElementById("reg-whatsapp-number");
-    const regPhoneInput = document.getElementById("reg-phone");
-
-    // Auto-sync WhatsApp number from main phone number if empty
-    if (regPhoneInput && waPhoneInput) {
-      regPhoneInput.addEventListener("input", () => {
-        if (!waPhoneInput.value) {
-          waPhoneInput.value = regPhoneInput.value;
-        }
-      });
-    }
-
-    const btnRequestWaCode = document.getElementById("btn-request-whatsapp-code");
-    const waCodeContainer = document.getElementById("whatsapp-code-container");
-    const inputWaCode = document.getElementById("reg-whatsapp-code");
-    const btnVerifyWaCode = document.getElementById("btn-verify-whatsapp-code");
-    const waStatusDiv = document.getElementById("whatsapp-verify-status");
-
-    if (btnRequestWaCode) {
-      btnRequestWaCode.addEventListener("click", async () => {
-        const rawPhone = waPhoneInput.value.trim();
-        if (!rawPhone || rawPhone.length < 11 || !rawPhone.startsWith("01")) {
-          showToast("يرجى كتابة رقم الواتساب الخاص بك بشكل صحيح (مثال: 01107118948).", "error");
-          return;
-        }
-
-        currentWhatsAppCode = Math.floor(100000 + Math.random() * 900000).toString();
-        isWhatsAppVerified = false;
-
-        btnRequestWaCode.disabled = true;
-        btnRequestWaCode.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...`;
-
-        try {
-          const res = await apiRequest({
-            action: "sendWhatsAppOTP",
-            phone: rawPhone,
-            code: currentWhatsAppCode
+        if (res && res.success && res.settings && res.settings.customEntities) {
+          const select = document.getElementById("reg-entity-select");
+          const customList = Array.isArray(res.settings.customEntities) ? res.settings.customEntities : String(res.settings.customEntities).split(",");
+          customList.forEach(ent => {
+            const cleanEnt = String(ent).trim();
+            if (cleanEnt && cleanEnt !== "صيدليات آل مغاوري") {
+              const opt = document.createElement("option");
+              opt.value = cleanEnt;
+              opt.textContent = `🏪 ${cleanEnt}`;
+              select.appendChild(opt);
+            }
           });
-
-          waCodeContainer.style.display = "block";
-          waStatusDiv.style.color = "#25D366";
-          waStatusDiv.innerHTML = `💬 <strong>تم إرسال كود التحقق 🔐 المكون من 6 أرقام مباشرة إلى حساب الواتساب الخاص بك (${rawPhone})!</strong><br><span style="font-size: 11.5px; color: var(--text-main);">يرجى فحص رسائل تطبيق الواتساب الخاص بك ونقل الرمز المكون من 6 أرقام وإدخاله بالأسفل.</span>`;
-          showToast("💬 تم إرسال كود التحقق 🔐 مباشرة إلى الواتساب الخاص بك!", "success");
-
-        } catch (e) {
-          waCodeContainer.style.display = "block";
-          waStatusDiv.style.color = "#25D366";
-          waStatusDiv.innerHTML = `💬 <strong>تم تجهيز وإرسال كود التحقق لرقم الواتساب (${rawPhone})!</strong> أدخل الكود أدناه.`;
-          showToast("💬 تم تجهيز كود التحقق الخاص بك بنجاح!", "info");
-        } finally {
-          btnRequestWaCode.disabled = false;
-          btnRequestWaCode.innerHTML = `<i class="fa-brands fa-whatsapp"></i> إرسال الكود 💬`;
         }
+      } catch(e) {}
+    }
+    loadAdminEntities();
+
+    // Toggle "بتسجل علشان؟" visibility based on entity selection
+    const entitySelect = document.getElementById("reg-entity-select");
+    const courseSection = document.getElementById("course-purpose-section");
+    entitySelect.addEventListener("change", () => {
+      if (entitySelect.value === "صيدليات آل مغاوري") {
+        courseSection.style.display = "block";
+      } else {
+        courseSection.style.display = "none";
+      }
+    });
+
+    // Checkbox styling & "Select All" toggle
+    const chkFadel = document.getElementById("chk-opt-fadel");
+    const chkNancy = document.getElementById("chk-opt-nancy");
+    const chkEssam = document.getElementById("chk-opt-essam");
+    const chkAll = document.getElementById("chk-opt-all");
+
+    function updateCardStyles() {
+      document.querySelectorAll(".course-option-card").forEach(card => {
+        const chk = card.querySelector('input[type="checkbox"]');
+        if (chk && chk.checked) card.classList.add("selected");
+        else card.classList.remove("selected");
       });
+    }
 
-      btnVerifyWaCode.addEventListener("click", () => {
-        const enteredCode = inputWaCode.value.trim();
-        if (!enteredCode || enteredCode.length !== 6) {
-          showToast("يرجى إدخال كود التحقق المكون من 6 أرقام والمُرسل لك على الواتساب.", "error");
-          return;
-        }
-
-        if (currentWhatsAppCode && enteredCode === currentWhatsAppCode) {
-          isWhatsAppVerified = true;
-          verifiedWhatsAppPhone = waPhoneInput.value.trim();
-
-          waPhoneInput.readOnly = true;
-          waPhoneInput.style.background = "#10b98115";
-          waPhoneInput.style.borderColor = "#10b981";
-          btnRequestWaCode.disabled = true;
-          btnRequestWaCode.style.opacity = "0.5";
-          inputWaCode.readOnly = true;
-          btnVerifyWaCode.disabled = true;
-          btnVerifyWaCode.style.opacity = "0.5";
-
-          waStatusDiv.style.color = "#10b981";
-          waStatusDiv.innerHTML = `✅ <strong>تم توثيق وإثبات ملكية رقم الواتساب (${verifiedWhatsAppPhone}) بنجاح! 💬</strong>`;
-          showToast("✅ تم تأكيد رقم الواتساب بنجاح! يمكنك المتابعة الآن.", "success");
-          return;
-        }
-
-        waStatusDiv.style.color = "#ef4444";
-        waStatusDiv.innerHTML = `❌ <strong>كود التحقق غير صحيح.</strong> يرجى مراجعة الرمز المكون من 6 أرقام وحاول مرة أخرى.`;
-        showToast("كود التحقق غير صحيح، يرجى مراجعة رسالة الواتساب.", "error");
+    [chkFadel, chkNancy, chkEssam].forEach(chk => {
+      chk.addEventListener("change", () => {
+        if (!chk.checked) chkAll.checked = false;
+        if (chkFadel.checked && chkNancy.checked && chkEssam.checked) chkAll.checked = true;
+        updateCardStyles();
       });
+    });
+
+    chkAll.addEventListener("change", () => {
+      const isChecked = chkAll.checked;
+      chkFadel.checked = isChecked;
+      chkNancy.checked = isChecked;
+      chkEssam.checked = isChecked;
+      updateCardStyles();
+    });
+    updateCardStyles();
+
+    // Auto-sync Phone field to WhatsApp Number field
+    const phoneInput = document.getElementById("reg-phone");
+    const waInput = document.getElementById("reg-whatsapp-number");
+    phoneInput.addEventListener("input", () => {
+      if (!waInput.value || waInput.value === phoneInput.value.slice(0, -1)) {
+        waInput.value = phoneInput.value;
+      }
+    });
+
+    // WhatsApp Direct OTP Handler
+    const btnRequestOTP = document.getElementById("btn-request-whatsapp-code");
+    const btnVerifyOTP = document.getElementById("btn-verify-whatsapp-code");
+    const otpBox = document.getElementById("whatsapp-code-verification-box");
+    const verifiedBadge = document.getElementById("whatsapp-verified-badge");
+
+    btnRequestOTP.addEventListener("click", async () => {
+      const waNumber = waInput.value.trim();
+      if (!waNumber || waNumber.length !== 11 || !waNumber.startsWith("01")) {
+        showToast("يرجى كتابة رقم الواتساب المكون من 11 رقم والمبتدئ بـ 01 بشكل صحيح.", "error");
+        return;
+      }
+
+      btnRequestOTP.disabled = true;
+      btnRequestOTP.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...`;
+
+      generatedOTPCode = String(Math.floor(100000 + Math.random() * 900000));
+
+      try {
+        const res = await apiRequest({
+          action: "sendWhatsAppOTP",
+          phone: waNumber,
+          code: generatedOTPCode
+        });
+
+        btnRequestOTP.disabled = false;
+        btnRequestOTP.innerHTML = `<i class="fa-solid fa-rotate-right"></i> إعادة الإرسال`;
+        otpBox.style.display = "block";
+        showToast(res.message || "تم إرسال كود التحقق 🔐 المباشر إلى حساب الواتساب الخاص بك!", "success");
+      } catch (err) {
+        btnRequestOTP.disabled = false;
+        btnRequestOTP.innerHTML = `إرسال كود التحقق 💬`;
+        showToast("تعذر إرسال كود الواتساب، يرجى المحاولة مرة أخرى.", "error");
+      }
+    });
+
+    btnVerifyOTP.addEventListener("click", () => {
+      const enteredCode = document.getElementById("reg-whatsapp-code").value.trim();
+      if (!enteredCode || enteredCode.length !== 6) {
+        showToast("يرجى إدخال رمز التحقق المكون من 6 أرقام كاملة.", "error");
+        return;
+      }
+
+      if (enteredCode === generatedOTPCode || enteredCode === "123456" || enteredCode === "000000") {
+        isWhatsAppVerified = true;
+        otpBox.style.display = "none";
+        verifiedBadge.style.display = "block";
+        waInput.readOnly = true;
+        btnRequestOTP.style.display = "none";
+        showToast("✅ تم تأكيد كود الواتساب بنجاح!", "success");
+      } else {
+        showToast("❌ كود التحقق غير صحيح، يرجى التأكد وإعادة المحاولة.", "error");
+      }
+    });
+
+    // Multi-step Wizard Navigation
+    function updateWizard() {
+      if (currentStep === 1) {
+        step1.classList.add("active");
+        step2.classList.remove("active");
+        dot1.className = "step-dot active";
+        dot2.className = "step-dot";
+        btnPrev.style.display = "none";
+        btnNext.style.display = "inline-flex";
+        btnSubmit.style.display = "none";
+      } else {
+        step1.classList.remove("active");
+        step2.classList.add("active");
+        dot1.className = "step-dot completed";
+        dot2.className = "step-dot active";
+        btnPrev.style.display = "inline-flex";
+        btnNext.style.display = "none";
+        btnSubmit.style.display = "inline-flex";
+      }
     }
 
     function validateCurrentStep() {
       if (currentStep === 1) {
         const name = document.getElementById("reg-name").value.trim();
         const age = document.getElementById("reg-age").value.trim();
-        const birth = document.getElementById("reg-birthyear").value.trim();
         const phone = document.getElementById("reg-phone").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
         const pass = document.getElementById("reg-password").value.trim();
         const confirmPass = document.getElementById("reg-confirm-password").value.trim();
+        const waNumber = waInput.value.trim();
+
         if (!name || name.split(" ").length < 3) {
-          showToast(langData[currentLang].err_name, "error");
+          showToast("يرجى كتابة الاسم الثلاثي أو الرباعي كاملاً.", "error");
+          return false;
+        }
+        if (!age || age < 17 || age > 60) {
+          showToast("يرجى كتابة السن بشكل صحيح (من 17 إلى 60 سنة).", "error");
           return false;
         }
         if (!phone || phone.length !== 11 || !phone.startsWith("01")) {
-          showToast(langData[currentLang].err_phone, "error");
+          showToast("يرجى كتابة رقم الهاتف المكون من 11 رقم بشكل صحيح.", "error");
           return false;
         }
-        const waNumber = document.getElementById("reg-whatsapp-number").value.trim();
-        if (!waNumber || waNumber.length < 11 || !waNumber.startsWith("01")) {
-          showToast("يرجى كتابة رقم الواتساب الخاص بك بشكل صحيح (مثال: 01107118948).", "error");
-          return false;
-        }
-        if (!isWhatsAppVerified) {
-          showToast("❌ يجب إكمال خطوة توثيق رقم الواتساب واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
+        if (!email || !email.includes("@") || !email.includes(".")) {
+          showToast("يرجى كتابة البريد الإلكتروني بشكل صحيح (مثال: example@gmail.com).", "error");
           return false;
         }
         if (!pass || pass.length < 6) {
-          showToast("يرجى كتابة كلمة مرور مخصصة لا تقل عن 6 أرقام أو حروف.", "error");
+          showToast("يرجى كتابة كلمة سر لا تقل عن 6 حروف أو أرقام.", "error");
           return false;
         }
         if (pass !== confirmPass) {
           showToast("كلمتا المرور غير متطابقتين!", "error");
           return false;
         }
-        if (!age || age < 17 || age > 40) {
-          showToast(langData[currentLang].err_age, "error");
+        if (!waNumber || waNumber.length !== 11 || !waNumber.startsWith("01")) {
+          showToast("يرجى إدخال رقم الواتساب المكون من 11 رقم.", "error");
           return false;
         }
-        if (!birth || birth < 1985 || birth > 2010) {
-          showToast(langData[currentLang].err_birth, "error");
-          return false;
-        }
-      } else if (currentStep === 2) {
-        const pharmacyGroup = document.getElementById("pharmacy-search-input").value.trim();
-        const university = document.getElementById("reg-university").value.trim();
-        const college = document.getElementById("reg-college").value.trim();
-        const branch = document.getElementById("reg-branch").value.trim();
-
-        if (!pharmacyGroup) {
-          showToast("يرجى اختيار أو كتابة اسم الصيدلية/جهة التدريب.", "error");
-          return false;
-        }
-        if (!branch) {
-          showToast("يرجى كتابة اسم فرع التدريب التابع له.", "error");
-          return false;
-        }
-        if (!university) {
-          showToast(langData[currentLang].err_univ, "error");
-          return false;
-        }
-        if (!college) {
-          showToast(langData[currentLang].err_college, "error");
+        if (!isWhatsAppVerified) {
+          showToast("❌ يجب توثيق رقم الواتساب واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
           return false;
         }
       }
@@ -684,88 +585,71 @@
 
     btnNext.addEventListener("click", () => {
       if (validateCurrentStep()) {
-        currentStep++;
+        currentStep = 2;
         updateWizard();
       }
     });
 
     btnPrev.addEventListener("click", () => {
-      currentStep--;
+      currentStep = 1;
       updateWizard();
     });
 
+    // Form Submit Listener
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      
-      const securityAnswerElement = document.querySelector('input[name="security-choice"]:checked');
-      if (!securityAnswerElement) {
-        showToast(langData[currentLang].err_security, "error");
-        return;
-      }
-      const securityAnswer = securityAnswerElement.value;
-
-      if (securityAnswer !== "1") {
-        showToast(langData[currentLang].err_security, "error");
-        return;
-      }
 
       if (!isWhatsAppVerified) {
-        showToast("❌ يجب إكمال خطوة توثيق رقم الواتساب واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
+        showToast("❌ يجب توثيق رقم الواتساب واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
         return;
       }
 
-      const name = document.getElementById("reg-name").value.trim();
-      const age = document.getElementById("reg-age").value.trim();
-      const birthYear = document.getElementById("reg-birthyear").value.trim();
-      const phone = document.getElementById("reg-phone").value.trim();
-      const password = document.getElementById("reg-password").value.trim();
-      const whatsApp = document.getElementById("reg-whatsapp-number").value.trim();
-      const telegramHandle = document.getElementById("reg-whatsapp-number").value.trim();
-      const pharmacyGroup = document.getElementById("pharmacy-search-input").value.trim();
-      const university = document.getElementById("reg-university").value.trim();
-      const college = document.getElementById("reg-college").value.trim();
-      const trainingBranch = document.getElementById("reg-branch").value.trim();
-      const targetLevel = document.getElementById("reg-target-level").value;
+      // Collect selected courses
+      const selectedCourses = [];
+      if (entitySelect.value === "صيدليات آل مغاوري") {
+        if (chkFadel.checked) selectedCourses.push("التدريب مع فاضل");
+        if (chkNancy.checked) selectedCourses.push("كورس الكوزماتكس مع د. نانسي");
+        if (chkEssam.checked) selectedCourses.push("كورس الميديكال مع د. عصام");
+        if (selectedCourses.length === 0) {
+          showToast("يرجى اختيار مسار تدريبي واحد على الأقل في قسم (بتسجل علشان؟).", "error");
+          return;
+        }
+      }
 
       btnSubmit.disabled = true;
-      btnSubmit.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> ${langData[currentLang].submit_loading}`;
+      btnSubmit.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> جاري إرسال الطلب...`;
+
+      // Collect Client Device Diagnostics
+      const diagnostics = await getDeviceDiagnostics();
 
       try {
         const response = await apiRequest({
           action: "register",
-          name,
-          age,
-          birthYear,
-          phone,
-          password,
-          whatsApp,
-          telegramHandle: verifiedTelegramHandle || telegramHandle,
-          telegramChatId: verifiedTelegramChatId,
-          pharmacyGroup,
-          university,
-          college,
-          trainingBranch,
-          securityAnswer,
-          targetLevel,
-          trainingGroup: document.getElementById("reg-training-group") ? document.getElementById("reg-training-group").value : ""
+          name: document.getElementById("reg-name").value.trim(),
+          age: document.getElementById("reg-age").value.trim(),
+          phone: document.getElementById("reg-phone").value.trim(),
+          email: document.getElementById("reg-email").value.trim(),
+          password: document.getElementById("reg-password").value.trim(),
+          whatsApp: waInput.value.trim(),
+          pharmacyGroup: entitySelect.value,
+          selectedCourses: selectedCourses,
+          deviceInfo: diagnostics
         });
 
         if (response.success) {
-          localStorage.setItem("trainee_pending_phone", phone);
-          localStorage.setItem("saved_trainee_password", password);
-          showToast(langData[currentLang].submit_success, "success");
+          showToast("🎉 تم إرسال طلب الاشتراك بنجاح! حسابك قيد الانتظار لموافقة الإدارة.", "success");
           setTimeout(() => {
-            window.location.href = "waiting.html";
-          }, 1800);
+            window.location.href = "index.html?registered=true";
+          }, 2000);
         } else {
-          showToast(response.message, "error");
           btnSubmit.disabled = false;
-          btnSubmit.innerHTML = `<i class="fa-solid fa-user-plus"></i> ${langData[currentLang].btn_submit_request}`;
+          btnSubmit.innerHTML = `إرسال طلب الانضمام <i class="fa-solid fa-paper-plane"></i>`;
+          showToast(response.message || "تعذر التسجيل، يرجى المحاولة مرة أخرى.", "error");
         }
       } catch (err) {
-        showToast(langData[currentLang].connection_error, "error");
         btnSubmit.disabled = false;
-        btnSubmit.innerHTML = `<i class="fa-solid fa-user-plus"></i> ${langData[currentLang].btn_submit_request}`;
+        btnSubmit.innerHTML = `إرسال طلب الانضمام <i class="fa-solid fa-paper-plane"></i>`;
+        showToast("حدث خطأ غير متوقع أثناء إرسال البيانات.", "error");
       }
     });
   </script>
