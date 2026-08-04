@@ -1365,10 +1365,7 @@
     const traineePassword = sessionStorage.getItem("trainee_password");
     const traineeName = sessionStorage.getItem("trainee_name");
 
-    if (!traineeLoggedIn || !traineeEmail) {
-      window.location.href = "index.html";
-      return;
-    }
+
     const traineeBranch = sessionStorage.getItem("trainee_branch");
     const loginTime = sessionStorage.getItem("login_timestamp");
 
