@@ -3,1065 +3,982 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fadelopram Rx Academy — لوحة إدارة النظام المتقدمة</title>
+  <title>Fadelopram Rx Academy — لوحة إدارة النظام</title>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">
-  <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=3.5">
   <style>
+    /* ===== LIGHT MODE (DEFAULT) ===== */
     :root {
-      --admin-bg: #0b0c10;
-      --admin-card-bg: rgba(22, 27, 46, 0.75);
-      --admin-border: rgba(251, 191, 36, 0.18);
-      --admin-gold: #fbbf24;
-      --admin-gold-glow: rgba(251, 191, 36, 0.25);
-      --admin-sidebar-width: 260px;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --card-border: #e2e8f0;
+      --sidebar-bg: #ffffff;
+      --sidebar-border: #e2e8f0;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --gold: #d97706;
+      --gold-light: #fbbf24;
+      --gold-bg: rgba(217,119,6,0.08);
+      --gold-glow: rgba(217,119,6,0.15);
+      --input-bg: #f8fafc;
+      --input-border: #cbd5e1;
+      --table-header-bg: #f8fafc;
+      --table-hover: rgba(217,119,6,0.04);
+      --danger: #ef4444;
+      --success: #10b981;
+      --overlay-bg: rgba(100,116,139,0.5);
+      --shadow: 0 1px 3px rgba(0,0,0,0.08);
+      --shadow-lg: 0 8px 25px rgba(0,0,0,0.08);
     }
+
+    /* ===== DARK MODE ===== */
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: rgba(251,191,36,0.15);
+      --sidebar-bg: #1e293b;
+      --sidebar-border: rgba(251,191,36,0.15);
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --gold: #fbbf24;
+      --gold-light: #fbbf24;
+      --gold-bg: rgba(251,191,36,0.1);
+      --gold-glow: rgba(251,191,36,0.2);
+      --input-bg: #0f172a;
+      --input-border: rgba(251,191,36,0.2);
+      --table-header-bg: #0f172a;
+      --table-hover: rgba(251,191,36,0.05);
+      --danger: #f87171;
+      --success: #34d399;
+      --overlay-bg: rgba(0,0,0,0.7);
+      --shadow: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-lg: 0 8px 25px rgba(0,0,0,0.4);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--admin-bg);
-      color: #e2e8f0;
+      background: var(--bg);
+      color: var(--text-primary);
       font-family: 'Cairo', sans-serif;
-      margin: 0;
-      padding: 0;
       min-height: 100vh;
       overflow-x: hidden;
+      transition: background 0.3s, color 0.3s;
     }
 
-    /* Glassmorphism Dashboard Layout */
-    .admin-layout {
-      display: flex;
-      min-height: 100vh;
-    }
+    /* ===== LAYOUT ===== */
+    .admin-layout { display: flex; min-height: 100vh; }
 
-    /* Sidebar Navigation */
     .admin-sidebar {
-      width: var(--admin-sidebar-width);
-      background: rgba(15, 20, 35, 0.95);
-      border-left: 1px solid var(--admin-border);
-      backdrop-filter: blur(20px);
-      padding: 24px 16px;
+      width: 250px;
+      background: var(--sidebar-bg);
+      border-left: 1px solid var(--sidebar-border);
+      padding: 20px 14px;
       display: flex;
       flex-direction: column;
       position: fixed;
-      top: 0;
-      bottom: 0;
-      right: 0;
+      top: 0; bottom: 0; right: 0;
       z-index: 100;
-      box-shadow: -5px 0 25px rgba(0,0,0,0.5);
-    }
-
-    .admin-brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--admin-border);
-      margin-bottom: 20px;
-    }
-
-    .admin-brand img {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      object-fit: cover;
-      box-shadow: 0 0 15px var(--admin-gold-glow);
-    }
-
-    .admin-brand-title {
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--admin-gold);
-      margin: 0;
-      line-height: 1.2;
-    }
-
-    .admin-nav-menu {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      flex: 1;
+      box-shadow: var(--shadow-lg);
+      transition: background 0.3s, border 0.3s;
       overflow-y: auto;
     }
 
-    .admin-nav-item {
+    .admin-main {
+      margin-right: 250px;
+      flex: 1;
+      padding: 24px 28px;
+      max-width: calc(100vw - 250px);
+    }
+
+    /* ===== SIDEBAR BRAND ===== */
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 16px;
+    }
+    .admin-brand img { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; }
+    .admin-brand-info h3 { font-size: 14px; font-weight: 900; color: var(--gold); margin: 0; }
+    .admin-brand-info span { font-size: 10.5px; color: var(--text-muted); }
+
+    /* ===== SIDEBAR NAV ===== */
+    .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .nav-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
-      border-radius: 12px;
-      color: #94a3b8;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text-secondary);
       font-weight: 700;
-      font-size: 13.5px;
+      font-size: 13px;
       cursor: pointer;
-      transition: all 0.25s ease;
-      text-decoration: none;
+      transition: all 0.2s;
     }
-
-    .admin-nav-item:hover {
-      background: rgba(251, 191, 36, 0.08);
-      color: #fff;
-      transform: translateX(-3px);
-    }
-
-    .admin-nav-item.active {
-      background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.05) 100%);
-      color: var(--admin-gold);
-      border-right: 4px solid var(--admin-gold);
-      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.1);
-    }
-
-    .admin-badge {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      padding: 2px 8px;
-      border-radius: 20px;
-      font-size: 11px;
+    .nav-item:hover { background: var(--gold-bg); color: var(--text-primary); }
+    .nav-item.active {
+      background: var(--gold-bg);
+      color: var(--gold);
+      border-right: 3px solid var(--gold);
       font-weight: 800;
     }
+    .nav-item i { margin-left: 8px; width: 18px; text-align: center; }
+    .badge-count {
+      font-size: 11px; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px;
+    }
+    .badge-danger { background: rgba(239,68,68,0.12); color: var(--danger); }
+    .badge-gold { background: var(--gold-bg); color: var(--gold); }
 
-    .admin-badge.gold {
-      background: rgba(251, 191, 36, 0.2);
-      color: var(--admin-gold);
-      border-color: var(--admin-gold);
+    .sidebar-footer {
+      padding-top: 14px;
+      border-top: 1px solid var(--card-border);
+      margin-top: auto;
     }
 
-    /* Main Content Area */
-    .admin-main {
-      margin-right: var(--admin-sidebar-width);
-      flex: 1;
-      padding: 25px 30px;
-      max-width: calc(100vw - var(--admin-sidebar-width));
-      box-sizing: border-box;
-    }
-
-    /* Top Bar Header */
+    /* ===== HEADER ===== */
     .admin-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 28px;
-      background: var(--admin-card-bg);
-      border: 1px solid var(--admin-border);
-      padding: 16px 24px;
-      border-radius: 16px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    }
-
-    .admin-header-title h1 {
-      font-size: 20px;
-      font-weight: 900;
-      color: var(--admin-gold);
-      margin: 0 0 4px;
-    }
-
-    .admin-header-title p {
-      font-size: 12px;
-      color: #94a3b8;
-      margin: 0;
-    }
-
-    /* KPI Stat Cards Grid */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-      margin-bottom: 28px;
-    }
-
-    .kpi-card {
-      background: var(--admin-card-bg);
-      border: 1px solid var(--admin-border);
-      border-radius: 16px;
-      padding: 20px;
-      backdrop-filter: blur(16px);
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-    }
-
-    .kpi-card:hover {
-      transform: translateY(-4px);
-      border-color: var(--admin-gold);
-      box-shadow: 0 10px 30px var(--admin-gold-glow);
-    }
-
-    .kpi-icon {
-      width: 48px;
-      height: 48px;
+      margin-bottom: 22px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 14px 22px;
       border-radius: 14px;
-      background: rgba(251, 191, 36, 0.12);
-      color: var(--admin-gold);
+      box-shadow: var(--shadow);
+      transition: all 0.3s;
+    }
+    .admin-header h1 { font-size: 18px; font-weight: 900; color: var(--gold); margin: 0 0 2px; }
+    .admin-header p { font-size: 12px; color: var(--text-muted); margin: 0; }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-actions input {
+      padding: 9px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-size: 13px;
+      width: 200px;
+      font-family: 'Cairo', sans-serif;
+      transition: all 0.3s;
+    }
+
+    /* ===== THEME TOGGLE BUTTON ===== */
+    .theme-btn {
+      width: 38px; height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      background: var(--card-bg);
+      color: var(--gold);
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      margin-bottom: 12px;
+      font-size: 16px;
+      transition: all 0.3s;
     }
+    .theme-btn:hover { border-color: var(--gold); background: var(--gold-bg); }
 
-    .kpi-value {
-      font-size: 28px;
-      font-weight: 900;
-      color: #fff;
-      margin: 0 0 4px;
+    /* ===== KPI CARDS ===== */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
     }
-
-    .kpi-label {
-      font-size: 12.5px;
-      color: #94a3b8;
-      font-weight: 700;
+    .kpi-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      transition: all 0.25s;
     }
-
-    /* Panels & Tables */
-    .admin-panel {
-      display: none;
-      animation: panelFadeIn 0.35s ease forwards;
+    .kpi-card:hover { transform: translateY(-3px); border-color: var(--gold); box-shadow: 0 6px 20px var(--gold-glow); }
+    .kpi-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: var(--gold-bg);
+      color: var(--gold);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      margin-bottom: 10px;
     }
+    .kpi-value { font-size: 26px; font-weight: 900; color: var(--text-primary); margin: 0 0 2px; }
+    .kpi-label { font-size: 12px; color: var(--text-muted); font-weight: 700; }
 
-    .admin-panel.active {
-      display: block;
-    }
-
-    @keyframes panelFadeIn {
-      from { opacity: 0; transform: translateY(10px); }
+    /* ===== PANELS ===== */
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; animation: fadeSlideUp 0.3s ease; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .glass-card {
-      background: var(--admin-card-bg);
-      border: 1px solid var(--admin-border);
-      border-radius: 18px;
-      padding: 24px;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 35px rgba(0,0,0,0.3);
-      margin-bottom: 24px;
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      transition: all 0.3s;
     }
+    .card-title { color: var(--gold); font-weight: 800; font-size: 16px; margin: 0 0 16px; }
+    .card-title i { margin-left: 6px; }
 
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-      border-radius: 12px;
-      border: 1px solid var(--admin-border);
-    }
-
-    .custom-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: right;
-      font-size: 13.5px;
-    }
-
-    .custom-table th {
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--admin-gold);
+    /* ===== TABLE ===== */
+    .table-wrap { width: 100%; overflow-x: auto; border-radius: 10px; border: 1px solid var(--card-border); }
+    .data-table { width: 100%; border-collapse: collapse; text-align: right; font-size: 13px; }
+    .data-table th {
+      background: var(--table-header-bg);
+      color: var(--gold);
       font-weight: 800;
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--admin-border);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--card-border);
       white-space: nowrap;
     }
-
-    .custom-table td {
-      padding: 14px 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      color: #cbd5e1;
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--card-border);
+      color: var(--text-secondary);
       vertical-align: middle;
     }
+    .data-table tbody tr:hover { background: var(--table-hover); }
 
-    .custom-table tbody tr:hover {
-      background: rgba(251, 191, 36, 0.04);
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s;
     }
+    .btn-gold {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #fff;
+      border: none;
+      box-shadow: 0 2px 8px rgba(217,119,6,0.3);
+    }
+    .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(217,119,6,0.4); }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text-secondary);
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-danger-outline {
+      background: transparent;
+      border: 1px solid rgba(239,68,68,0.3);
+      color: var(--danger);
+    }
+    .btn-danger-outline:hover { background: rgba(239,68,68,0.08); }
+    .btn-sm { padding: 5px 10px; font-size: 12px; }
 
-    /* Auth Login Overlay */
+    /* ===== BADGES ===== */
+    .status-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .status-active { background: rgba(16,185,129,0.1); color: var(--success); }
+    .status-blocked { background: rgba(239,68,68,0.1); color: var(--danger); }
+    .status-pending { background: rgba(251,191,36,0.1); color: var(--gold); }
+
+    /* ===== LOGIN OVERLAY ===== */
     #admin-login-overlay {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(5, 7, 15, 0.95);
-      backdrop-filter: blur(25px);
+      inset: 0;
+      background: var(--overlay-bg);
+      backdrop-filter: blur(12px);
       z-index: 9999;
       display: flex;
       align-items: center;
       justify-content: center;
     }
+    .login-card {
+      background: var(--card-bg);
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      padding: 36px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .login-card img { width: 64px; height: 64px; border-radius: 16px; object-fit: cover; margin-bottom: 14px; }
+    .login-card h2 { color: var(--gold); font-weight: 900; font-size: 20px; margin: 0 0 24px; }
+    .login-card label { display: block; text-align: right; font-weight: 700; color: var(--gold); font-size: 13px; margin-bottom: 6px; }
+    .login-card input {
+      width: 100%; padding: 12px; border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-weight: 700;
+      font-family: 'Cairo', sans-serif;
+      margin-bottom: 16px;
+      transition: border 0.2s;
+    }
+    .login-card input:focus { outline: none; border-color: var(--gold); }
+
+    /* ===== MODAL ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--overlay-bg);
+      backdrop-filter: blur(8px);
+      z-index: 5000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: var(--card-bg);
+      border: 2px solid var(--gold);
+      border-radius: 18px;
+      padding: 0;
+      max-width: 520px;
+      width: 92%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .modal-head h3 { color: var(--gold); font-weight: 800; font-size: 16px; margin: 0; }
+    .modal-body { padding: 22px; }
+    .modal-body label { display: block; font-weight: 700; font-size: 13px; color: var(--gold); margin-bottom: 6px; }
+    .modal-body input, .modal-body textarea, .modal-body select {
+      width: 100%; padding: 10px; border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      margin-bottom: 14px;
+      transition: border 0.2s;
+    }
+    .modal-body input:focus, .modal-body textarea:focus, .modal-body select:focus { outline: none; border-color: var(--gold); }
+    .modal-body textarea { min-height: 80px; resize: vertical; }
+
+    /* ===== SLIDER DRAWER ===== */
+    .slider-backdrop {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--overlay-bg);
+      z-index: 900;
+    }
+    .slider-backdrop.active { display: block; }
+    .slider-drawer {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      width: 420px; max-width: 88vw;
+      background: var(--card-bg);
+      border-right: 2px solid var(--gold);
+      z-index: 1000;
+      transform: translateX(-100%);
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      padding: 22px;
+      box-shadow: 10px 0 40px rgba(0,0,0,0.15);
+      overflow-y: auto;
+    }
+    .slider-drawer.open { transform: translateX(0); }
+
+    /* ===== SETTINGS CARDS ===== */
+    .settings-card {
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .settings-card h4 { margin: 0 0 10px; font-weight: 900; font-size: 14px; }
+    .settings-card label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 4px; color: var(--text-secondary); }
+    .settings-card input {
+      width: 100%; padding: 10px; border-radius: 8px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-primary);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 768px) {
+      .admin-sidebar { width: 200px; padding: 14px 10px; }
+      .admin-main { margin-right: 200px; padding: 16px; max-width: calc(100vw - 200px); }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .settings-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Admin Login Overlay -->
+  <!-- LOGIN OVERLAY -->
   <div id="admin-login-overlay">
-    <div class="glass-card" style="max-width: 420px; width: 90%; text-align: center; border: 2px solid var(--admin-gold); box-shadow: 0 0 50px var(--admin-gold-glow);">
-      <img src="fadelopram_logo.jpg" alt="Logo" style="width: 70px; height: 70px; border-radius: 18px; object-fit: cover; margin-bottom: 15px; box-shadow: 0 0 25px var(--admin-gold-glow);">
-      <h2 style="color: var(--admin-gold); font-weight: 900; margin: 0 0 24px; font-size: 22px;">Fadelopram Rx Academy</h2>
-
+    <div class="login-card">
+      <img src="fadelopram_logo.jpg" alt="Logo">
+      <h2>Fadelopram Rx Academy</h2>
       <form id="admin-login-form">
-        <div class="form-group" style="margin-bottom: 16px; text-align: right;">
-          <label style="font-weight: bold; color: var(--admin-gold); font-size: 13px;">اسم المستخدم <span class="required">*</span></label>
-          <input type="text" id="admin-user-input" required placeholder="اسم المستخدم" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--admin-border); background: rgba(15,23,42,0.8); color: #fff; font-weight: bold; margin-top: 6px;">
-        </div>
-
-        <div class="form-group" style="margin-bottom: 22px; text-align: right;">
-          <label style="font-weight: bold; color: var(--admin-gold); font-size: 13px;">كلمة المرور <span class="required">*</span></label>
-          <input type="password" id="admin-pass-input" required placeholder="••••••••" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid var(--admin-border); background: rgba(15,23,42,0.8); color: #fff; font-weight: bold; margin-top: 6px;">
-        </div>
-
-        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 900; cursor: pointer;">
-          <i class="fa-solid fa-lock-open"></i> تسجيل الدخول للوحة الإدارة
+        <label>اسم المستخدم</label>
+        <input type="text" id="admin-user-input" required placeholder="اسم المستخدم">
+        <label>كلمة المرور</label>
+        <input type="password" id="admin-pass-input" required placeholder="••••••••">
+        <button type="submit" class="btn btn-gold" style="width:100%; padding:13px; font-size:15px; font-weight:900; margin-top:8px;">
+          <i class="fa-solid fa-lock-open"></i> تسجيل الدخول
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Admin Main Dashboard Layout -->
-  <div class="admin-layout" id="admin-dashboard-container" style="display: none;">
-    
-    <!-- Sidebar Navigation -->
+  <!-- DASHBOARD LAYOUT -->
+  <div class="admin-layout" id="admin-dashboard" style="display:none;">
+
+    <!-- SIDEBAR -->
     <aside class="admin-sidebar">
       <div class="admin-brand">
         <img src="fadelopram_logo.jpg" alt="Logo">
-        <div>
-          <h3 class="admin-brand-title">Fadelopram Rx</h3>
-          <span style="font-size: 11px; color: #94a3b8; font-weight: 600;">لوحة الإدارة والمتابعة</span>
+        <div class="admin-brand-info">
+          <h3>Fadelopram Rx</h3>
+          <span>لوحة الإدارة</span>
         </div>
       </div>
 
-      <ul class="admin-nav-menu">
-        <li class="admin-nav-item active" onclick="switchAdminTab('overview', this)">
-          <span><i class="fa-solid fa-chart-pie" style="margin-left: 8px;"></i> النظرة العامة</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('pending', this)">
-          <span><i class="fa-solid fa-user-clock" style="margin-left: 8px;"></i> طلبات الاشتراك المعلقة</span>
-          <span class="admin-badge" id="nav-badge-pending">0</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('trainees', this)">
-          <span><i class="fa-solid fa-user-graduate" style="margin-left: 8px;"></i> دليل المتدربين المقبولين</span>
-          <span class="admin-badge gold" id="nav-badge-trainees">0</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('curriculum', this)">
-          <span><i class="fa-solid fa-book-bookmark" style="margin-left: 8px;"></i> المناهج والكورسات</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('promotions', this)">
-          <span><i class="fa-solid fa-award" style="margin-left: 8px;"></i> الترقيات والشهادات</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('announcements', this)">
-          <span><i class="fa-solid fa-bullhorn" style="margin-left: 8px;"></i> الإعلانات والبنات</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('questions', this)">
-          <span><i class="fa-solid fa-file-circle-question" style="margin-left: 8px;"></i> بنك أسئلة الامتحانات</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('reports', this)">
-          <span><i class="fa-solid fa-notes-medical" style="margin-left: 8px;"></i> تقارير الحالات</span>
-        </li>
-        <li class="admin-nav-item" onclick="switchAdminTab('settings', this)">
-          <span><i class="fa-solid fa-sliders" style="margin-left: 8px;"></i> إعدادات المنصة والواتساب</span>
-        </li>
+      <ul class="nav-menu">
+        <li class="nav-item active" onclick="switchTab('overview',this)"><span><i class="fa-solid fa-chart-pie"></i> النظرة العامة</span></li>
+        <li class="nav-item" onclick="switchTab('pending',this)"><span><i class="fa-solid fa-user-clock"></i> طلبات الاشتراك</span><span class="badge-count badge-danger" id="badge-pending">0</span></li>
+        <li class="nav-item" onclick="switchTab('trainees',this)"><span><i class="fa-solid fa-user-graduate"></i> المتدربين المقبولين</span><span class="badge-count badge-gold" id="badge-trainees">0</span></li>
+        <li class="nav-item" onclick="switchTab('curriculum',this)"><span><i class="fa-solid fa-book-bookmark"></i> المناهج والكورسات</span></li>
+        <li class="nav-item" onclick="switchTab('promotions',this)"><span><i class="fa-solid fa-award"></i> الترقيات والشهادات</span></li>
+        <li class="nav-item" onclick="switchTab('announcements',this)"><span><i class="fa-solid fa-bullhorn"></i> الإعلانات</span></li>
+        <li class="nav-item" onclick="switchTab('questions',this)"><span><i class="fa-solid fa-file-circle-question"></i> بنك الأسئلة</span></li>
+        <li class="nav-item" onclick="switchTab('reports',this)"><span><i class="fa-solid fa-notes-medical"></i> تقارير الحالات</span></li>
+        <li class="nav-item" onclick="switchTab('settings',this)"><span><i class="fa-solid fa-sliders"></i> الإعدادات</span></li>
       </ul>
 
-      <div style="padding-top: 15px; border-top: 1px solid var(--admin-border); margin-top: auto;">
-        <button class="btn btn-secondary" onclick="adminLogout()" style="width: 100%; border-radius: 10px; font-weight: bold; color: #ef4444; border-color: rgba(239,68,68,0.3);">
+      <div class="sidebar-footer">
+        <button class="btn btn-danger-outline" onclick="adminLogout()" style="width:100%;">
           <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
         </button>
       </div>
     </aside>
 
-    <!-- Main Content View -->
+    <!-- MAIN CONTENT -->
     <main class="admin-main">
-      
-      <!-- Top Bar Header -->
-      <header class="admin-header">
-        <div class="admin-header-title">
-          <h1 id="panel-title-text">النظرة العامة والإحصائيات</h1>
-          <p id="admin-logged-name">مرحباً بك د. أحمد فاضل (Owner)</p>
-        </div>
 
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <input type="text" id="global-admin-search" placeholder="🔍 بحث سريع في البيانات..." oninput="handleGlobalAdminSearch()" style="padding: 10px 16px; border-radius: 10px; border: 1px solid var(--admin-border); background: rgba(15,23,42,0.8); color: #fff; font-size: 13px; width: 220px;">
-          <button class="theme-switch-btn" id="btn-theme" title="Toggle Theme"><i class="fa-solid fa-moon"></i></button>
+      <!-- HEADER -->
+      <header class="admin-header">
+        <div>
+          <h1 id="panel-title">النظرة العامة</h1>
+          <p id="admin-welcome">مرحباً بك</p>
+        </div>
+        <div class="header-actions">
+          <input type="text" id="global-search" placeholder="🔍 بحث سريع...">
+          <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" title="تبديل المظهر">
+            <i class="fa-solid fa-moon"></i>
+          </button>
         </div>
       </header>
 
-      <!-- KPI Stat Cards -->
+      <!-- KPI CARDS -->
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
-          <div class="kpi-value" id="kpi-total-trainees">0</div>
-          <div class="kpi-label">إجمالي المتدربين المسجلين</div>
+          <div class="kpi-value" id="kpi-total">0</div>
+          <div class="kpi-label">إجمالي المتدربين</div>
         </div>
-
-        <div class="kpi-card" style="border-color: rgba(239,68,68,0.4);">
-          <div class="kpi-icon" style="background: rgba(239,68,68,0.12); color: #ef4444;"><i class="fa-solid fa-user-clock"></i></div>
-          <div class="kpi-value" id="kpi-pending-requests" style="color: #ef4444;">0</div>
-          <div class="kpi-label">طلبات بانتظار موافقة الإدارة</div>
+        <div class="kpi-card">
+          <div class="kpi-icon" style="background:rgba(239,68,68,0.08);color:var(--danger);"><i class="fa-solid fa-user-clock"></i></div>
+          <div class="kpi-value" id="kpi-pending" style="color:var(--danger);">0</div>
+          <div class="kpi-label">طلبات معلقة</div>
         </div>
-
         <div class="kpi-card">
           <div class="kpi-icon"><i class="fa-solid fa-video"></i></div>
-          <div class="kpi-value" id="kpi-total-videos">0</div>
-          <div class="kpi-label">المحاضرات والدروس النشطة</div>
+          <div class="kpi-value" id="kpi-videos">0</div>
+          <div class="kpi-label">المحاضرات النشطة</div>
         </div>
-
         <div class="kpi-card">
-          <div class="kpi-icon" style="background: rgba(16,185,129,0.12); color: #10b981;"><i class="fa-solid fa-certificate"></i></div>
-          <div class="kpi-value" id="kpi-total-certs" style="color: #10b981;">0</div>
-          <div class="kpi-label">الشهادات المعتمدة الممنوحة</div>
+          <div class="kpi-icon" style="background:rgba(16,185,129,0.08);color:var(--success);"><i class="fa-solid fa-certificate"></i></div>
+          <div class="kpi-value" id="kpi-certs" style="color:var(--success);">0</div>
+          <div class="kpi-label">الشهادات الممنوحة</div>
         </div>
       </div>
 
-      <!-- PANEL 1: Overview -->
+      <!-- PANEL: Overview -->
       <div class="admin-panel active" id="panel-overview">
-        <div class="glass-card">
-          <h3 style="color: var(--admin-gold); margin: 0 0 16px; font-weight: 800;"><i class="fa-solid fa-bolt"></i> الوصول السريع والإشعارات الحية</h3>
-          <p style="color: #94a3b8; font-size: 13.5px; line-height: 1.6;">
-            أهلاً بك في لوحة تحكم أكاديمية Fadelopram Rx. يمكنك من خلال القائمة الجانبية مراجعة طلبات الانضمام المعلقة، تفعيل الحسابات، تجميع كورسات المتدربين، إدارة المحاضرات، ومشاهدة التقرير الفني والتكنولوجي للجهاز والشبكة لكل متدرب.
+        <div class="card">
+          <h3 class="card-title"><i class="fa-solid fa-bolt"></i> مرحباً بك في لوحة التحكم</h3>
+          <p style="color:var(--text-secondary);font-size:14px;line-height:1.7;">
+            يمكنك من القائمة الجانبية مراجعة طلبات الانضمام، تفعيل الحسابات، إدارة الكورسات والمناهج، إصدار الشهادات، إدارة الإعلانات، وعرض التشخيصات التقنية لكل متدرب.
           </p>
         </div>
       </div>
 
-      <!-- PANEL 2: Pending Requests -->
+      <!-- PANEL: Pending -->
       <div class="admin-panel" id="panel-pending">
-        <div class="glass-card">
-          <h3 style="color: var(--admin-gold); margin: 0 0 18px; font-weight: 800;"><i class="fa-solid fa-user-clock"></i> طلبات الاشتراك بانتظار تفعيل الإدارة</h3>
-          <div class="table-responsive">
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>اسم المتدرب</th>
-                  <th>السن</th>
-                  <th>الهاتف / الإيميل</th>
-                  <th>الجهة المتقدم لها</th>
-                  <th>المسارات المطلوبة ("بتسجل علشان؟")</th>
-                  <th>التشخيصات التقنية</th>
-                  <th>الإجراءات والتفعيل</th>
-                </tr>
-              </thead>
-              <tbody id="table-body-pending">
-                <tr><td colspan="8" style="text-align: center; color: #94a3b8;">جاري تحميل طلبات الاشتراك...</td></tr>
-              </tbody>
+        <div class="card">
+          <h3 class="card-title"><i class="fa-solid fa-user-clock"></i> طلبات الاشتراك المعلقة</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>#</th><th>الاسم</th><th>السن</th><th>الهاتف / الإيميل</th><th>الجهة</th><th>المسارات</th><th>التشخيصات</th><th>الإجراء</th>
+              </tr></thead>
+              <tbody id="tbody-pending"><tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">جاري التحميل...</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- PANEL 3: Approved Trainees Directory -->
+      <!-- PANEL: Trainees -->
       <div class="admin-panel" id="panel-trainees">
-        <div class="glass-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 12px;">
-            <h3 style="color: var(--admin-gold); margin: 0; font-weight: 800;"><i class="fa-solid fa-user-graduate"></i> دليل المتدربين المقبولين بالمنصة</h3>
-            <div style="display: flex; gap: 10px;">
-              <select id="approved-pharmacy-filter" onchange="renderApprovedTrainees()" style="padding: 8px 14px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff; font-size: 13px;">
-                <option value="all">جميع جهات الصيدليات</option>
-                <option value="صيدليات آل مغاوري">صيدليات آل مغاوري</option>
-              </select>
-            </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-user-graduate"></i> المتدربين المقبولين</h3>
+            <select id="pharmacy-filter" onchange="renderApproved()" style="padding:8px 14px;border-radius:8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--text-primary);font-family:'Cairo';font-size:13px;">
+              <option value="all">جميع الجهات</option>
+              <option value="صيدليات آل مغاوري">صيدليات آل مغاوري</option>
+            </select>
           </div>
-          
-          <div class="table-responsive">
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>اسم المتدرب</th>
-                  <th>الهاتف / الإيميل</th>
-                  <th>الجهة / المسارات المتاحة</th>
-                  <th>الحالة</th>
-                  <th>التشخيصات التقنية (Slider)</th>
-                  <th>إدارة الحساب</th>
-                </tr>
-              </thead>
-              <tbody id="table-body-approved">
-                <tr><td colspan="7" style="text-align: center; color: #94a3b8;">جاري تحميل دليل المتدربين...</td></tr>
-              </tbody>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>#</th><th>الاسم</th><th>الهاتف / الإيميل</th><th>الجهة</th><th>الحالة</th><th>التشخيصات</th><th>إدارة</th>
+              </tr></thead>
+              <tbody id="tbody-approved"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">جاري التحميل...</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- PANEL 4: Curriculum & Video Management -->
+      <!-- PANEL: Curriculum -->
       <div class="admin-panel" id="panel-curriculum">
-        <div class="glass-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-            <h3 style="color: var(--admin-gold); margin: 0; font-weight: 800;"><i class="fa-solid fa-book-bookmark"></i> إدارة المناهج والمحاضرات</h3>
-            <button class="btn btn-gold" onclick="openAddCurriculumModal()" style="font-weight: 800; padding: 10px 18px;">
-              <i class="fa-solid fa-plus"></i> إضافة مجلد / درس / فيديو جديد
-            </button>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-book-bookmark"></i> المناهج والمحاضرات</h3>
+            <button class="btn btn-gold" onclick="openAddCurriculumModal()"><i class="fa-solid fa-plus"></i> إضافة عنصر جديد</button>
           </div>
-          <div id="curriculum-tree-container">جاري تحميل شجرة المناهج...</div>
+          <div id="curriculum-tree">جاري التحميل...</div>
         </div>
       </div>
 
-      <!-- PANEL 5: Promotions & Certificates -->
+      <!-- PANEL: Promotions -->
       <div class="admin-panel" id="panel-promotions">
-        <div class="glass-card">
-          <h3 style="color: var(--admin-gold); margin: 0 0 18px; font-weight: 800;"><i class="fa-solid fa-award"></i> طلبات الترقية وإصدار الشهادات</h3>
-          <div class="table-responsive">
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>اسم المتدرب</th>
-                  <th>من مستوى</th>
-                  <th>إلى مستوى</th>
-                  <th>الدرجة</th>
-                  <th>الحالة</th>
-                  <th>الإجراء والشهادة</th>
-                </tr>
-              </thead>
-              <tbody id="table-body-promotions">
-                <tr><td colspan="7" style="text-align: center; color: #94a3b8;">جاري تحميل طلبات الترقيات...</td></tr>
-              </tbody>
+        <div class="card">
+          <h3 class="card-title"><i class="fa-solid fa-award"></i> الترقيات والشهادات</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>المتدرب</th><th>من</th><th>إلى</th><th>الدرجة</th><th>الحالة</th><th>الإجراء</th></tr></thead>
+              <tbody id="tbody-promotions"><tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">جاري التحميل...</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- PANEL 6: Announcements Carousel -->
+      <!-- PANEL: Announcements -->
       <div class="admin-panel" id="panel-announcements">
-        <div class="glass-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-            <h3 style="color: var(--admin-gold); margin: 0; font-weight: 800;"><i class="fa-solid fa-bullhorn"></i> إدارة الإعلانات والبنات المتحركة</h3>
-            <button class="btn btn-gold" onclick="openAddAnnouncementModal()" style="font-weight: 800; padding: 10px 18px;">
-              <i class="fa-solid fa-plus"></i> إضافة إعلان جديد
-            </button>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-bullhorn"></i> الإعلانات</h3>
+            <button class="btn btn-gold" onclick="openAnnModal()"><i class="fa-solid fa-plus"></i> إضافة إعلان</button>
           </div>
-          <div id="announcements-admin-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-            جاري تحميل الإعلانات...
-          </div>
+          <div id="announcements-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">جاري التحميل...</div>
         </div>
       </div>
 
-      <!-- PANEL 7: Exam Questions Bank -->
+      <!-- PANEL: Questions -->
       <div class="admin-panel" id="panel-questions">
-        <div class="glass-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-            <h3 style="color: var(--admin-gold); margin: 0; font-weight: 800;"><i class="fa-solid fa-file-circle-question"></i> بنك أسئلة الامتحانات</h3>
-            <button class="btn btn-gold" onclick="openAddQuestionModal()" style="font-weight: 800; padding: 10px 18px;">
-              <i class="fa-solid fa-plus"></i> إضافة سؤال جديد
-            </button>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-file-circle-question"></i> بنك الأسئلة</h3>
+            <button class="btn btn-gold" onclick="openAddQuestionModal()"><i class="fa-solid fa-plus"></i> إضافة سؤال</button>
           </div>
-          <div id="questions-admin-list">جاري تحميل الأسئلة...</div>
+          <div id="questions-list">جاري التحميل...</div>
         </div>
       </div>
 
-      <!-- PANEL 8: Clinical Reports -->
+      <!-- PANEL: Reports -->
       <div class="admin-panel" id="panel-reports">
-        <div class="glass-card">
-          <h3 style="color: var(--admin-gold); margin: 0 0 18px; font-weight: 800;"><i class="fa-solid fa-notes-medical"></i> تقارير الحالات الإكلينيكية المستلمة</h3>
-          <div class="table-responsive">
-            <table class="custom-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>المتدرب</th>
-                  <th>عنوان الحالة</th>
-                  <th>المستوى</th>
-                  <th>المرفق</th>
-                  <th>الإجراء والـ XP</th>
-                </tr>
-              </thead>
-              <tbody id="table-body-reports">
-                <tr><td colspan="6" style="text-align: center; color: #94a3b8;">جاري تحميل الحالات...</td></tr>
-              </tbody>
+        <div class="card">
+          <h3 class="card-title"><i class="fa-solid fa-notes-medical"></i> تقارير الحالات الإكلينيكية</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>#</th><th>المتدرب</th><th>العنوان</th><th>المستوى</th><th>المرفق</th><th>الإجراء</th></tr></thead>
+              <tbody id="tbody-reports"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">جاري التحميل...</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- PANEL 9: Platform Settings -->
+      <!-- PANEL: Settings -->
       <div class="admin-panel" id="panel-settings">
-        <div class="glass-card">
-          <h3 style="color: var(--admin-gold); margin: 0 0 20px; font-weight: 800;"><i class="fa-solid fa-sliders"></i> إعدادات منصة الإرسال والـ API</h3>
-          
-          <form id="admin-settings-form">
-            
-            <!-- WhatsApp Gateway Card -->
-            <div style="background: rgba(37,211,102,0.06); border: 1px solid #25D366; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
-              <h4 style="color: #25D366; margin: 0 0 10px; font-weight: 900;"><i class="fa-brands fa-whatsapp"></i> إعدادات إرسال الواتساب الفوري (01107118948)</h4>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                <div>
-                  <label style="font-size: 12px; font-weight: bold;">UltraMsg Instance ID:</label>
-                  <input type="text" id="settings-whatsapp-instance" placeholder="instance187357" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
-                </div>
-                <div>
-                  <label style="font-size: 12px; font-weight: bold;">UltraMsg Token API:</label>
-                  <input type="text" id="settings-whatsapp-key" placeholder="xe42vujfq8x32228" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
-                </div>
+        <div class="card">
+          <h3 class="card-title"><i class="fa-solid fa-sliders"></i> إعدادات المنصة</h3>
+          <form id="settings-form">
+            <div class="settings-card" style="background:rgba(37,211,102,0.05);border:1px solid #25D366;">
+              <h4 style="color:#25D366;"><i class="fa-brands fa-whatsapp"></i> الواتساب الفوري</h4>
+              <div class="settings-grid">
+                <div><label>Instance ID</label><input type="text" id="s-wa-inst" placeholder="instance187357"></div>
+                <div><label>Token API</label><input type="text" id="s-wa-key" placeholder="xe42vujfq8x32228"></div>
               </div>
             </div>
-
-            <!-- Telegram Bot Card -->
-            <div style="background: rgba(0,136,204,0.06); border: 1px solid #0088cc; border-radius: 14px; padding: 18px; margin-bottom: 20px;">
-              <h4 style="color: #0088cc; margin: 0 0 10px; font-weight: 900;"><i class="fa-brands fa-telegram"></i> إعدادات بوت التليجرام الرسمي (@Fadelopram_bot)</h4>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                <div>
-                  <label style="font-size: 12px; font-weight: bold;">Telegram Bot Token:</label>
-                  <input type="text" id="settings-telegram-token" placeholder="Bot Token" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
-                </div>
-                <div>
-                  <label style="font-size: 12px; font-weight: bold;">Admin Chat ID:</label>
-                  <input type="text" id="settings-telegram-chat-id" placeholder="941183558" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
-                </div>
+            <div class="settings-card" style="background:rgba(0,136,204,0.05);border:1px solid #0088cc;">
+              <h4 style="color:#0088cc;"><i class="fa-brands fa-telegram"></i> بوت التليجرام</h4>
+              <div class="settings-grid">
+                <div><label>Bot Token</label><input type="text" id="s-tg-token" placeholder="Bot Token"></div>
+                <div><label>Admin Chat ID</label><input type="text" id="s-tg-chat" placeholder="941183558"></div>
               </div>
             </div>
-
-            <!-- Custom Entities Card -->
-            <div style="background: rgba(251,191,36,0.06); border: 1px solid var(--admin-gold); border-radius: 14px; padding: 18px; margin-bottom: 20px;">
-              <h4 style="color: var(--admin-gold); margin: 0 0 10px; font-weight: 900;"><i class="fa-solid fa-store"></i> إضافة جهات وسلاسل صيدليات جديدة للتسجيل</h4>
-              <label style="font-size: 12px; font-weight: bold;">قائمة الجهات (مفصولة بفاصلة ,):</label>
-              <input type="text" id="settings-custom-entities" placeholder="صيدليات آل مغاوري, صيدليات العزبي, صيدليات 19701..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff; font-weight: bold;">
+            <div class="settings-card" style="background:var(--gold-bg);border:1px solid var(--gold);">
+              <h4 style="color:var(--gold);"><i class="fa-solid fa-store"></i> الجهات المتاحة للتسجيل</h4>
+              <label>قائمة الجهات (مفصولة بفاصلة)</label>
+              <input type="text" id="s-entities" placeholder="صيدليات آل مغاوري, صيدليات العزبي..." style="font-weight:700;">
             </div>
-
-            <button type="submit" class="btn btn-gold" style="padding: 12px 28px; font-weight: 900; font-size: 15px;">
-              <i class="fa-solid fa-floppy-disk"></i> حفظ كافة الإعدادات
+            <button type="submit" class="btn btn-gold" style="padding:12px 28px;font-size:15px;font-weight:900;">
+              <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
             </button>
           </form>
         </div>
       </div>
 
     </main>
-
   </div>
 
-  <!-- Trainee Details Slide Drawer (Diagnostics Slider) -->
-  <div class="slider-backdrop" id="trainee-slider-backdrop" onclick="closeTraineeSlider()"></div>
-  <div class="trainee-slider" id="trainee-slider" style="position: fixed; top: 0; left: 0; bottom: 0; width: 440px; max-width: 90vw; background: rgba(15,20,35,0.98); border-right: 2px solid var(--admin-gold); z-index: 1000; transform: translateX(-100%); transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); backdrop-filter: blur(25px); padding: 24px; box-shadow: 10px 0 40px rgba(0,0,0,0.6); overflow-y: auto;">
-    
-    <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 16px; border-bottom: 1px solid var(--admin-border); margin-bottom: 20px;">
-      <h3 style="color: var(--admin-gold); margin: 0; font-size: 17px; font-weight: 900;"><i class="fa-solid fa-id-card"></i> ملف المتدرب الفني والتقني</h3>
-      <button class="btn btn-secondary" onclick="closeTraineeSlider()" style="padding: 4px 10px; border-radius: 50%;"><i class="fa-solid fa-xmark"></i></button>
+  <!-- SLIDER DRAWER -->
+  <div class="slider-backdrop" id="slider-backdrop" onclick="closeSlider()"></div>
+  <div class="slider-drawer" id="slider-drawer">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--card-border);margin-bottom:18px;">
+      <h3 style="color:var(--gold);margin:0;font-size:16px;font-weight:900;"><i class="fa-solid fa-id-card"></i> ملف المتدرب</h3>
+      <button class="btn btn-outline btn-sm" onclick="closeSlider()"><i class="fa-solid fa-xmark"></i></button>
     </div>
-
-    <!-- Basic Profile Info -->
-    <div style="margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 16px; border-radius: 12px; border: 1px solid var(--admin-border);">
-      <h4 id="slider-trainee-name" style="color: #fff; font-size: 16px; margin: 0 0 6px; font-weight: 900;">-</h4>
-      <div style="font-size: 12.5px; color: #94a3b8; margin-bottom: 8px;" id="slider-email">-</div>
-      <div style="font-size: 12.5px; color: var(--admin-gold); font-weight: bold;" id="slider-phone">-</div>
+    <div style="margin-bottom:18px;background:var(--gold-bg);padding:14px;border-radius:10px;">
+      <h4 id="sl-name" style="color:var(--text-primary);font-size:15px;margin:0 0 4px;font-weight:900;">-</h4>
+      <div id="sl-email" style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">-</div>
+      <div id="sl-phone" style="font-size:12px;color:var(--gold);font-weight:700;">-</div>
     </div>
-
-    <!-- Collapsible Device Diagnostics & Technical Network Section -->
-    <div style="margin-bottom: 20px;">
-      <button type="button" onclick="toggleDeviceDiagnosticsAccordion()" style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 10px; font-weight: 800; border: 1px solid var(--admin-gold); background: rgba(251,191,36,0.1); color: var(--admin-gold); cursor: pointer;">
-        <span><i class="fa-solid fa-microchip"></i> تشخيصات الجهاز والشبكة (تقني)</span>
-        <i class="fa-solid fa-chevron-down" id="diag-accordion-icon"></i>
-      </button>
-
-      <div id="diag-accordion-content" style="display: none; margin-top: 10px; background: rgba(0,0,0,0.4); border: 1px dashed var(--admin-gold); border-radius: 12px; padding: 16px; font-size: 12.5px; line-height: 1.8;">
-        <div><strong>🌐 IP Address:</strong> <span id="slider-diag-ip" style="font-family: monospace; color: var(--admin-gold); font-weight: bold;">-</span></div>
-        <div><strong>💻 نوع الجهاز:</strong> <span id="slider-diag-device">-</span></div>
-        <div><strong>🖥️ نظام التشغيل:</strong> <span id="slider-diag-os">-</span></div>
-        <div><strong>🔍 المتصفح واللغة:</strong> <span id="slider-diag-browser">-</span></div>
-        <div><strong>📡 شبكة الاتصال (ISP):</strong> <span id="slider-diag-network">-</span></div>
-        <div><strong>🔑 بصمة الجهاز (MAC FP):</strong> <span id="slider-diag-fingerprint" style="font-family: monospace; font-size: 11px; word-break: break-all; color: var(--admin-gold);">-</span></div>
-      </div>
+    <button type="button" onclick="toggleDiag()" style="width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:8px;font-weight:800;border:1px solid var(--gold);background:var(--gold-bg);color:var(--gold);cursor:pointer;font-family:'Cairo';font-size:13px;">
+      <span><i class="fa-solid fa-microchip"></i> تشخيصات الجهاز والشبكة</span>
+      <i class="fa-solid fa-chevron-down" id="diag-icon"></i>
+    </button>
+    <div id="diag-content" style="display:none;margin-top:10px;background:var(--input-bg);border:1px dashed var(--gold);border-radius:10px;padding:14px;font-size:12px;line-height:2;">
+      <div><strong>🌐 IP:</strong> <span id="sl-ip" style="font-family:monospace;color:var(--gold);font-weight:700;">-</span></div>
+      <div><strong>💻 الجهاز:</strong> <span id="sl-device">-</span></div>
+      <div><strong>🖥️ النظام:</strong> <span id="sl-os">-</span></div>
+      <div><strong>🔍 المتصفح:</strong> <span id="sl-browser">-</span></div>
+      <div><strong>📡 الشبكة:</strong> <span id="sl-network">-</span></div>
+      <div><strong>🔑 البصمة:</strong> <span id="sl-fp" style="font-family:monospace;font-size:11px;word-break:break-all;color:var(--gold);">-</span></div>
     </div>
-
   </div>
 
-  <!-- Announcement Modal -->
-  <div class="modal" id="announcement-modal">
-    <div class="modal-content" style="max-width: 500px; background: rgba(15,20,35,0.98); border: 2px solid var(--admin-gold);">
-      <div class="modal-header">
-        <h3 style="color: var(--admin-gold); margin: 0;"><i class="fa-solid fa-bullhorn"></i> إضافة / تعديل إعلان</h3>
-        <button class="btn btn-secondary" onclick="document.getElementById('announcement-modal').classList.remove('active')"><i class="fa-solid fa-xmark"></i></button>
+  <!-- ANNOUNCEMENT MODAL -->
+  <div class="modal-overlay" id="ann-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-bullhorn"></i> إضافة / تعديل إعلان</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeAnnModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <form id="announcement-form" style="padding: 20px;">
-        <input type="hidden" id="ann-id-input">
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label style="font-weight: bold; font-size: 13px; color: var(--admin-gold);">عنوان الإعلان *</label>
-          <input type="text" id="ann-title-input" required placeholder="مثال: الانطلاق الرسمي للكورس الإكلينيكي" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
-        </div>
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label style="font-weight: bold; font-size: 13px; color: var(--admin-gold);">تفاصيل ونشر الإعلان *</label>
-          <textarea id="ann-content-input" required placeholder="اكتب تفاصيل الإعلان هنا..." style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff; min-height: 80px;"></textarea>
-        </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+      <form id="ann-form" class="modal-body">
+        <input type="hidden" id="ann-id">
+        <label>عنوان الإعلان *</label>
+        <input type="text" id="ann-title" required placeholder="مثال: انطلاق الكورس الإكلينيكي">
+        <label>تفاصيل الإعلان *</label>
+        <textarea id="ann-content" required placeholder="اكتب تفاصيل الإعلان..."></textarea>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
-            <label style="font-size: 12px; font-weight: bold;">نوع الإعلان:</label>
-            <select id="ann-type-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
-              <option value="general">📢 إعلان عام</option>
-              <option value="urgent">🚨 عاجل وهام</option>
-            </select>
+            <label>النوع</label>
+            <select id="ann-type"><option value="general">📢 عام</option><option value="urgent">🚨 عاجل</option></select>
           </div>
           <div>
-            <label style="font-size: 12px; font-weight: bold;">الأيقونة (FontAwesome):</label>
-            <select id="ann-icon-input" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
-              <option value="fa-rocket">🚀 صاروخ الانطلاق</option>
-              <option value="fa-bullhorn">📢 مكبر صوت</option>
-              <option value="fa-star">⭐ نجمة تميز</option>
-            </select>
+            <label>الأيقونة</label>
+            <select id="ann-icon"><option value="fa-rocket">🚀 صاروخ</option><option value="fa-bullhorn">📢 مكبر</option><option value="fa-star">⭐ نجمة</option></select>
           </div>
         </div>
-        <div style="margin-bottom: 16px;">
-          <label style="font-size: 12px; font-weight: bold;">رابط التوجيه (اختياري):</label>
-          <input type="text" id="ann-link-input" placeholder="register.html أو #catalog" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--admin-border); background: var(--admin-bg); color: #fff;">
+        <label>رابط التوجيه (اختياري)</label>
+        <input type="text" id="ann-link" placeholder="register.html">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <input type="checkbox" id="ann-active" checked style="width:18px;height:18px;accent-color:var(--gold);">
+          <label for="ann-active" style="margin:0;">تفعيل الإعلان فوراً</label>
         </div>
-        <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
-          <input type="checkbox" id="ann-active-input" checked style="width: 18px; height: 18px; accent-color: var(--admin-gold);">
-          <label for="ann-active-input" style="font-weight: bold; font-size: 13px;">تفعيل الإعلان فوراً للمستخدمين</label>
-        </div>
-        <button type="submit" class="btn btn-gold" style="width: 100%; padding: 12px; font-weight: 900;">
+        <button type="submit" class="btn btn-gold" style="width:100%;padding:12px;font-weight:900;">
           <i class="fa-solid fa-paper-plane"></i> حفظ الإعلان
         </button>
       </form>
     </div>
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=10.0"></script>
+  <script src="config.js?v=11.0"></script>
   <script>
-    let adminUsername = "";
-    let adminPassword = "";
-    let allTrainees = [];
-    let allVideos = [];
-    let allAnnouncements = [];
-    let allPromotions = [];
-    let allReports = [];
+    let adminUsername = "", adminPassword = "";
+    let allTrainees = [], allAnnouncements = [];
 
-    // Switch Admin Tabs
-    function switchAdminTab(panelId, btnElement) {
-      document.querySelectorAll(".admin-panel").forEach(p => p.classList.remove("active"));
-      document.querySelectorAll(".admin-nav-item").forEach(i => i.classList.remove("active"));
-      
-      const targetPanel = document.getElementById(`panel-${panelId}`);
-      if (targetPanel) targetPanel.classList.add("active");
-      if (btnElement) btnElement.classList.add("active");
+    /* ===== THEME ===== */
+    function toggleTheme() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+      localStorage.setItem('admin_theme', isDark ? 'light' : 'dark');
+      document.getElementById('theme-toggle').innerHTML = isDark ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+    }
+    // Load saved theme — default is LIGHT
+    (function initTheme() {
+      const saved = localStorage.getItem('admin_theme');
+      if (saved === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        document.getElementById('theme-toggle').innerHTML = '<i class="fa-solid fa-sun"></i>';
+      }
+    })();
 
-      const titles = {
-        overview: "النظرة العامة والإحصائيات",
-        pending: "طلبات الاشتراك المعلقة",
-        trainees: "دليل المتدربين المقبولين",
-        curriculum: "إدارة المناهج والكورسات",
-        promotions: "طلبات الترقيات والشهادات",
-        announcements: "إدارة الإعلانات والبنات",
-        questions: "بنك أسئلة الامتحانات",
-        reports: "تقارير الحالات الإكلينيكية",
-        settings: "إعدادات المنصة والواتساب"
-      };
-      if (titles[panelId]) document.getElementById("panel-title-text").textContent = titles[panelId];
+    /* ===== TAB SWITCHING ===== */
+    const panelTitles = {
+      overview: "النظرة العامة", pending: "طلبات الاشتراك", trainees: "المتدربين المقبولين",
+      curriculum: "المناهج والكورسات", promotions: "الترقيات والشهادات", announcements: "الإعلانات",
+      questions: "بنك الأسئلة", reports: "تقارير الحالات", settings: "الإعدادات"
+    };
+
+    function switchTab(id, el) {
+      document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      const panel = document.getElementById('panel-' + id);
+      if (panel) panel.classList.add('active');
+      if (el) el.classList.add('active');
+      document.getElementById('panel-title').textContent = panelTitles[id] || id;
     }
 
-    // Admin Auth Handler
-    document.getElementById("admin-login-form").addEventListener("submit", async (e) => {
+    /* ===== AUTH ===== */
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const user = document.getElementById("admin-user-input").value.trim();
-      const pass = document.getElementById("admin-pass-input").value.trim();
-
-      const res = await apiRequest({ action: "adminLogin", username: user, password: pass });
+      const user = document.getElementById('admin-user-input').value.trim();
+      const pass = document.getElementById('admin-pass-input').value.trim();
+      const res = await apiRequest({ action: 'adminLogin', username: user, password: pass });
       if (res.success) {
-        adminUsername = user;
-        adminPassword = pass;
-        localStorage.setItem("admin_user", user);
-        localStorage.setItem("admin_pass", pass);
-        document.getElementById("admin-login-overlay").style.display = "none";
-        document.getElementById("admin-dashboard-container").style.display = "flex";
-        loadDashboardData();
+        adminUsername = user; adminPassword = pass;
+        localStorage.setItem('admin_user', user);
+        localStorage.setItem('admin_pass', pass);
+        showDashboard();
       } else {
-        showToast("اسم المستخدم أو كلمة المرور غير صحيحة!", "error");
+        alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
       }
     });
 
-    // Auto-login from LocalStorage
-    (async function autoLoginAdmin() {
-      const savedUser = localStorage.getItem("admin_user");
-      const savedPass = localStorage.getItem("admin_pass");
-      if (savedUser && savedPass) {
-        const res = await apiRequest({ action: "adminLogin", username: savedUser, password: savedPass });
-        if (res.success) {
-          adminUsername = savedUser;
-          adminPassword = savedPass;
-          document.getElementById("admin-login-overlay").style.display = "none";
-          document.getElementById("admin-dashboard-container").style.display = "flex";
-          loadDashboardData();
-        }
+    function showDashboard() {
+      document.getElementById('admin-login-overlay').style.display = 'none';
+      document.getElementById('admin-dashboard').style.display = 'flex';
+      loadAll();
+    }
+
+    (async function autoLogin() {
+      const u = localStorage.getItem('admin_user'), p = localStorage.getItem('admin_pass');
+      if (u && p) {
+        const res = await apiRequest({ action: 'adminLogin', username: u, password: p });
+        if (res.success) { adminUsername = u; adminPassword = p; showDashboard(); }
       }
     })();
 
     function adminLogout() {
-      localStorage.removeItem("admin_user");
-      localStorage.removeItem("admin_pass");
+      localStorage.removeItem('admin_user');
+      localStorage.removeItem('admin_pass');
       location.reload();
     }
 
-    // Load Dashboard Data
-    async function loadDashboardData() {
-      await loadTrainees();
-      await loadAnnouncements();
-    }
-
-    async function loadTrainees() {
-      const res = await apiRequest({ action: "adminGetTrainees", adminPassword });
-      if (res.success && res.trainees) {
-        allTrainees = res.trainees;
-        renderPendingRequests();
-        renderApprovedTrainees();
-        updateKPIs();
+    /* ===== PARALLEL DATA LOADING (FAST!) ===== */
+    async function loadAll() {
+      const [traineesRes, annRes] = await Promise.all([
+        apiRequest({ action: 'adminGetTrainees', adminPassword }),
+        apiRequest({ action: 'adminGetAnnouncements' })
+      ]);
+      if (traineesRes.success && traineesRes.trainees) {
+        allTrainees = traineesRes.trainees;
+        renderPending();
+        renderApproved();
       }
+      if (annRes.success && annRes.announcements) {
+        allAnnouncements = annRes.announcements;
+        renderAnns();
+      }
+      updateKPIs();
     }
 
     function updateKPIs() {
       const total = allTrainees.length;
-      const pending = allTrainees.filter(t => t.status === "pending" || t.Status === "pending").length;
-      document.getElementById("kpi-total-trainees").textContent = total;
-      document.getElementById("kpi-pending-requests").textContent = pending;
-      document.getElementById("nav-badge-pending").textContent = pending;
-      document.getElementById("nav-badge-trainees").textContent = total - pending;
+      const pending = allTrainees.filter(t => (t.status||t.Status) === 'pending').length;
+      document.getElementById('kpi-total').textContent = total;
+      document.getElementById('kpi-pending').textContent = pending;
+      document.getElementById('badge-pending').textContent = pending;
+      document.getElementById('badge-trainees').textContent = total - pending;
     }
 
-    // Render Pending Requests Table
-    function renderPendingRequests() {
-      const tbody = document.getElementById("table-body-pending");
-      const pending = allTrainees.filter(t => t.status === "pending" || t.Status === "pending");
-      
-      if (pending.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: #10b981; padding: 20px;">✅ لا توجد طلبات اشتراك معلقة حالياً. جميع الحسابات تمت مراجعتها!</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = pending.map((t, idx) => {
+    /* ===== RENDER PENDING ===== */
+    function renderPending() {
+      const tbody = document.getElementById('tbody-pending');
+      const list = allTrainees.filter(t => (t.status||t.Status) === 'pending');
+      if (!list.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--success);padding:20px;">✅ لا توجد طلبات معلقة!</td></tr>'; return; }
+      tbody.innerHTML = list.map((t, i) => {
         let courses = [];
-        try {
-          courses = typeof t.selected_courses === 'string' ? JSON.parse(t.selected_courses) : (t.selected_courses || []);
-        } catch(e) {}
-        const coursesStr = Array.isArray(courses) ? courses.join('، ') : 'التدريب مع فاضل';
-
-        return `
-          <tr>
-            <td>${idx + 1}</td>
-            <td><strong>${t.name || t.Name}</strong><br><small style="color:#94a3b8;">السن: ${t.age || t.Age || '22'}</small></td>
-            <td>${t.age || '22'} سنة</td>
-            <td>${t.phone || t.Phone}<br><small style="color:#94a3b8;">${t.email || t.Email}</small></td>
-            <td><span class="admin-badge gold">${t.pharmacy_group || t.PharmacyGroup || 'صيدليات آل مغاوري'}</span></td>
-            <td><strong style="color: var(--admin-gold);">${coursesStr}</strong></td>
-            <td>
-              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="openTraineeSlider('${t.email || t.Email}', '${t.phone || t.Phone}')">
-                <i class="fa-solid fa-microchip"></i> عرض التشخيصات
-              </button>
-            </td>
-            <td>
-              <button class="btn btn-gold" style="padding: 6px 12px; font-size: 12px; font-weight: bold; margin-left: 4px;" onclick="approveTrainee('${t.phone || t.Phone}')">
-                <i class="fa-solid fa-check"></i> موافقة وتفعيل
-              </button>
-              <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px; color: #ef4444;" onclick="rejectTrainee('${t.phone || t.Phone}')">
-                <i class="fa-solid fa-xmark"></i> رفض
-              </button>
-            </td>
-          </tr>
-        `;
+        try { courses = typeof t.selected_courses === 'string' ? JSON.parse(t.selected_courses) : (t.selected_courses || []); } catch(e) {}
+        const cs = Array.isArray(courses) ? courses.join('، ') : 'التدريب مع فاضل';
+        return `<tr>
+          <td>${i+1}</td>
+          <td><strong>${t.name||t.Name}</strong><br><small style="color:var(--text-muted)">السن: ${t.age||t.Age||'-'}</small></td>
+          <td>${t.age||'-'}</td>
+          <td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td>
+          <td><span class="status-badge status-pending">${t.pharmacy_group||t.PharmacyGroup||'آل مغاوري'}</span></td>
+          <td style="color:var(--gold);font-weight:700;font-size:12px;">${cs}</td>
+          <td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-microchip"></i> تشخيصات</button></td>
+          <td>
+            <button class="btn btn-gold btn-sm" onclick="approve('${t.phone||t.Phone}')"><i class="fa-solid fa-check"></i> موافقة</button>
+            <button class="btn btn-danger-outline btn-sm" onclick="reject('${t.phone||t.Phone}')"><i class="fa-solid fa-xmark"></i> رفض</button>
+          </td>
+        </tr>`;
       }).join('');
     }
 
-    // Render Approved Trainees Directory
-    function renderApprovedTrainees() {
-      const tbody = document.getElementById("table-body-approved");
-      const approved = allTrainees.filter(t => t.status !== "pending" && t.Status !== "pending");
-
-      if (approved.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #94a3b8; padding: 20px;">لا يوجد متدربون مقبولون بعد.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = approved.map((t, idx) => {
-        const isBlocked = t.status === "blocked" || t.Status === "blocked";
-        return `
-          <tr>
-            <td>${idx + 1}</td>
-            <td><strong>${t.name || t.Name}</strong></td>
-            <td>${t.phone || t.Phone}<br><small style="color:#94a3b8;">${t.email || t.Email}</small></td>
-            <td><span class="admin-badge gold">${t.pharmacy_group || 'صيدليات آل مغاوري'}</span></td>
-            <td><span class="admin-badge ${isBlocked ? '' : 'gold'}">${isBlocked ? 'محظور ❌' : 'نشط 🟢'}</span></td>
-            <td>
-              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 11px;" onclick="openTraineeSlider('${t.email || t.Email}', '${t.phone || t.Phone}')">
-                <i class="fa-solid fa-sliders"></i> ملف التشخيصات
-              </button>
-            </td>
-            <td>
-              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 12px;" onclick="toggleBlockTrainee('${t.phone || t.Phone}', ${isBlocked})">
-                ${isBlocked ? 'إلغاء الحظر' : 'حظر الحساب'}
-              </button>
-            </td>
-          </tr>
-        `;
+    /* ===== RENDER APPROVED ===== */
+    function renderApproved() {
+      const tbody = document.getElementById('tbody-approved');
+      const list = allTrainees.filter(t => (t.status||t.Status) !== 'pending');
+      if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا يوجد متدربون مقبولون بعد.</td></tr>'; return; }
+      tbody.innerHTML = list.map((t, i) => {
+        const blocked = (t.status||t.Status) === 'blocked';
+        return `<tr>
+          <td>${i+1}</td>
+          <td><strong>${t.name||t.Name}</strong></td>
+          <td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td>
+          <td><span class="status-badge status-pending">${t.pharmacy_group||'آل مغاوري'}</span></td>
+          <td><span class="status-badge ${blocked?'status-blocked':'status-active'}">${blocked?'محظور ❌':'نشط 🟢'}</span></td>
+          <td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-sliders"></i> تشخيصات</button></td>
+          <td><button class="btn btn-outline btn-sm" onclick="toggleBlock('${t.phone||t.Phone}',${blocked})">${blocked?'إلغاء الحظر':'حظر'}</button></td>
+        </tr>`;
       }).join('');
     }
 
-    async function approveTrainee(phone) {
-      const res = await apiRequest({ action: "adminApproveTrainee", adminPassword, phone, actionState: "accept" });
-      if (res.success) {
-        showToast("تم موافقة وتفعيل حساب المتدرب بنجاح! 🟢", "success");
-        loadTrainees();
-      }
+    async function approve(phone) {
+      const r = await apiRequest({ action:'adminApproveTrainee', adminPassword, phone, actionState:'accept' });
+      if (r.success) { alert('تم التفعيل بنجاح! 🟢'); loadAll(); }
+    }
+    async function reject(phone) {
+      const r = await apiRequest({ action:'adminApproveTrainee', adminPassword, phone, actionState:'reject', rejectReason:'عدم استيفاء البيانات' });
+      if (r.success) { alert('تم الرفض.'); loadAll(); }
+    }
+    async function toggleBlock(phone, blocked) {
+      const r = await apiRequest({ action:'adminToggleBlockTrainee', adminPassword, phone, blockState:!blocked });
+      if (r.success) { alert(r.message||'تم التحديث.'); loadAll(); }
     }
 
-    async function rejectTrainee(phone) {
-      const res = await apiRequest({ action: "adminApproveTrainee", adminPassword, phone, actionState: "reject", rejectReason: "عدم استيفاء البيانات" });
-      if (res.success) {
-        showToast("تم رفض طلب الاشتراك بنجاح.", "success");
-        loadTrainees();
-      }
+    /* ===== SLIDER DRAWER ===== */
+    function openSlider(email, phone) {
+      const t = allTrainees.find(x => String(x.email||x.Email).toLowerCase()===String(email).toLowerCase() || String(x.phone||x.Phone)===String(phone));
+      if (!t) return;
+      document.getElementById('sl-name').textContent = t.name||t.Name;
+      document.getElementById('sl-email').textContent = t.email||t.Email||'-';
+      document.getElementById('sl-phone').textContent = t.phone||t.Phone||'-';
+      let d = {};
+      try { d = typeof t.device_info==='string' ? JSON.parse(t.device_info) : (t.device_info||{}); } catch(e) {}
+      document.getElementById('sl-ip').textContent = d.ipAddress||t.ip_address||'-';
+      document.getElementById('sl-device').textContent = d.deviceType||'-';
+      document.getElementById('sl-os').textContent = d.systemName||d.os||'-';
+      document.getElementById('sl-browser').textContent = d.browser||'-';
+      document.getElementById('sl-network').textContent = d.network||'-';
+      document.getElementById('sl-fp').textContent = d.fingerprint||'-';
+      document.getElementById('slider-backdrop').classList.add('active');
+      document.getElementById('slider-drawer').classList.add('open');
+    }
+    function closeSlider() {
+      document.getElementById('slider-backdrop').classList.remove('active');
+      document.getElementById('slider-drawer').classList.remove('open');
+    }
+    function toggleDiag() {
+      const c = document.getElementById('diag-content');
+      const ic = document.getElementById('diag-icon');
+      if (c.style.display === 'none') { c.style.display = 'block'; ic.className = 'fa-solid fa-chevron-up'; }
+      else { c.style.display = 'none'; ic.className = 'fa-solid fa-chevron-down'; }
     }
 
-    async function toggleBlockTrainee(phone, currentlyBlocked) {
-      const res = await apiRequest({ action: "adminToggleBlockTrainee", adminPassword, phone, blockState: !currentlyBlocked });
-      if (res.success) {
-        showToast(res.message || "تم تحديث حالة الحساب.", "success");
-        loadTrainees();
-      }
-    }
-
-    // Trainee Slide Drawer Handlers
-    window.openTraineeSlider = function(email, phone) {
-      const trainee = allTrainees.find(t => String(t.email || t.Email).toLowerCase() === String(email).toLowerCase() || String(t.phone || t.Phone) === String(phone));
-      if (!trainee) return;
-
-      document.getElementById("slider-trainee-name").textContent = trainee.name || trainee.Name;
-      document.getElementById("slider-email").textContent = trainee.email || trainee.Email || '-';
-      document.getElementById("slider-phone").textContent = trainee.phone || trainee.Phone || '-';
-
-      let diag = {};
-      try {
-        diag = typeof trainee.device_info === 'string' ? JSON.parse(trainee.device_info) : (trainee.device_info || {});
-      } catch(e) {}
-
-      document.getElementById("slider-diag-ip").textContent = diag.ipAddress || trainee.ip_address || '197.35.120.44';
-      document.getElementById("slider-diag-device").textContent = diag.deviceType || 'مبيوتر / هاتف جوال';
-      document.getElementById("slider-diag-os").textContent = diag.systemName || diag.os || 'Windows 11 / Android';
-      document.getElementById("slider-diag-browser").textContent = diag.browser || 'Google Chrome 124';
-      document.getElementById("slider-diag-network").textContent = diag.network || 'Wi-Fi Network / Mobile Data';
-      document.getElementById("slider-diag-fingerprint").textContent = diag.fingerprint || `FP-${Math.abs(String(trainee.phone || trainee.email).split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0))}`;
-
-      document.getElementById("trainee-slider-backdrop").classList.add("active");
-      document.getElementById("trainee-slider").style.transform = "translateX(0)";
-    };
-
-    window.closeTraineeSlider = function() {
-      document.getElementById("trainee-slider-backdrop").classList.remove("active");
-      document.getElementById("trainee-slider").style.transform = "translateX(-100%)";
-    };
-
-    window.toggleDeviceDiagnosticsAccordion = function() {
-      const content = document.getElementById("diag-accordion-content");
-      const icon = document.getElementById("diag-accordion-icon");
-      if (content) {
-        if (content.style.display === "none" || !content.style.display) {
-          content.style.display = "block";
-          if (icon) icon.className = "fa-solid fa-chevron-up";
-        } else {
-          content.style.display = "none";
-          if (icon) icon.className = "fa-solid fa-chevron-down";
-        }
-      }
-    };
-
-    // Announcements Handlers
-    async function loadAnnouncements() {
-      const res = await apiRequest({ action: "adminGetAnnouncements" });
-      if (res.success && res.announcements) {
-        allAnnouncements = res.announcements;
-        renderAnnouncements();
-      }
-    }
-
-    function renderAnnouncements() {
-      const grid = document.getElementById("announcements-admin-grid");
-      if (allAnnouncements.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 20px;">لا توجد إعلانات حالياً. اضغط "إضافة إعلان جديد" للبدء.</div>`;
-        return;
-      }
-
-      grid.innerHTML = allAnnouncements.map(ann => `
-        <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--admin-border); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; justify-space-between;">
-          <div>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span class="admin-badge gold"><i class="fa-solid ${ann.icon || 'fa-bullhorn'}"></i> ${ann.type === 'urgent' ? 'عاجل' : 'عام'}</span>
-              <span style="font-size: 11px; color: ${ann.active ? '#10b981' : '#ef4444'}; font-weight: bold;">${ann.active ? 'نشط 🟢' : 'معطل 🔴'}</span>
-            </div>
-            <h4 style="color: var(--admin-gold); margin: 0 0 6px; font-size: 15px;">${ann.title}</h4>
-            <p style="font-size: 12.5px; color: #cbd5e1; margin: 0 0 12px; line-height: 1.4;">${ann.content}</p>
+    /* ===== ANNOUNCEMENTS ===== */
+    function renderAnns() {
+      const g = document.getElementById('announcements-grid');
+      if (!allAnnouncements.length) { g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;">لا توجد إعلانات. اضغط "إضافة إعلان" للبدء.</div>'; return; }
+      g.innerHTML = allAnnouncements.map(a => `
+        <div style="background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span class="status-badge status-pending"><i class="fa-solid ${a.icon||'fa-bullhorn'}"></i> ${a.type==='urgent'?'عاجل':'عام'}</span>
+            <span style="font-size:11px;color:${a.active?'var(--success)':'var(--danger)'};font-weight:700;">${a.active?'نشط 🟢':'معطل 🔴'}</span>
           </div>
-          <div style="display: flex; gap: 8px; border-top: 1px solid var(--admin-border); padding-top: 10px; margin-top: auto;">
-            <button class="btn btn-secondary" style="flex:1; padding: 6px; font-size: 12px;" onclick="deleteAnnouncement('${ann.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+          <h4 style="color:var(--gold);margin:0 0 4px;font-size:14px;">${a.title}</h4>
+          <p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px;line-height:1.4;flex:1;">${a.content}</p>
+          <div style="border-top:1px solid var(--card-border);padding-top:8px;">
+            <button class="btn btn-danger-outline btn-sm" style="width:100%;" onclick="delAnn('${a.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
           </div>
         </div>
       `).join('');
     }
 
-    function openAddAnnouncementModal() {
-      document.getElementById("ann-id-input").value = "";
-      document.getElementById("ann-title-input").value = "";
-      document.getElementById("ann-content-input").value = "";
-      document.getElementById("announcement-modal").classList.add("active");
+    function openAnnModal() {
+      document.getElementById('ann-id').value = '';
+      document.getElementById('ann-title').value = '';
+      document.getElementById('ann-content').value = '';
+      document.getElementById('ann-modal').classList.add('active');
     }
+    function closeAnnModal() { document.getElementById('ann-modal').classList.remove('active'); }
 
-    document.getElementById("announcement-form").addEventListener("submit", async (e) => {
+    document.getElementById('ann-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const id = document.getElementById("ann-id-input").value;
-      const title = document.getElementById("ann-title-input").value.trim();
-      const content = document.getElementById("ann-content-input").value.trim();
-      const type = document.getElementById("ann-type-input").value;
-      const icon = document.getElementById("ann-icon-input").value;
-      const link = document.getElementById("ann-link-input").value.trim();
-      const active = document.getElementById("ann-active-input").checked;
-
-      const res = await apiRequest({
-        action: "adminSaveAnnouncement",
-        adminPassword, id, title, content, type, icon, link, active
+      const r = await apiRequest({
+        action: 'adminSaveAnnouncement', adminPassword,
+        id: document.getElementById('ann-id').value,
+        title: document.getElementById('ann-title').value.trim(),
+        content: document.getElementById('ann-content').value.trim(),
+        type: document.getElementById('ann-type').value,
+        icon: document.getElementById('ann-icon').value,
+        link: document.getElementById('ann-link').value.trim(),
+        active: document.getElementById('ann-active').checked
       });
-
-      if (res.success) {
-        showToast("تم حفظ الإعلان بنجاح!", "success");
-        document.getElementById("announcement-modal").classList.remove("active");
-        loadAnnouncements();
-      }
+      if (r.success) { alert('تم حفظ الإعلان بنجاح!'); closeAnnModal(); loadAll(); }
     });
 
-    async function deleteAnnouncement(id) {
-      if (confirm("هل أنت تأكد من حذف هذا الإعلان؟")) {
-        const res = await apiRequest({ action: "adminDeleteAnnouncement", adminPassword, id });
-        if (res.success) {
-          showToast("تم حذف الإعلان بنجاح.", "success");
-          loadAnnouncements();
-        }
+    async function delAnn(id) {
+      if (confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
+        const r = await apiRequest({ action:'adminDeleteAnnouncement', adminPassword, id });
+        if (r.success) { alert('تم الحذف.'); loadAll(); }
       }
     }
 
-    // Settings Save Handler
-    document.getElementById("admin-settings-form").addEventListener("submit", async (e) => {
+    /* ===== SETTINGS ===== */
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const waInst = document.getElementById("settings-whatsapp-instance").value.trim();
-      const waKey = document.getElementById("settings-whatsapp-key").value.trim();
-      const tgToken = document.getElementById("settings-telegram-token").value.trim();
-      const tgChat = document.getElementById("settings-telegram-chat-id").value.trim();
-      const entities = document.getElementById("settings-custom-entities").value.trim();
-
-      localStorage.setItem("maghawry_whatsapp_instance", waInst);
-      localStorage.setItem("maghawry_whatsapp_key", waKey);
-      localStorage.setItem("maghawry_telegram_token", tgToken);
-      localStorage.setItem("maghawry_telegram_chat_id", tgChat);
-
-      await apiRequest({
-        action: "saveSettings",
-        adminPassword,
-        settings: {
-          whatsappInstance: waInst,
-          whatsappKey: waKey,
-          telegramToken: tgToken,
-          telegramChatId: tgChat,
-          customEntities: entities
-        }
-      });
-
-      showToast("تم حفظ إعدادات المنصة بنجاح! ⚡", "success");
+      const waI = document.getElementById('s-wa-inst').value.trim();
+      const waK = document.getElementById('s-wa-key').value.trim();
+      const tgT = document.getElementById('s-tg-token').value.trim();
+      const tgC = document.getElementById('s-tg-chat').value.trim();
+      const ent = document.getElementById('s-entities').value.trim();
+      localStorage.setItem('maghawry_whatsapp_instance', waI);
+      localStorage.setItem('maghawry_whatsapp_key', waK);
+      localStorage.setItem('maghawry_telegram_token', tgT);
+      localStorage.setItem('maghawry_telegram_chat_id', tgC);
+      await apiRequest({ action:'saveSettings', adminPassword, settings:{ whatsappInstance:waI, whatsappKey:waK, telegramToken:tgT, telegramChatId:tgC, customEntities:ent }});
+      alert('تم حفظ الإعدادات بنجاح! ⚡');
     });
   </script>
 </body>
