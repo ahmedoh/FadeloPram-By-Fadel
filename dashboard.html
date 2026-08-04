@@ -1608,7 +1608,7 @@
               created_at: v.created_at || v.CreatedAt || new Date().toISOString()
             };
           });
-          watchedVideos = response.watched;
+          watchedVideos = response.watched || [];
           traineeLevel = response.currentLevel;
           sessionStorage.setItem("trainee_level", traineeLevel);
           completedLevelsList = response.completedLevels || [];
@@ -1628,7 +1628,11 @@
           renderMyCourses();
           renderCurriculumAccordion(response.curriculum || []);
           renderPlaylist();
-          await loadTraineeReports(); // Ensure reports are cached to check checklist
+          try {
+            await loadTraineeReports();
+          } catch(e) {
+            console.warn('Reports load non-fatal error:', e);
+          }
           
           // Initialize gamification (points, streak, leaderboard)
           initGamification(response);
@@ -3772,6 +3776,7 @@
 
     function renderTraineeReportsList() {
       const tbody = document.getElementById("trainee-reports-table-body");
+      if (!tbody) return;
       if (traineeReports.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px;">لا توجد تقارير أو مهام مقدمة حالياً.</td></tr>`;
         return;
