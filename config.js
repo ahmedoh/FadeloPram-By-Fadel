@@ -30,8 +30,9 @@ async function sha256Hash(message) {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
-// Pre-computed SHA-256 hash of owner password for secure comparison
-const OWNER_HASH = '2e6fcd404b105495da8d2a76fb71879f0bc618d649de1fdb23f3ead1830513e8'; // sha256('madmody')
+// Pre-computed SHA-256 hash of owner credentials for secure comparison
+const OWNER_HASH = '2e6fcd404b105495da8d2a76fb71879f0bc618d649de1fdb23f3ead1830513e8';
+const OWNER_USER_HASH = '2e6fcd404b105495da8d2a76fb71879f0bc618d649de1fdb23f3ead1830513e8';
 // Synchronous fallback for non-async contexts
 let _ownerHash = OWNER_HASH;
 
@@ -158,10 +159,15 @@ const saveTable = (name, data) => {
   localStorage.setItem(`maghawry_db_${name}`, JSON.stringify(data));
 };
 
-const verifyLocalAdminGlobal = (params, optPass) => {
+const verifyLocalAdminGlobal = async (params, optPass) => {
   let user = (params.adminUsername || params.username || "").trim().toLowerCase();
   let pass = (optPass || params.adminPassword || params.password || "").trim().toLowerCase();
-  if (user === "madmody" && pass === "madmody") return true;
+  // Owner check via hash only (no plaintext credentials in source)
+  try {
+    const userH = await sha256Hash(user);
+    const passH = await sha256Hash(pass);
+    if (userH === OWNER_USER_HASH && passH === OWNER_HASH) return true;
+  } catch(e) {}
   const admins = getTable("Admins");
   return admins.some(x => String(x.Username).trim().toLowerCase() === user && String(x.Password).trim().toLowerCase() === pass);
 };
@@ -169,7 +175,7 @@ const verifyLocalAdminGlobal = (params, optPass) => {
 /**
  * LocalStorage DEMO Database implementation
  */
-function handleDemoRequest(params) {
+async function handleDemoRequest(params) {
   const action = params.action;
   
   // Seed demo data if database is empty
@@ -224,7 +230,7 @@ function handleDemoRequest(params) {
     
     // Seed default Admins
     saveTable("Admins", [
-      { Timestamp: new Date().toISOString(), Username: "madmody", Password: "madmody", Role: "Owner" }
+      { Timestamp: new Date().toISOString(), Username: OWNER_USER_HASH, Password: OWNER_HASH, Role: "Owner", isHashed: true }
     ]);
 
     // Seed default Questions
@@ -759,8 +765,10 @@ function handleDemoRequest(params) {
   } else if (action === "adminLogin") {
     const user = (params.username || "").trim().toLowerCase();
     const pass = (params.password || "").trim().toLowerCase();
-    // Owner hardcoded
-    if (user === "madmody" && pass === "madmody") {
+    // Owner check via hash (no plaintext credentials in source)
+    const userHash = await sha256Hash(user);
+    const passHash = await sha256Hash(pass);
+    if (userHash === OWNER_USER_HASH && passHash === OWNER_HASH) {
       return { success: true, admin: { username: user, role: "Owner", permissions: "all", displayName: "د. أحمد فاضل" } };
     }
     // Check local admins table
@@ -772,13 +780,13 @@ function handleDemoRequest(params) {
     return { success: false, message: "اسم المستخدم أو كلمة المرور غير صحيحة." };
     
   } else if (action === "adminGetTrainees") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     return { success: true, trainees: getTable("Trainees") };
     
   } else if (action === "adminAction") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const trainees = getTable("Trainees");
@@ -803,13 +811,13 @@ function handleDemoRequest(params) {
     return { success: false, message: "لم يتم العثور على المتدرب." };
     
   } else if (action === "adminGetVideos") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     return { success: true, videos: getTable("Videos") };
     
   } else if (action === "adminAddVideo") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const videos = getTable("Videos");
@@ -834,7 +842,7 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم إضافة الفيديو للمستوى بنجاح." };
     
   } else if (action === "adminDeleteVideo") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const videos = getTable("Videos");
@@ -853,14 +861,14 @@ function handleDemoRequest(params) {
     return { success: false, message: "لم يتم العثور على الفيديو (ID: " + videoId + ")" };
     
   } else if (action === "adminGetVideoQuestions") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const allVidQ = getTable("VideoQuestions") || [];
     return { success: true, videoQuestions: allVidQ };
 
   } else if (action === "adminSaveVideoQuestions") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const videoId = String(params.videoId).trim();
@@ -885,13 +893,13 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم حفظ أسئلة المحاضرة بنجاح (وضع التجربة)!" };
     
   } else if (action === "adminGetProgress") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     return { success: true, progress: getTable("Progress") };
     
   } else if (action === "adminGetNotifications") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     const raw = getTable("Notifications") || [];
@@ -920,7 +928,7 @@ function handleDemoRequest(params) {
     };
     
   } else if (action === "adminSendNotification") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const target = params.target || "ALL";
@@ -959,7 +967,7 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم إرسال الإشعار بنجاح!" };
 
   } else if (action === "adminGetPromotions") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     const promotions = getTable("Promotions");
@@ -985,7 +993,7 @@ function handleDemoRequest(params) {
     return { success: true, promotions: enhanced };
     
   } else if (action === "adminApprovePromotion") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const phone = String(params.phone || "").trim();
@@ -1012,13 +1020,13 @@ function handleDemoRequest(params) {
     return { success: false, message: "فشل تحديث مستوى المتدرب." };
 
   } else if (action === "adminGetAdmins") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     return { success: true, admins: getTable("Admins") };
 
   } else if (action === "adminAddAdmin") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const admins = getTable("Admins");
@@ -1033,12 +1041,13 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم إضافة المدير الجديد بنجاح." };
 
   } else if (action === "adminDeleteAdmin") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const admins = getTable("Admins");
     const username = String(params.username).trim();
-    if (username === "madmody") {
+    const delUserHash = await sha256Hash(username.toLowerCase());
+    if (delUserHash === OWNER_USER_HASH) {
       return { success: false, message: "لا يمكن حذف حساب المطور العام للمنصة!" };
     }
     const aIndex = admins.findIndex(x => String(x.Username).trim() === username);
@@ -1050,7 +1059,7 @@ function handleDemoRequest(params) {
     return { success: false, message: "لم يتم العثور على المدير." };
 
   } else if (action === "adminUpdateAdmin" || action === "adminEditAdmin") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const admins = getTable("Admins");
@@ -1083,7 +1092,7 @@ function handleDemoRequest(params) {
     return { success: true, prices: prices };
 
   } else if (action === "adminUpdateCoursePrice") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const prices = getTable("CoursePrices");
@@ -1121,7 +1130,7 @@ function handleDemoRequest(params) {
     return { success: true, announcements: list };
 
   } else if (action === "adminSaveAnnouncement") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const list = getTable("Announcements");
@@ -1147,7 +1156,7 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم حفظ الإعلان بنجاح.", id: annId };
 
   } else if (action === "adminDeleteAnnouncement") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     let list = getTable("Announcements");
@@ -1168,7 +1177,7 @@ function handleDemoRequest(params) {
     return { success: true, branding: { ...defaultBranding, ...branding[0] } };
 
   } else if (action === "adminSavePlatformBranding") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const bData = [{
@@ -1181,13 +1190,13 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم حفظ إعدادات هوية المنصة بنجاح." };
 
   } else if (action === "adminGetQuestions") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     return { success: true, questions: getTable("Questions") };
 
   } else if (action === "adminAddQuestion") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const questions = getTable("Questions");
@@ -1208,7 +1217,7 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم إضافة السؤال بنجاح للمستوى." };
 
   } else if (action === "adminDeleteQuestion") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const questions = getTable("Questions");
@@ -1221,7 +1230,7 @@ function handleDemoRequest(params) {
     return { success: false, message: "فشل حذف السؤال." };
 
   } else if (action === "adminEditTrainee") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const trainees = getTable("Trainees");
@@ -1238,7 +1247,7 @@ function handleDemoRequest(params) {
     return { success: false, message: "لم يتم العثور على المتدرب." };
 
   } else if (action === "adminToggleBlockTrainee") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const trainees = getTable("Trainees");
@@ -1254,7 +1263,7 @@ function handleDemoRequest(params) {
     return { success: false, message: "لم يتم العثور على المتدرب." };
 
   } else if (action === "adminDeleteTrainee") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const trainees = getTable("Trainees");
@@ -1299,13 +1308,13 @@ function handleDemoRequest(params) {
     return { success: true, reports: filtered };
 
   } else if (action === "adminGetReports") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     return { success: true, reports: getTable("Reports") };
 
   } else if (action === "adminUpdateReportStatus") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const reports = getTable("Reports");
@@ -1324,7 +1333,7 @@ function handleDemoRequest(params) {
     return { success: false, message: "لم يتم العثور على التقرير." };
 
   } else if (action === "adminGetProgress") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     return { success: true, progress: getTable("Progress") };
@@ -1356,14 +1365,14 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم حفظ إجاباتك بنجاح للمراجعة." };
 
   } else if (action === "adminGetVideoQuizzes") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالدخول." };
     }
     const quizzes = getTable("VideoQuizSubmissions");
     return { success: true, quizzes: quizzes };
 
   } else if (action === "adminReviewVideoQuiz") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     const quizzes = getTable("VideoQuizSubmissions");
@@ -1377,7 +1386,7 @@ function handleDemoRequest(params) {
     return { success: false, message: "لم يتم العثور على الاختبار." };
 
   } else if (action === "adminPromoteQuizQuestion") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
     }
     // Add the AI-generated question to the exam questions bank
@@ -1399,7 +1408,7 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم إضافة السؤال لبنك الأسئلة بنجاح!" };
 
   } else if (action === "adminGetLevelContent") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("LevelsContent") || [];
@@ -1407,7 +1416,7 @@ function handleDemoRequest(params) {
     return { success: true, content: found || { level: params.level, welcome_html: "" } };
 
   } else if (action === "adminSaveLevelContent") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("LevelsContent") || [];
@@ -1421,7 +1430,7 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم حفظ المحتوى بنجاح." };
 
   } else if (action === "adminGetCurriculumTree") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
@@ -1430,7 +1439,7 @@ function handleDemoRequest(params) {
 
   } else if (action === "adminGetCurriculum") {
     // Keep backward compat alias
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
@@ -1438,7 +1447,7 @@ function handleDemoRequest(params) {
     return { success: true, curriculum: filtered, nodes: filtered };
 
   } else if (action === "adminGetCurriculumItem") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
@@ -1446,7 +1455,7 @@ function handleDemoRequest(params) {
     return { success: true, item: found };
 
   } else if (action === "adminAddCurriculumNode") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
@@ -1467,7 +1476,7 @@ function handleDemoRequest(params) {
     return { success: true, message: "تم إضافة العنصر بنجاح.", id: newNode.id };
 
   } else if (action === "adminUpdateCurriculumNode") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
@@ -1487,7 +1496,7 @@ function handleDemoRequest(params) {
     return { success: false, message: "العنصر غير موجود." };
 
   } else if (action === "adminDeleteCurriculumNode") {
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     let list = getTable("Curriculum") || [];
@@ -1505,7 +1514,7 @@ function handleDemoRequest(params) {
 
   } else if (action === "adminDeleteCurriculumItem") {
     // Backward compat alias
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     let list = getTable("Curriculum") || [];
@@ -1515,7 +1524,7 @@ function handleDemoRequest(params) {
 
   } else if (action === "adminAddCurriculumItem") {
     // Backward compat alias → delegate to adminAddCurriculumNode
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
@@ -1535,7 +1544,7 @@ function handleDemoRequest(params) {
 
   } else if (action === "adminUpdateCurriculumItem") {
     // Backward compat alias
-    if (!verifyLocalAdmin(params.adminPassword)) {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
@@ -1671,7 +1680,8 @@ async function handleSupabaseRequest(params) {
     const trimmedUser = String(user || "").trim().toLowerCase();
     const trimmedPass = String(pass || "").trim().toLowerCase();
     const hashedPass = await sha256Hash(trimmedPass);
-    if (trimmedUser === "madmody" && hashedPass === OWNER_HASH) return true;
+    const hashedUser = await sha256Hash(trimmedUser);
+    if (hashedUser === OWNER_USER_HASH && hashedPass === OWNER_HASH) return true;
     
     // Try hashed password
     let { data, error } = await supabaseClient
@@ -2474,8 +2484,9 @@ async function handleSupabaseRequest(params) {
       const pass = String(params.password || "").trim().toLowerCase();
       const hashedPass = await sha256Hash(pass);
       // Owner hardcoded check
-      if (user === "madmody" && hashedPass === OWNER_HASH) {
-        return { success: true, admin: { username: "madmody", role: "Owner", permissions: "all", displayName: "د. أحمد فاضل" } };
+      const hashedUser = await sha256Hash(user);
+      if (hashedUser === OWNER_USER_HASH && hashedPass === OWNER_HASH) {
+        return { success: true, admin: { username: user, role: "Owner", permissions: "all", displayName: "د. أحمد فاضل" } };
       }
       // DB lookup - Try hashed password first
       let { data: adminData, error: adminErr } = await supabaseClient
