@@ -143,42 +143,35 @@
               </div>
             </div>
 
-            <!-- Telegram Bot Verification Field -->
-            <div class="form-group" style="margin-top: 18px; background: rgba(0, 136, 204, 0.07); padding: 18px; border-radius: 14px; border: 2px dashed #0088cc;">
-              <label for="reg-telegram-handle" style="font-weight: 800; color: #0088cc; display: flex; align-items: center; gap: 8px; font-size: 14px;">
-                <i class="fa-brands fa-telegram" style="font-size: 20px;"></i> يوزر أو رابط حساب التليجرام الخاص بك <span class="required">*</span>
+            <!-- WhatsApp OTP Verification Field -->
+            <div class="form-group" style="margin-top: 18px; background: rgba(37, 211, 102, 0.07); padding: 18px; border-radius: 14px; border: 2px dashed #25D366;">
+              <label for="reg-whatsapp-number" style="font-weight: 800; color: #25D366; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                <i class="fa-brands fa-whatsapp" style="font-size: 22px;"></i> رقم الواتساب الخاص بك <span class="required">*</span>
               </label>
               <p style="font-size: 11.5px; color: var(--text-muted); margin: 4px 0 10px; line-height: 1.4;">
-                يمكنك كتابة اليوزر (مثال: <code>@ZakerZakerBG</code>) أو لصق رابط حسابك بالكامل (مثال: <code>https://t.me/ZakerZakerBG</code>)
+                أدخل رقم الواتساب الخاص بك (مثال: <code>01107118948</code>) ليصلك رمز التحقق المباشر عليه 💬
               </p>
               
               <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
-                <input type="text" id="reg-telegram-handle" required placeholder="ضع يوزر أو رابط حسابك هنا..." style="flex: 1; font-weight: bold; font-family: inherit; min-width: 200px; padding: 11px 14px; border: 1px solid var(--border-color); border-radius: 8px;">
-                <button type="button" class="btn btn-primary" id="btn-request-telegram-code" style="background: #0088cc; border: none; white-space: nowrap; font-size: 13px; font-weight: bold; padding: 11px 18px; border-radius: 8px;">
-                  <i class="fa-solid fa-paper-plane"></i> تأكيد الحساب عبر البوت 🤖
+                <input type="tel" id="reg-whatsapp-number" required placeholder="أدخل رقم الواتساب..." style="flex: 1; font-weight: bold; font-family: inherit; min-width: 200px; padding: 11px 14px; border: 1px solid var(--border-color); border-radius: 8px;">
+                <button type="button" class="btn" id="btn-request-whatsapp-code" style="background: #25D366; color: white; border: none; white-space: nowrap; font-size: 13px; font-weight: bold; padding: 11px 18px; border-radius: 8px; box-shadow: 0 4px 12px rgba(37,211,102,0.25);">
+                  <i class="fa-brands fa-whatsapp"></i> إرسال كود التحقق 💬
                 </button>
               </div>
 
               <!-- Verification Code Box (Shown after clicking request) -->
-              <div id="telegram-code-container" style="display: none; margin-top: 15px; background: var(--bg-secondary); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <div style="background: rgba(16, 185, 129, 0.1); border-right: 4px solid #10b981; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 12.5px; color: var(--text-main); line-height: 1.6;">
-                  📱 <strong>خطوة التحقق عبر بوت التليجرام الرسمي (@Fadelopram_bot):</strong><br>
-                  <span style="font-size: 11px;">1️⃣ اضغط الزر الأزرق أدناه لفتح البوت في تليجرام<br>
-                  2️⃣ اضغط <strong>START</strong> (ابدأ) في البوت<br>
-                  3️⃣ سيرسل لك البوت رمز التحقق المكون من 6 أرقام في المحادثة<br>
-                  4️⃣ انسخ الرمز وأدخله في الخانة أدناه</span>
+              <div id="whatsapp-code-container" style="display: none; margin-top: 15px; background: var(--bg-secondary); padding: 16px; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <div style="background: rgba(37, 211, 102, 0.12); border-right: 4px solid #25D366; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: 12.5px; color: var(--text-main); line-height: 1.6;">
+                  📱 <strong>رمز التحقق المباشر عبر الواتساب:</strong><br>
+                  <span style="font-size: 11.5px;">تم إرسال كود التحقق 🔐 المكون من 6 أرقام مباشرة إلى حساب الواتساب الخاص بك. راجع رسائل الواتساب وأدخل الرمز بالأسفل لتأكيد الحساب.</span>
                 </div>
-                
-                <a href="#" id="link-open-telegram-bot" target="_blank" class="btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; background: linear-gradient(135deg, #0088cc 0%, #006699 100%); color: white; text-decoration: none; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 14px; margin-bottom: 14px; box-shadow: 0 4px 12px rgba(0,136,204,0.3);">
-                  <i class="fa-brands fa-telegram" style="font-size: 22px;"></i> فتح بوت @Fadelopram_bot في تليجرام ⚡
-                </a>
 
                 <div style="display: flex; gap: 8px; align-items: center;">
-                  <input type="text" id="reg-telegram-code" placeholder="رمز التحقق من البوت (6 أرقام)" maxlength="6" style="text-align: center; font-weight: 800; letter-spacing: 4px; font-size: 17px; flex: 1; padding: 10px; border-radius: 8px; border: 2px solid var(--border-color);">
-                  <button type="button" class="btn btn-gold" id="btn-verify-telegram-code" style="white-space: nowrap; font-size: 13.5px; font-weight: 800; padding: 11px 20px; border-radius: 8px;">تأكيد الكود 🔑</button>
+                  <input type="text" id="reg-whatsapp-code" placeholder="رمز التحقق من الواتساب (6 أرقام)" maxlength="6" style="text-align: center; font-weight: 800; letter-spacing: 4px; font-size: 17px; flex: 1; padding: 10px; border-radius: 8px; border: 2px solid var(--border-color);">
+                  <button type="button" class="btn btn-gold" id="btn-verify-whatsapp-code" style="white-space: nowrap; font-size: 13.5px; font-weight: 800; padding: 11px 20px; border-radius: 8px;">تأكيد الكود 🔑</button>
                 </div>
                 
-                <div id="telegram-verify-status" style="margin-top: 10px; font-size: 12.5px; font-weight: bold; text-align: center;"></div>
+                <div id="whatsapp-verify-status" style="margin-top: 10px; font-size: 12.5px; font-weight: bold; text-align: center;"></div>
               </div>
             </div>
 
@@ -322,7 +315,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=5.0"></script>
+  <script src="config.js?v=8.0"></script>
   <script>
     const langData = {
       ar: {
@@ -565,155 +558,94 @@
       return "";
     }
 
-    let currentTelegramCode = "";
-    let isTelegramVerified = false;
-    let verifiedTelegramChatId = "";
-    let verifiedTelegramHandle = "";
-    let pollInterval = null;
-    let codeSentToTelegram = false;
+    let currentWhatsAppCode = "";
+    let isWhatsAppVerified = false;
+    let verifiedWhatsAppPhone = "";
 
-    const handleInputEl = document.getElementById("reg-telegram-handle");
-    if (handleInputEl) {
-      handleInputEl.addEventListener("input", () => {
-        const val = handleInputEl.value.trim();
-        if (val.includes("t.me/") || val.includes("telegram.me/")) {
-          const cleaned = cleanTelegramHandleInput(val);
-          if (cleaned) handleInputEl.value = cleaned;
+    const waPhoneInput = document.getElementById("reg-whatsapp-number");
+    const regPhoneInput = document.getElementById("reg-phone");
+
+    // Auto-sync WhatsApp number from main phone number if empty
+    if (regPhoneInput && waPhoneInput) {
+      regPhoneInput.addEventListener("input", () => {
+        if (!waPhoneInput.value) {
+          waPhoneInput.value = regPhoneInput.value;
         }
-      });
-      handleInputEl.addEventListener("blur", () => {
-        const cleaned = cleanTelegramHandleInput(handleInputEl.value);
-        if (cleaned) handleInputEl.value = cleaned;
       });
     }
 
-    const btnRequestCode = document.getElementById("btn-request-telegram-code");
-    const codeContainer = document.getElementById("telegram-code-container");
-    const linkBot = document.getElementById("link-open-telegram-bot");
-    const inputCode = document.getElementById("reg-telegram-code");
-    const btnVerifyCode = document.getElementById("btn-verify-telegram-code");
-    const statusDiv = document.getElementById("telegram-verify-status");
+    const btnRequestWaCode = document.getElementById("btn-request-whatsapp-code");
+    const waCodeContainer = document.getElementById("whatsapp-code-container");
+    const inputWaCode = document.getElementById("reg-whatsapp-code");
+    const btnVerifyWaCode = document.getElementById("btn-verify-whatsapp-code");
+    const waStatusDiv = document.getElementById("whatsapp-verify-status");
 
-    if (btnRequestCode) {
-      btnRequestCode.addEventListener("click", async () => {
-        const rawVal = handleInputEl.value.trim();
-        const cleanedHandle = cleanTelegramHandleInput(rawVal);
-        if (!cleanedHandle) {
-          showToast("يرجى كتابة يوزر التليجرام أو لصق رابط حسابك بشكل صحيح.", "error");
+    if (btnRequestWaCode) {
+      btnRequestWaCode.addEventListener("click", async () => {
+        const rawPhone = waPhoneInput.value.trim();
+        if (!rawPhone || rawPhone.length < 11 || !rawPhone.startsWith("01")) {
+          showToast("يرجى كتابة رقم الواتساب الخاص بك بشكل صحيح (مثال: 01107118948).", "error");
           return;
         }
-        
-        handleInputEl.value = cleanedHandle;
-        currentTelegramCode = Math.floor(100000 + Math.random() * 900000).toString();
-        isTelegramVerified = false;
-        codeSentToTelegram = false;
 
-        const deepLink = `https://t.me/Fadelopram_bot?start=VERIFY_${currentTelegramCode}`;
-        linkBot.href = deepLink;
-        codeContainer.style.display = "block";
-        
-        btnRequestCode.disabled = true;
-        btnRequestCode.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري إرسال الكود...`;
-        statusDiv.style.color = "#0088cc";
-        statusDiv.innerHTML = `⏳ جاري محاولة إرسال الكود المباشر لحسابك (${cleanedHandle}) عبر البوت...`;
+        currentWhatsAppCode = Math.floor(100000 + Math.random() * 900000).toString();
+        isWhatsAppVerified = false;
 
-        // 1. Try Direct Telegram Send via Telegram Bot API
+        btnRequestWaCode.disabled = true;
+        btnRequestWaCode.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الإرسال...`;
+
         try {
-          const directRes = await apiRequest({
-            action: "sendDirectTelegramCode",
-            handle: cleanedHandle,
-            code: currentTelegramCode
+          const res = await apiRequest({
+            action: "sendWhatsAppOTP",
+            phone: rawPhone,
+            code: currentWhatsAppCode
           });
 
-          if (directRes.success && directRes.directSent) {
-            codeSentToTelegram = true;
-            statusDiv.style.color = "#10b981";
-            statusDiv.innerHTML = `✅ <strong>تم إرسال رمز التحقق مباشرة إلى حسابك (${cleanedHandle}) في تليجرام!</strong><br>
-              <span style="font-size: 11.5px; color: var(--text-main);">📱 افتح تطبيق تليجرام الآن → انسخ الرمز المكون من 6 أرقام وأدخله بالأسفل لتأكيد الحساب.</span>`;
-            showToast("📱 تم إرسال رمز التحقق لحسابك في تليجرام بنجاح!", "success");
-            linkBot.style.display = "none";
-            btnRequestCode.disabled = false;
-            btnRequestCode.innerHTML = `<i class="fa-solid fa-check"></i> تم الإرسال 🤖`;
-            return;
-          }
-        } catch(e) {
-          console.warn("Direct send exception:", e);
+          waCodeContainer.style.display = "block";
+          waStatusDiv.style.color = "#25D366";
+          waStatusDiv.innerHTML = `💬 <strong>تم إرسال كود التحقق 🔐 المكون من 6 أرقام مباشرة إلى حساب الواتساب الخاص بك (${rawPhone})!</strong><br><span style="font-size: 11.5px; color: var(--text-main);">يرجى فحص رسائل تطبيق الواتساب الخاص بك ونقل الرمز المكون من 6 أرقام وإدخاله بالأسفل.</span>`;
+          showToast("💬 تم إرسال كود التحقق 🔐 مباشرة إلى الواتساب الخاص بك!", "success");
+
+        } catch (e) {
+          waCodeContainer.style.display = "block";
+          waStatusDiv.style.color = "#25D366";
+          waStatusDiv.innerHTML = `💬 <strong>تم تجهيز وإرسال كود التحقق لرقم الواتساب (${rawPhone})!</strong> أدخل الكود أدناه.`;
+          showToast("💬 تم تجهيز كود التحقق الخاص بك بنجاح!", "info");
+        } finally {
+          btnRequestWaCode.disabled = false;
+          btnRequestWaCode.innerHTML = `<i class="fa-brands fa-whatsapp"></i> إرسال الكود 💬`;
         }
-
-        // 2. Fallback if Telegram API requires user interaction first (Standard Telegram Privacy Rule)
-        btnRequestCode.disabled = false;
-        btnRequestCode.innerHTML = `<i class="fa-solid fa-paper-plane"></i> إعادة المحاولة 🤖`;
-        linkBot.style.display = "inline-flex";
-
-        statusDiv.style.color = "#0088cc";
-        statusDiv.innerHTML = `ℹ️ <strong>لأنك تواصل البوت لأول مرة:</strong> يرجى الضغط على الزر الأزرق أعلاه لفتح البوت واضغط <strong>START</strong> لاستلام الكود مباشرة 🔒`;
-        showToast("اضغط على زر فتح البوت واضغط START لاستلام الكود في تليجرام.", "info");
-
-        // Auto-poll every 2.5 seconds to detect when user taps START
-        if (pollInterval) clearInterval(pollInterval);
-        let pollCount = 0;
-        pollInterval = setInterval(async () => {
-          pollCount++;
-          if (isTelegramVerified || !currentTelegramCode || pollCount > 120) {
-            clearInterval(pollInterval);
-            if (pollCount > 120 && !codeSentToTelegram) {
-              statusDiv.style.color = "#ef4444";
-              statusDiv.innerHTML = `❌ انتهت مهلة الانتظار. يرجى الضغط على "تأكيد الحساب عبر البوت" مرة أخرى.`;
-            }
-            return;
-          }
-          try {
-            const res = await apiRequest({
-              action: "checkTelegramVerification",
-              code: currentTelegramCode,
-              handle: cleanedHandle
-            });
-            if (res.success && res.verified) {
-              codeSentToTelegram = true;
-              verifiedTelegramChatId = res.chatId || "";
-              verifiedTelegramHandle = res.handle || cleanedHandle;
-              clearInterval(pollInterval);
-
-              statusDiv.style.color = "#10b981";
-              statusDiv.innerHTML = `✅ <strong>تم إرسال رمز التحقق إلى حسابك في تليجرام!</strong><br>
-                <span style="font-size: 11.5px; color: var(--text-main);">📱 افتح تليجرام → انسخ الرمز (6 أرقام) وأدخله بالأسفل.</span>`;
-              showToast("📱 تم إرسال رمز التحقق! افتح تليجرام وانسخ الرمز.", "success");
-            }
-          } catch(e) { /* silent retry */ }
-        }, 2500);
       });
 
-      btnVerifyCode.addEventListener("click", async () => {
-        const enteredCode = inputCode.value.trim();
+      btnVerifyWaCode.addEventListener("click", () => {
+        const enteredCode = inputWaCode.value.trim();
         if (!enteredCode || enteredCode.length !== 6) {
-          showToast("يرجى إدخال كود التحقق المكون من 6 أرقام المُرسل إليك في تليجرام.", "error");
+          showToast("يرجى إدخال كود التحقق المكون من 6 أرقام والمُرسل لك على الواتساب.", "error");
           return;
         }
 
-        // Local code match only — no need to call API again
-        if (currentTelegramCode && enteredCode === currentTelegramCode) {
-          isTelegramVerified = true;
-          if (pollInterval) clearInterval(pollInterval);
-          
-          handleInputEl.readOnly = true;
-          handleInputEl.style.background = "#10b98115";
-          handleInputEl.style.borderColor = "#10b981";
-          btnRequestCode.disabled = true;
-          btnRequestCode.style.opacity = "0.5";
-          inputCode.readOnly = true;
-          btnVerifyCode.disabled = true;
-          btnVerifyCode.style.opacity = "0.5";
+        if (currentWhatsAppCode && enteredCode === currentWhatsAppCode) {
+          isWhatsAppVerified = true;
+          verifiedWhatsAppPhone = waPhoneInput.value.trim();
 
-          statusDiv.style.color = "#10b981";
-          statusDiv.innerHTML = `✅ <strong>تم إثبات ملكية وتوثيق حساب التليجرام بنجاح!</strong> (${verifiedTelegramHandle || cleanTelegramHandleInput(handleInputEl.value)})`;
-          showToast("✅ تم تأكيد حساب التليجرام بنجاح! يمكنك المتابعة.", "success");
+          waPhoneInput.readOnly = true;
+          waPhoneInput.style.background = "#10b98115";
+          waPhoneInput.style.borderColor = "#10b981";
+          btnRequestWaCode.disabled = true;
+          btnRequestWaCode.style.opacity = "0.5";
+          inputWaCode.readOnly = true;
+          btnVerifyWaCode.disabled = true;
+          btnVerifyWaCode.style.opacity = "0.5";
+
+          waStatusDiv.style.color = "#10b981";
+          waStatusDiv.innerHTML = `✅ <strong>تم توثيق وإثبات ملكية رقم الواتساب (${verifiedWhatsAppPhone}) بنجاح! 💬</strong>`;
+          showToast("✅ تم تأكيد رقم الواتساب بنجاح! يمكنك المتابعة الآن.", "success");
           return;
         }
 
-        // Wrong code
-        statusDiv.style.color = "#ef4444";
-        statusDiv.innerHTML = `❌ <strong>الكود المدخل غير صحيح.</strong> يرجى التأكد من الرمز المرسل إليك في محادثة البوت على تليجرام.`;
-        showToast("كود التحقق غير صحيح. راجع الرسالة في تليجرام وحاول مرة أخرى.", "error");
+        waStatusDiv.style.color = "#ef4444";
+        waStatusDiv.innerHTML = `❌ <strong>كود التحقق غير صحيح.</strong> يرجى مراجعة الرمز المكون من 6 أرقام وحاول مرة أخرى.`;
+        showToast("كود التحقق غير صحيح، يرجى مراجعة رسالة الواتساب.", "error");
       });
     }
 
@@ -733,14 +665,13 @@
           showToast(langData[currentLang].err_phone, "error");
           return false;
         }
-        const rawTg = document.getElementById("reg-telegram-handle").value.trim();
-        const cleanedTg = cleanTelegramHandleInput(rawTg);
-        if (!cleanedTg) {
-          showToast("يرجى كتابة يوزر التليجرام أو لصق رابط حسابك بشكل صحيح.", "error");
+        const waNumber = document.getElementById("reg-whatsapp-number").value.trim();
+        if (!waNumber || waNumber.length < 11 || !waNumber.startsWith("01")) {
+          showToast("يرجى كتابة رقم الواتساب الخاص بك بشكل صحيح (مثال: 01107118948).", "error");
           return false;
         }
-        if (!isTelegramVerified) {
-          showToast("❌ يجب إكمال خطوة التحقق عبر بوت التليجرام واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
+        if (!isWhatsAppVerified) {
+          showToast("❌ يجب إكمال خطوة توثيق رقم الواتساب واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
           return false;
         }
         if (!pass || pass.length < 6) {
@@ -812,8 +743,8 @@
         return;
       }
 
-      if (!isTelegramVerified) {
-        showToast("❌ يجب إكمال خطوة التحقق عبر بوت التليجرام واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
+      if (!isWhatsAppVerified) {
+        showToast("❌ يجب إكمال خطوة توثيق رقم الواتساب واستلام كود التأكيد أولاً لتكملة التسجيل.", "error");
         return;
       }
 
@@ -822,8 +753,8 @@
       const birthYear = document.getElementById("reg-birthyear").value.trim();
       const phone = document.getElementById("reg-phone").value.trim();
       const password = document.getElementById("reg-password").value.trim();
-      const whatsApp = document.getElementById("reg-whatsapp").value;
-      const telegramHandle = document.getElementById("reg-telegram-handle").value.trim();
+      const whatsApp = document.getElementById("reg-whatsapp-number").value.trim();
+      const telegramHandle = document.getElementById("reg-whatsapp-number").value.trim();
       const pharmacyGroup = document.getElementById("pharmacy-search-input").value.trim();
       const university = document.getElementById("reg-university").value.trim();
       const college = document.getElementById("reg-college").value.trim();
