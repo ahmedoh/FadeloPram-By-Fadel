@@ -1065,15 +1065,17 @@ function handleDemoRequest(params) {
     }
     return { success: false, message: "لم يتم العثور على المدير." };
 
-  } else if (action === "adminGetCoursePrices") {
-    const prices = getTable("CoursePrices");
-    if (prices.length === 0) {
+  } else if (action === "adminGetCoursePrices" || action === "getCoursePrices") {
+    let prices = getTable("CoursePrices");
+    const hasLegacy = prices.some(p => p.Level === "Passengers" || p.Level === "Starters" || p.Level === "Movers" || p.Level === "Flyers" || p.Level === "Beast" || !p.LevelName);
+    
+    if (prices.length === 0 || hasLegacy) {
       const defaultPrices = [
-        { Level: "Passengers", OriginalPrice: "200", OfferPrice: "0", IsFree: "true" },
-        { Level: "Starters", OriginalPrice: "350", OfferPrice: "", IsFree: "false" },
-        { Level: "Movers", OriginalPrice: "500", OfferPrice: "", IsFree: "false" },
-        { Level: "Flyers", OriginalPrice: "800", OfferPrice: "", IsFree: "false" },
-        { Level: "Beast", OriginalPrice: "1500", OfferPrice: "", IsFree: "false" }
+        { Level: "L0", LevelName: "الصيدلي الواعد (L0)", OriginalPrice: "0", OfferPrice: "0", IsFree: "true", FreeUntil: "", OfferLabel: "مجاني دائماً 🎉", OfferBadgeColor: "#10b981" },
+        { Level: "L1", LevelName: "ممارس الـ OTC والتواصل (L1)", OriginalPrice: "350", OfferPrice: "250", IsFree: "false", FreeUntil: "", OfferLabel: "عرض الانطلاق 🔥", OfferBadgeColor: "#f59e0b" },
+        { Level: "L2", LevelName: "أخصائي الاستشارات الصيدلانية (L2)", OriginalPrice: "500", OfferPrice: "350", IsFree: "false", FreeUntil: "", OfferLabel: "خصم 30% 🏷️", OfferBadgeColor: "#3b82f6" },
+        { Level: "L3", LevelName: "صيدلي أول وممارس متقدم (L3)", OriginalPrice: "800", OfferPrice: "600", IsFree: "false", FreeUntil: "", OfferLabel: "متاح للمتميزين ✨", OfferBadgeColor: "#8b5cf6" },
+        { Level: "L4", LevelName: "استشاري الرعاية وقائد الفرع (L4)", OriginalPrice: "1500", OfferPrice: "1200", IsFree: "false", FreeUntil: "", OfferLabel: "المستوى المتقدم 👑", OfferBadgeColor: "#ef4444" }
       ];
       saveTable("CoursePrices", defaultPrices);
       return { success: true, prices: defaultPrices };
@@ -1086,22 +1088,97 @@ function handleDemoRequest(params) {
     }
     const prices = getTable("CoursePrices");
     const level = String(params.level).trim();
-    const pIndex = prices.findIndex(x => String(x.Level).trim() === level);
-    if (pIndex !== -1) {
-      prices[pIndex].OriginalPrice = String(params.originalPrice).trim();
-      prices[pIndex].OfferPrice = String(params.offerPrice).trim();
-      prices[pIndex].IsFree = String(params.isFree).trim();
-      saveTable("CoursePrices", prices);
-      return { success: true, message: "تم تحديث السعر بنجاح." };
-    }
-    prices.push({
+    const pIndex = prices.findIndex(x => String(x.Level).trim() === level || String(x.LevelName).trim() === level);
+    const itemData = {
       Level: level,
-      OriginalPrice: String(params.originalPrice).trim(),
-      OfferPrice: String(params.offerPrice).trim(),
-      IsFree: String(params.isFree).trim()
-    });
+      LevelName: params.levelName || level,
+      OriginalPrice: String(params.originalPrice || 0).trim(),
+      OfferPrice: String(params.offerPrice || "").trim(),
+      IsFree: String(params.isFree).trim(),
+      FreeUntil: String(params.freeUntil || "").trim(),
+      OfferLabel: String(params.offerLabel || "").trim(),
+      OfferBadgeColor: String(params.offerBadgeColor || "#f59e0b").trim()
+    };
+    if (pIndex !== -1) {
+      prices[pIndex] = { ...prices[pIndex], ...itemData };
+    } else {
+      prices.push(itemData);
+    }
     saveTable("CoursePrices", prices);
-    return { success: true, message: "تم إضافة وتحديث السعر بنجاح." };
+    return { success: true, message: "تم حفظ وتحديث التسعير بنجاح." };
+
+  } else if (action === "getAnnouncements" || action === "adminGetAnnouncements") {
+    const list = getTable("Announcements");
+    if (list.length === 0) {
+      const defaultAnnouncements = [
+        { id: "ann_1", type: "general", title: "🚀 مرحباً بكم في أكاديمية فاضلوبرام", content: "انضم لأحدث المسارات التدريبية المتقدمة في الصيدلة الإكلينيكية وابتكر في مسارك المهني!", icon: "fa-rocket", color: "gold", link: "#levels-catalog", active: true, createdAt: new Date().toISOString() },
+        { id: "ann_2", type: "course", title: "🎓 مسار OTC والتواصل (L1) متاح الآن!", content: "سجل الآن واكتسب مهارات التشخيص الأولي والتعامل الاحترافي مع الحالات الشائعة.", icon: "fa-stethoscope", color: "teal", link: "register.html", active: true, createdAt: new Date().toISOString() },
+        { id: "ann_3", type: "offer", title: "🔥 عرض محدث: خصم 30% على المستوى الثاني", content: "استفد من الخصم الاستثنائي لفترة محدودة على مستوى أخصائي الاستشارات الصيدلانية.", icon: "fa-fire", color: "orange", link: "#popular-courses-sec", active: true, createdAt: new Date().toISOString() }
+      ];
+      saveTable("Announcements", defaultAnnouncements);
+      return { success: true, announcements: defaultAnnouncements };
+    }
+    return { success: true, announcements: list };
+
+  } else if (action === "adminSaveAnnouncement") {
+    if (!verifyLocalAdmin(params.adminPassword)) {
+      return { success: false, message: "غير مصرح بالعملية." };
+    }
+    const list = getTable("Announcements");
+    const annId = params.id || ("ann_" + Date.now());
+    const idx = list.findIndex(x => x.id === annId);
+    const annObj = {
+      id: annId,
+      type: params.type || "general",
+      title: params.title || "",
+      content: params.content || "",
+      icon: params.icon || "fa-bullhorn",
+      color: params.color || "gold",
+      link: params.link || "",
+      active: params.active !== undefined ? params.active : true,
+      updatedAt: new Date().toISOString()
+    };
+    if (idx !== -1) {
+      list[idx] = annObj;
+    } else {
+      list.push(annObj);
+    }
+    saveTable("Announcements", list);
+    return { success: true, message: "تم حفظ الإعلان بنجاح.", id: annId };
+
+  } else if (action === "adminDeleteAnnouncement") {
+    if (!verifyLocalAdmin(params.adminPassword)) {
+      return { success: false, message: "غير مصرح بالعملية." };
+    }
+    let list = getTable("Announcements");
+    list = list.filter(x => x.id !== params.id);
+    saveTable("Announcements", list);
+    return { success: true, message: "تم حذف الإعلان بنجاح." };
+
+  } else if (action === "getPlatformBranding" || action === "adminGetPlatformBranding") {
+    const branding = getTable("PlatformBranding");
+    const defaultBranding = {
+      name: "Fadelopram Rx Academy",
+      sub: "المنصة الأكاديمية الصيدلانية المتقدمة",
+      logo: "logo.png"
+    };
+    if (branding.length === 0) {
+      return { success: true, branding: defaultBranding };
+    }
+    return { success: true, branding: { ...defaultBranding, ...branding[0] } };
+
+  } else if (action === "adminSavePlatformBranding") {
+    if (!verifyLocalAdmin(params.adminPassword)) {
+      return { success: false, message: "غير مصرح بالعملية." };
+    }
+    const bData = [{
+      name: params.name || "Fadelopram Rx Academy",
+      sub: params.sub || "المنصة الأكاديمية الصيدلانية المتقدمة",
+      logo: params.logo || "logo.png",
+      updatedAt: new Date().toISOString()
+    }];
+    saveTable("PlatformBranding", bData);
+    return { success: true, message: "تم حفظ إعدادات هوية المنصة بنجاح." };
 
   } else if (action === "adminGetQuestions") {
     if (!verifyLocalAdmin(params.adminPassword)) {
@@ -1980,45 +2057,145 @@ async function handleSupabaseRequest(params) {
       }
       
       return { success: true };
-      
-    } else if (action === "checkTelegramVerification") {
+    } else if (action === "sendDirectTelegramCode") {
+      const handle = String(params.handle || "").trim();
       const code = String(params.code || "").trim();
       const token = localStorage.getItem("maghawry_telegram_token") || DEFAULT_TELEGRAM_TOKEN;
-      try {
-        const res = await fetch(`https://api.telegram.org/bot${token}/getUpdates`);
-        const data = await res.json();
-        if (data.ok && Array.isArray(data.result)) {
-          // Search backwards for latest match
-          for (let i = data.result.length - 1; i >= 0; i--) {
-            const upd = data.result[i];
-            const msg = upd.message || upd.edited_message;
-            if (msg && msg.text) {
-              if (msg.text.includes(code) || msg.text.includes(`VERIFY_${code}`)) {
-                const chatId = String(msg.chat.id);
-                const username = msg.from.username ? `@${msg.from.username}` : (msg.from.first_name || "المتدرب");
-                
-                // Reply to user on Telegram via bot
-                sendTelegramNotification(
-                  `يرجى استخدام الرمز المرفق أدناه لتأكيد حسابكم لدى منصة Fadelopram\n\n` +
-                  `الرمز ( \`${code}\` )\n\n` +
-                  `لسلامتكم يرجى عدم مشاركته مع أحد`,
-                  chatId
-                ).catch(e => console.error(e));
 
-                return {
-                  success: true,
-                  verified: true,
-                  chatId: chatId,
-                  handle: username,
-                  message: "تم التحقق من حساب التليجرام بنجاح عبر البوت ⚡"
-                };
+      if (!handle || !code) {
+        return { success: false, message: "بيانات التليجرام غير مكتملة." };
+      }
+
+      // Clean username (extract raw handle without @ or URL parts)
+      let cleanUser = handle.replace(/^@+/, "").trim();
+      const urlMatch = cleanUser.match(/(?:t\.me|telegram\.me|telegram\.dog)\/([a-zA-Z0-9_]{4,})/i);
+      if (urlMatch && urlMatch[1]) cleanUser = urlMatch[1];
+      cleanUser = cleanUser.split("/")[0].split("?")[0].trim().toLowerCase();
+
+      try {
+        // Step 1: Ensure webhook is deleted so getUpdates works
+        await fetch(`https://api.telegram.org/bot${token}/deleteWebhook`);
+
+        // Step 2: Search getUpdates history for numeric chat_id belonging to this username
+        let targetChatId = null;
+        let resolvedUsername = `@${cleanUser}`;
+        const resUpdates = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=-100&limit=100`);
+        const updatesData = await resUpdates.json();
+
+        if (updatesData.ok && Array.isArray(updatesData.result)) {
+          for (let i = updatesData.result.length - 1; i >= 0; i--) {
+            const upd = updatesData.result[i];
+            const msg = upd.message || upd.edited_message;
+            if (msg && msg.from) {
+              const uName = String(msg.from.username || "").trim().toLowerCase();
+              if (uName && uName === cleanUser) {
+                targetChatId = String(msg.chat ? msg.chat.id : msg.from.id);
+                resolvedUsername = `@${msg.from.username}`;
+                break;
               }
             }
           }
         }
-        return { success: false, verified: false, message: "لم يتم استقبال إشارة التوثيق من البوت بعد. يرجى الضغط على زر التفعيل في تليجرام." };
+
+        // Fallback target: try @username string if numeric chat_id not found in history
+        if (!targetChatId && cleanUser) {
+          targetChatId = `@${cleanUser}`;
+        }
+
+        if (!targetChatId) {
+          return { success: false, requireBotStart: true, message: "يلزم تفعيل المحادثة مع البوت أولاً." };
+        }
+
+        // Step 3: Send verification code to the resolved Telegram chat_id
+        const sendRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: targetChatId,
+            text: `🔐 *رمز التحقق الخاص بك في أكاديمية Fadelopram Rx*\n\n` +
+                  `🔑 الرمز: \`${code}\`\n\n` +
+                  `📋 قم بنسخ هذا الرمز وإدخاله في صفحة التسجيل لإكمال التوثيق.\n` +
+                  `⚠️ لا تشارك هذا الرمز مع أي شخص.`,
+            parse_mode: "Markdown"
+          })
+        });
+        const sendData = await sendRes.json();
+
+        if (sendData.ok) {
+          return {
+            success: true,
+            directSent: true,
+            chatId: targetChatId,
+            handle: resolvedUsername,
+            message: `تم إرسال رمز التحقق المباشر إلى حسابك ${resolvedUsername} في تليجرام بنجاح ⚡`
+          };
+        } else {
+          console.warn("Direct Telegram send API response:", sendData);
+          return {
+            success: false,
+            requireBotStart: true,
+            message: sendData.description || "يلزم تفعيل المحادثة مع البوت أولاً."
+          };
+        }
       } catch (err) {
-        console.error("Telegram updates poll error:", err);
+        console.error("Direct Telegram send exception:", err);
+        return { success: false, requireBotStart: true, message: "تعذر الإرسال المباشر." };
+      }
+
+    } else if (action === "checkTelegramVerification") {
+      const code = String(params.code || "").trim();
+      const targetHandle = String(params.handle || "").trim().replace(/^@+/, "").toLowerCase();
+      const token = localStorage.getItem("maghawry_telegram_token") || DEFAULT_TELEGRAM_TOKEN;
+      try {
+        await fetch(`https://api.telegram.org/bot${token}/deleteWebhook`);
+
+        const res = await fetch(`https://api.telegram.org/bot${token}/getUpdates?offset=-100&limit=100`);
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.result)) {
+          for (let i = data.result.length - 1; i >= 0; i--) {
+            const upd = data.result[i];
+            const msg = upd.message || upd.edited_message;
+            if (!msg || !msg.text) continue;
+            const txt = msg.text.trim();
+            const uName = String(msg.from ? msg.from.username : "").trim().toLowerCase();
+
+            // Match code in text OR handle match with /start
+            const matchesCode = (code && (txt.includes(`VERIFY_${code}`) || txt.includes(code)));
+            const matchesUserStart = (targetHandle && uName === targetHandle && txt.startsWith("/start"));
+
+            if (matchesCode || matchesUserStart) {
+              const chatId = String(msg.chat.id);
+              const username = msg.from.username ? `@${msg.from.username}` : (msg.from.first_name || "المتدرب");
+              
+              // Reply with code to user's Telegram chat
+              const sendRes = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  chat_id: chatId,
+                  text: `🔐 *رمز التحقق الخاص بك في أكاديمية Fadelopram Rx*\n\n` +
+                        `🔑 الرمز: \`${code}\`\n\n` +
+                        `📋 قم بنسخ هذا الرمز وإدخاله في صفحة التسجيل لإكمال التوثيق.\n` +
+                        `⚠️ لا تشارك هذا الرمز مع أي شخص.`,
+                  parse_mode: "Markdown"
+                })
+              });
+              const sendData = await sendRes.json();
+
+              return {
+                success: true,
+                verified: true,
+                chatId: chatId,
+                handle: username,
+                codeSent: sendData.ok,
+                message: "تم إرسال رمز التأكيد لحسابك في التليجرام بنجاح ⚡"
+              };
+            }
+          }
+        }
+        return { success: false, verified: false, message: "لم يتم استقبال إشارة التفعيل من البوت بعد." };
+      } catch (err) {
+        console.error("Telegram verification error:", err);
         return { success: false, verified: false, message: "تعذر الاتصال بسيرفر تليجرام." };
       }
 

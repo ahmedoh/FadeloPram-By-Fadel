@@ -596,119 +596,44 @@
             </p>
           </div>
 
-          <!-- Smart Protected Video Player Container -->
-          <div id="lecture-preview-container" oncontextmenu="return false;" style="
+          <div id="lecture-preview-container" style="
             position: relative;
             width: 100%;
             aspect-ratio: 16/9;
-            border-radius: 16px;
+            border-radius: 14px;
             overflow: hidden;
             border: 1px solid var(--border-color);
-            background: #000;
+            background: rgba(0,0,0,0.15);
             margin-bottom: 15px;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.3);
-            user-select: none;
-            -webkit-user-select: none;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            backdrop-filter: blur(8px);
           ">
-            <!-- Dynamic Anti-Recording Watermark Overlay -->
-            <div id="player-watermark-overlay" style="
-              position: absolute;
-              top: 20px;
-              right: 20px;
-              z-index: 10;
-              pointer-events: none;
-              color: rgba(255, 255, 255, 0.4);
-              font-size: 11px;
-              font-weight: bold;
-              font-family: monospace;
-              text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-              background: rgba(0,0,0,0.3);
-              padding: 4px 10px;
-              border-radius: 20px;
-              backdrop-filter: blur(4px);
-              transition: all 4s ease-in-out;
-            ">
-              <span id="wm-student-name">د. متدرب</span> | <span id="wm-student-phone">01000000000</span> | Fadelopram Shield 🛡️
-            </div>
-
-            <!-- Video Player Iframe (Sandboxed Encapsulated Player) -->
             <iframe id="lecture-preview-iframe" src="" style="
               width: 100%;
               height: 100%;
               border: none;
-              background: #000;
-              pointer-events: auto;
-            " allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
-
-            <!-- Smart Controls Overlay Bar -->
-            <div id="smart-player-controls-bar" style="
-              position: absolute;
-              bottom: 0;
-              left: 0;
-              right: 0;
-              z-index: 12;
-              background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
-              padding: 12px 18px;
-              display: flex;
-              flex-direction: column;
-              gap: 8px;
-              transition: opacity 0.3s ease;
-            ">
-              <!-- Smart Progress Bar -->
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <input type="range" id="smart-player-seek" min="0" max="100" value="0" style="
-                  flex: 1;
-                  cursor: pointer;
-                  accent-color: var(--color-gold);
-                  height: 4px;
-                  border-radius: 2px;
-                ">
-                <span id="smart-player-time" style="color: #fff; font-size: 11px; font-weight: bold; font-family: monospace; min-width: 80px; text-align: left;">00:00 / 00:00</span>
-              </div>
-
-              <!-- Action Controls Row -->
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <button type="button" id="btn-player-play" class="btn" style="background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; padding: 0;">
-                    <i class="fa-solid fa-play"></i>
-                  </button>
-                  <button type="button" id="btn-player-rewind" class="btn" title="تراجع 10 ثوانٍ" style="background: none; border: none; color: rgba(255,255,255,0.8); font-size: 14px; cursor: pointer; padding: 0;">
-                    <i class="fa-solid fa-rotate-left"></i> <span style="font-size: 10px;">10s</span>
-                  </button>
-                  <button type="button" id="btn-player-forward" class="btn" title="تقديم 10 ثوانٍ" style="background: none; border: none; color: rgba(255,255,255,0.8); font-size: 14px; cursor: pointer; padding: 0;">
-                    <i class="fa-solid fa-rotate-right"></i> <span style="font-size: 10px;">10s</span>
-                  </button>
-                </div>
-
-                <div style="display: flex; align-items: center; gap: 12px;">
-                  <select id="smart-player-speed" style="
-                    background: rgba(255,255,255,0.15);
-                    color: #fff;
-                    border: 1px solid rgba(255,255,255,0.2);
-                    border-radius: 8px;
-                    padding: 2px 6px;
-                    font-size: 11px;
-                    font-weight: bold;
-                    cursor: pointer;
-                  ">
-                    <option value="0.75" style="color: #000;">0.75x</option>
-                    <option value="1.0" selected style="color: #000;">1.0x (عادي)</option>
-                    <option value="1.25" style="color: #000;">1.25x</option>
-                    <option value="1.5" style="color: #000;">1.5x (سريع)</option>
-                    <option value="2.0" style="color: #000;">2.0x (مضاعف)</option>
-                  </select>
-
-                  <button type="button" id="btn-player-fullscreen" class="btn" title="ملء الشاشة" style="background: none; border: none; color: #fff; font-size: 15px; cursor: pointer; padding: 0;">
-                    <i class="fa-solid fa-expand"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
+              background: transparent;
+            " allowfullscreen></iframe>
           </div>
 
-          <!-- Hidden External Button Container (Kept hidden to prevent raw URL leakage) -->
-          <div style="display: none !important;">
-            <button id="btn-open-drive-lecture" onclick="openDriveLecture()"></button>
+          <div style="text-align: center; margin-bottom: 20px;">
+            <button id="btn-open-drive-lecture" onclick="openDriveLecture()" class="btn btn-secondary" style="
+              font-size: 13px;
+              padding: 8px 24px;
+              border-radius: 20px;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              gap: 8px;
+              font-weight: bold;
+              box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.15);
+              background: rgba(var(--color-primary-rgb), 0.08);
+              color: var(--color-primary);
+              border: 1px solid rgba(var(--color-primary-rgb), 0.2);
+            ">
+              <i class="fa-solid fa-up-right-from-square"></i>
+              فتح المحاضرة في نافذة خارجية ↗
+            </button>
           </div>
 
 
@@ -761,15 +686,15 @@
           </div>
           
           <div class="certificate-wrapper" id="print-area">
-            <div class="certificate-watermark">MAGHAWRY</div>
+            <div class="certificate-watermark">FADELOPRAM</div>
             <div class="certificate-content">
               <div class="cert-header">
-                <h2>أكاديمية صيدليات آل مغاوري</h2>
+                <h2>أكاديمية Fadelopram Rx Academy</h2>
                 <p>Fadelopram Trainees Academy</p>
               </div>
               <div class="cert-title">شهادة اجتياز وتفوق</div>
               <div class="cert-body">
-                تشهد إدارة التدريب والتعليم بصيدليات آل مغاوري بأن الدكتور / الدكتورة:
+                تشهد إدارة التدريب والتعليم بأكاديمية Fadelopram Rx Academy بأن الدكتور / الدكتورة:
                 <br><strong><span id="cert-trainee-name">...</span></strong><br>
                 قد اجتاز بنجاح وتفوق المتطلبات الأكاديمية والعملية المقررة لمستوى:
                 <br><strong><span id="cert-level-name">...</span></strong><br>
@@ -969,6 +894,24 @@
               <span id="btn-start-exam-text">الانتقال إلى اختبار المرحلة (مغلق)</span>
             </button>
           </div>
+
+          <!-- Dashboard Bottom Announcements Carousel Board -->
+          <div id="dashboard-bottom-announcements" style="margin-top: 35px; direction: rtl;">
+            <div id="dash-ann-carousel-card" style="background: linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(20, 20, 35, 0.95) 100%); border: 1px solid var(--color-gold-glow); border-radius: 18px; padding: 22px 28px; position: relative; overflow: hidden; box-shadow: 0 10px 35px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; transition: all 0.4s ease;">
+              <div style="display: flex; align-items: center; gap: 16px;">
+                <div style="width: 50px; height: 50px; border-radius: 14px; background: rgba(197,160,89,0.2); display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--color-gold); flex-shrink: 0;">
+                  <i class="fa-solid fa-bullhorn" id="dash-ann-icon"></i>
+                </div>
+                <div>
+                  <h4 id="dash-ann-title" style="font-size: 16px; font-weight: 800; color: var(--color-gold); margin: 0 0 4px;">جاري تحميل أحدث إعلانات المنصة...</h4>
+                  <p id="dash-ann-desc" style="font-size: 13px; color: var(--text-muted); margin: 0; line-height: 1.5;">تابع التحديثات الإكلينيكية والمستويات المتاحة هنا.</p>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <a id="dash-ann-btn" href="#" class="btn btn-gold" style="padding: 10px 22px; font-size: 13px; font-weight: 800; border-radius: 10px; white-space: nowrap;">استكشف العرض <i class="fa-solid fa-arrow-left"></i></a>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -1096,11 +1039,11 @@
           <li style="margin-bottom: 12px; list-style-position: inside;">
             <strong>خطة المستويات المتكاملة:</strong> تم تقسيم المنهج تدريجياً لفتح مسارات واضحة:
             <ul style="list-style-type: none; padding-right: 15px; margin-top: 5px;">
-              <li style="margin-bottom: 4px;"><span style="color: #10b981;">🟢 المستوى الصِفري (Passengers):</span> مرحلة التأسيس المهني (مجانية بالكامل) — تشمل أدبيات العمل الصيدلي، الإسعافات الأولية (First Aid)، وأساسيات علم الدواء (Basic Pharma).</li>
-              <li style="margin-bottom: 4px;"><span style="color: #3b82f6;">🔵 المستوى الأول (Starters):</span> الممارسة اليومية المباشرة — تشمل OTC التشخيص بدون روشتة، وقراءة التحاليل الطبية (Medical Analysis).</li>
-              <li style="margin-bottom: 4px;"><span style="color: #eab308;">🟡 المستوى الثاني (Movers):</span> التعمق والتخصص — تشمل المضادات الحيوية (Antibiotics)، الجلدية الشائعة (Dermatology)، وشرح المواد الفعالة من A to Z.</li>
-              <li style="margin-bottom: 4px;"><span style="color: #f97316;">🟠 المستوى الثالث (Flyers):</span> الربط والتطبيق العملي — تشمل تركيبات التجميل (Formulation)، الكوزمو (Cosmetics)، ودبلومة السكر المعتمدة.</li>
-              <li style="margin-bottom: 4px;"><span style="color: #ef4444;">🔴 المستوى الرابع (ليفيل الوحش):</span> مستوى الخبراء والسريريات المتقدمة (يُحدد لاحقاً).</li>
+              <li style="margin-bottom: 4px;"><span style="color: #10b981;">🟢 🌱 الصيدلي الواعد (Pharmacy Trainee - L0):</span> مرحلة التأسيس المهني (مجانية بالكامل) — تشمل أدبيات العمل الصيدلي، الإسعافات الأولية (First Aid)، وأساسيات علم الدواء (Basic Pharma).</li>
+              <li style="margin-bottom: 4px;"><span style="color: #3b82f6;">🔵 💊 ممارس الـ OTC والتواصل (OTC Specialist - L1):</span> الممارسة اليومية المباشرة — تشمل OTC التشخيص بدون روشتة، وقراءة التحاليل الطبية (Medical Analysis).</li>
+              <li style="margin-bottom: 4px;"><span style="color: #eab308;">🟡 🩺 خبير الروشتات والجرعات (Clinical Dispenser - L2):</span> التعمق والتخصص — تشمل المضادات الحيوية (Antibiotics)، الجلدية الشائعة (Dermatology)، وشرح المواد الفعالة من A to Z.</li>
+              <li style="margin-bottom: 4px;"><span style="color: #f97316;">🟠 ⚡ صيدلي الحالات الحرجة والتركيبات (Advanced Pharmacist - L3):</span> الربط والتطبيق العملي — تشمل تركيبات التجميل (Formulation)، الكوزمو (Cosmetics)، ودبلومة السكر المعتمدة.</li>
+              <li style="margin-bottom: 4px;"><span style="color: #ef4444;">🔴 👑 صيدلي أول وممارس متقدم (Senior Pharmacist - L4):</span> مستوى الخبراء والسريريات المتقدمة (يُحدد لاحقاً).</li>
             </ul>
           </li>
           <li style="margin-bottom: 12px; list-style-position: inside;"><strong>متطلبات فتح الامتحانات:</strong> يلتزم المتدرب بمشاهدة كافة محاضرات المستوى الحالي بشكل كامل لتسجيل حضورهم وتفاعلهم.</li>
@@ -1186,13 +1129,13 @@
       <button onclick="document.getElementById('passport-modal').classList.remove('active')" style="position: absolute; top: 15px; left: 15px; z-index: 10; background: rgba(0,0,0,0.5); border: none; font-size: 20px; color: #fff; width: 36px; height: 36px; border-radius: 50%; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
 
       <div class="passport-card" id="digital-passport-printable">
-        <div class="passport-watermark">MAGHAWRY</div>
+        <div class="passport-watermark">FADELOPRAM</div>
 
         <!-- Passport Header -->
         <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--color-gold); padding-bottom: 15px; margin-bottom: 20px;">
           <div>
-            <div style="font-size: 18px; font-weight: 900; color: var(--color-gold);">أكاديمية صيدليات آل مغاوري</div>
-            <div style="font-size: 11px; opacity: 0.8; letter-spacing: 1px;">EL-MAGHAWRY PHARMA DIGITAL PASSPORT</div>
+            <div style="font-size: 18px; font-weight: 900; color: var(--color-gold);">أكاديمية Fadelopram Rx Academy</div>
+            <div style="font-size: 11px; opacity: 0.8; letter-spacing: 1px;">FADELOPRAM RX DIGITAL PASSPORT</div>
           </div>
           <div style="text-align: left;">
             <span style="background: rgba(251,191,36,0.2); color: var(--color-gold); border: 1px solid var(--color-gold); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 800;">وثيقة موثقة 📜</span>
@@ -1320,7 +1263,7 @@
   </div>
 
   <footer class="app-footer">
-    <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري</p>
+    <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لـ Fadelopram Rx Academy</p>
     <p style="font-size: 10px; margin-top: 5px; color: rgba(128,128,128,0.4)">Support: 01107118948</p>
   </footer>
 
@@ -1340,7 +1283,7 @@
         loading_lectures: "جاري تحميل الفيديوهات...",
         cert_list_title: "شهاداتك المعتمدة",
         playing_video_title: "المحاضرة المعروضة",
-        copyright_warning: "هذا الفيديو محمي بموجب حقوق الطبع والنشر لصيدليات آل مغاوري. يتم توليد علامات مائية عشوائية باسمك وبيانات حسابك لمنع التسجيل أو النشر غير المصرح به. إتمام مشاهدة الفيديو كاملاً يسجل تلقائياً في ملف تقدمك الدراسي.",
+        copyright_warning: "هذا الفيديو محمي بموجب حقوق الطبع والنشر لـ Fadelopram Rx Academy. يتم توليد علامات مائية عشوائية باسمك وبيانات حسابك لمنع التسجيل أو النشر غير المصرح به. إتمام مشاهدة الفيديو كاملاً يسجل تلقائياً في ملف تقدمك الدراسي.",
         exam_title: "امتحان اجتياز وتخطي المرحلة",
         exam_desc: "يرجى الإجابة على الأسئلة التالية بدقة. يشترط الحصول على نسبة نجاح 80% أو أكثر لتتمكن من تقديم طلب الترقية للمستوى التالي والحصول على شهادتك.",
         btn_submit_exam: "تسجيل إجابات الامتحان",
@@ -1349,8 +1292,8 @@
         btn_refresh_now: "تحديث الحالة الآن",
         btn_print_cert: "طباعة الشهادة أو حفظ كـ PDF",
         btn_back_dashboard: "العودة للرئيسية",
-        main_title: "أكاديمية آل مغاوري لتأهيل الصيادلة الجدد",
-        main_subtitle: `<div style="text-align: center; font-size: 16px; margin-bottom: 20px; font-weight: bold; color: var(--color-primary);">مرحباً بكم زملاء المهنة الكرام في رحاب أكاديمية آل مغاوري للتأهيل الميداني 🎓</div>
+        main_title: "Fadelopram Rx Academy — المنصة الأكاديمية الصيدلانية",
+        main_subtitle: `<div style="text-align: center; font-size: 16px; margin-bottom: 20px; font-weight: bold; color: var(--color-primary);">مرحباً بكم زملاء المهنة الكرام في رحاب Fadelopram Rx Academy 🎓</div>
 <p style="text-align: center; font-size: 14px; color: var(--text-muted); line-height: 1.8;">يرجى اختيار المحاضرة الأولى من القائمة الجانبية لبدء مسيرتكم التدريبية المباركة. نتمنى لكم التوفيق والتميز!</p>`,
         exam_ready_title: "🎉 مبارك! أتممت مشاهدة كافة محاضرات هذا المستوى",
         exam_ready_desc: "أصبحت مؤهلاً الآن لدخول امتحان تقييم المرحلة للحصول على شهادتك المعتمدة وفتح المستوى التدريبي التالي.",
@@ -1360,7 +1303,7 @@
         lbl_confirm_pass: "تأكيد كلمة المرور الجديدة",
         btn_cancel: "إلغاء",
         btn_save_pass: "حفظ كلمة المرور الجديدة",
-        footer_text: "برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري",
+        footer_text: "برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لـ Fadelopram Rx Academy",
         err_chpass_match: "تأكيد كلمة المرور غير متطابق مع كلمة المرور الجديدة.",
         err_chpass_curr: "كلمة المرور الحالية المدخلة غير صحيحة.",
         toast_chpass_success: "🔒 تم تغيير كلمة المرور بنجاح وتم إرسال إشعار للمطور.",
@@ -1368,7 +1311,7 @@
         toast_exam_fail: "⚠️ للأسف لم تجتز الامتحان. حصلت على {score} من {total}. يجب الحصول على 80% على الأقل. حاول مرة أخرى!",
         cert_view_title: "شهادة المستوى: {level}",
         btn_view_cert: "عرض الشهادة",
-        level_Passengers: "🌱 الصيدلي الواءد (L0)",
+        level_Passengers: "🌱 الصيدلي الواعد (L0)",
         level_Starters: "💊 ممارس الـ OTC والتواصل (L1)",
         level_Movers: "🩺 خبير الروشتات والجرعات (L2)",
         level_Flyers: "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
@@ -1488,7 +1431,7 @@
       document.body.dir = currentLang === "ar" ? "rtl" : "ltr";
       
       const headerTitle = document.getElementById("header-branch-name");
-      headerTitle.textContent = currentLang === "ar" ? `صيدليات آل مغاوري - ${traineeBranch}` : `El-Maghawry Pharmacies - ${traineeBranch}`;
+      headerTitle.textContent = currentLang === "ar" ? `أكاديمية Fadelopram - ${traineeBranch}` : `Fadelopram Academy - ${traineeBranch}`;
 
       const levelBadge = document.getElementById("trainee-level-badge");
       levelBadge.textContent = langData[currentLang][`level_${traineeLevel}`] || traineeLevel;
@@ -1732,11 +1675,11 @@
 
       const levelsOrder = ["Passengers", "Starters", "Movers", "Flyers", "Beast"];
       const levelNamesAr = {
-        "Passengers": "Passengers (المستوى التمهيدي 0)",
-        "Starters": "Starters (المستوى الأول 1)",
-        "Movers": "Movers (المستوى الثاني 2)",
-        "Flyers": "Flyers (المستوى الثالث 3)",
-        "Beast": "Beast (المستوى الرابع 4)"
+        "Passengers": "🌱 الصيدلي الواعد (L0)",
+        "Starters": "💊 ممارس الـ OTC والتواصل (L1)",
+        "Movers": "🩺 خبير الروشتات والجرعات (L2)",
+        "Flyers": "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
+        "Beast": "👑 صيدلي أول وممارس متقدم (L4)"
       };
 
       const totalVids = videosData.length;
@@ -2255,50 +2198,10 @@
         if (iframe) {
           iframe.src = getEmbedUrl(v.Url || v.VideoId || "");
         }
-        updateSmartWatermark();
       }
       loadInlineVideoQuiz(videoId, title);
 
       renderPlaylist();
-    }
-
-    // Smart Watermark Animation & Dynamic User Info
-    function updateSmartWatermark() {
-      const wmName = document.getElementById("wm-student-name");
-      const wmPhone = document.getElementById("wm-student-phone");
-      const overlay = document.getElementById("player-watermark-overlay");
-
-      if (wmName) wmName.textContent = traineeName || "د. متدرب";
-      if (wmPhone) wmPhone.textContent = traineeEmail || traineeBranch || "Fadelopram";
-
-      if (overlay && !overlay.dataset.animated) {
-        overlay.dataset.animated = "true";
-        const pos = [
-          { top: '15px', right: '15px', bottom: 'auto', left: 'auto' },
-          { top: '15px', right: 'auto', bottom: 'auto', left: '15px' },
-          { top: 'auto', right: '15px', bottom: '60px', left: 'auto' },
-          { top: 'auto', right: 'auto', bottom: '60px', left: '15px' }
-        ];
-        let idx = 0;
-        setInterval(() => {
-          idx = (idx + 1) % pos.length;
-          Object.assign(overlay.style, pos[idx]);
-        }, 4500);
-      }
-    }
-
-    // Fullscreen Toggle for Protected Player
-    const btnFullscreen = document.getElementById("btn-player-fullscreen");
-    if (btnFullscreen) {
-      btnFullscreen.addEventListener("click", () => {
-        const container = document.getElementById("lecture-preview-container");
-        if (!document.fullscreenElement) {
-          if (container.requestFullscreen) container.requestFullscreen();
-          else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
-        } else {
-          if (document.exitFullscreen) document.exitFullscreen();
-        }
-      });
     }
 
     function resetViewport() {
@@ -3566,11 +3469,11 @@
         item.style.cssText = "display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 10px; margin-bottom: 6px; gap: 10px;";
         
         const levelNamesAr = {
-          "Passengers": "Passengers (المستوى الصفري)",
-          "Starters": "Starters (المستوى الأول)",
-          "Movers": "Movers (المستوى الثاني)",
-          "Flyers": "Flyers (المستوى الثالث)",
-          "Beast": "Beast (المستوى الرابع)"
+          "Passengers": "🌱 الصيدلي الواعد (L0)",
+          "Starters": "💊 ممارس الـ OTC والتواصل (L1)",
+          "Movers": "🩺 خبير الروشتات والجرعات (L2)",
+          "Flyers": "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
+          "Beast": "👑 صيدلي أول وممارس متقدم (L4)"
         };
         const levelName = levelNamesAr[p.FromLevel] || p.FromLevel;
         
@@ -4210,6 +4113,57 @@
     // Check one time popup and render missions on startup
     checkOneTimeGroupPopup();
     renderPracticalMissions();
+    loadDashboardAnnouncementsBanner();
+
+    async function loadDashboardAnnouncementsBanner() {
+      try {
+        const response = await apiRequest({ action: "getAnnouncements" });
+        if (response.success && response.announcements && response.announcements.length > 0) {
+          const activeAnnouncements = response.announcements.filter(a => a.active);
+          if (activeAnnouncements.length === 0) return;
+          
+          let currentIndex = 0;
+          const cardEl = document.getElementById("dash-ann-carousel-card");
+          const iconEl = document.getElementById("dash-ann-icon");
+          const titleEl = document.getElementById("dash-ann-title");
+          const descEl = document.getElementById("dash-ann-desc");
+          const btnEl = document.getElementById("dash-ann-btn");
+
+          function updateDashBanner() {
+            const current = activeAnnouncements[currentIndex];
+            if (!current || !cardEl) return;
+            
+            cardEl.style.opacity = "0";
+            cardEl.style.transform = "translateY(5px)";
+            
+            setTimeout(() => {
+              if (iconEl) iconEl.className = `fa-solid ${current.icon || 'fa-bullhorn'}`;
+              if (titleEl) titleEl.textContent = current.title;
+              if (descEl) descEl.textContent = current.content;
+              if (btnEl) {
+                if (current.link) {
+                  btnEl.href = current.link;
+                  btnEl.style.display = "inline-flex";
+                } else {
+                  btnEl.style.display = "none";
+                }
+              }
+              cardEl.style.opacity = "1";
+              cardEl.style.transform = "translateY(0)";
+            }, 250);
+
+            currentIndex = (currentIndex + 1) % activeAnnouncements.length;
+          }
+
+          updateDashBanner();
+          if (activeAnnouncements.length > 1) {
+            setInterval(updateDashBanner, 6000);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard announcements:", err);
+      }
+    }
     document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && (e.key === "s" || e.key === "S")) e.preventDefault();
     });

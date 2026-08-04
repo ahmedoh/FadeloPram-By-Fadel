@@ -12,6 +12,42 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="style.css?v=2.0">
   <link rel="manifest" href="manifest.json">
+  <style>
+    /* 60fps Ultra Smooth GPU-Accelerated Micro-Animations */
+    @keyframes announcementFadeSlide {
+      0% { opacity: 0; transform: translate3d(0, 8px, 0); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0); }
+    }
+    @keyframes subtleGlowGold {
+      0%, 100% { border-color: rgba(197, 160, 89, 0.3); }
+      50% { border-color: rgba(197, 160, 89, 0.7); }
+    }
+
+    .announcements-banner-card {
+      animation: subtleGlowGold 3s infinite ease-in-out;
+      will-change: transform, opacity;
+      transform: translate3d(0,0,0);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .announcements-banner-card:hover {
+      transform: translate3d(0, -3px, 0) !important;
+      box-shadow: 0 10px 28px rgba(197, 160, 89, 0.25) !important;
+    }
+
+    .category-card {
+      will-change: transform, opacity;
+      transform: translate3d(0,0,0);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .category-card:hover {
+      transform: translate3d(0, -5px, 0) !important;
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .ann-slide-item {
+      animation: announcementFadeSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
 </head>
 <body>
 
@@ -60,13 +96,13 @@
       
       <!-- Right Side: Logo & Brand -->
       <div class="logo-section" style="display: flex; align-items: center; gap: 10px;">
-        <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 48px; width: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 15px rgba(251,191,36,0.3);">
+        <img src="logo.png" alt="Fadelopram Logo" class="logo-img" style="height: 52px; width: auto; object-fit: contain; filter: drop-shadow(0px 4px 8px rgba(251,191,36,0.25));">
         <div style="border-right: 1px solid var(--border-color); padding-right: 10px; margin-right: 4px;">
           <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 2px;">
-            <h1 data-i18n="logo_title" style="margin: 0; font-size: 17px; font-weight: 900; line-height: 1.2; color: var(--color-gold);">منظومة Fadelopram</h1>
+            <h1 data-i18n="logo_title" style="margin: 0; font-size: 17px; font-weight: 900; line-height: 1.2; color: var(--color-gold);">Fadelopram Rx Academy</h1>
             <span class="beta-badge"><span class="pulse-dot"></span>إصدار احترافي</span>
           </div>
-          <p data-i18n="logo_sub" style="font-size: 11px; margin: 0; color: var(--text-muted);">الأكاديمية الصيدلانية الرقمية المتقدمة</p>
+          <p data-i18n="logo_sub" style="font-size: 11px; margin: 0; color: var(--text-muted);">المنصة الأكاديمية الصيدلانية المتقدمة</p>
         </div>
       </div>
 
@@ -87,6 +123,19 @@
 
     </div>
   </header>
+
+  <!-- Dynamic Announcements Marquee Header Bar -->
+  <div id="index-marquee-bar" style="background: linear-gradient(90deg, rgba(182, 116, 28, 0.95) 0%, rgba(27, 54, 93, 0.95) 100%); color: white; padding: 8px 15px; font-size: 13px; font-weight: 700; overflow: hidden; position: relative; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px);">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 15px; direction: rtl;">
+      <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0; background: rgba(0,0,0,0.25); padding: 3px 10px; border-radius: 20px; font-size: 11px;">
+        <span class="pulse-dot" style="background: #10b981;"></span> 📢 هام وحصري
+      </div>
+      <div id="index-marquee-text" style="flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        🚀 مرحباً بكم في أكاديمية فاضلوبرام الصيدلانية الإكلينيكية المتقدمة!
+      </div>
+      <a href="#levels-catalog" style="color: #fbbf24; text-decoration: underline; font-size: 11.5px; flex-shrink: 0;">تصفح المسارات <i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+  </div>
 
   <!-- Main LMS Workspace Container -->
   <main class="app-container" style="flex: 1; padding-top: 0; max-width: 1200px; margin: 0 auto; padding-bottom: 80px;">
@@ -120,8 +169,8 @@
 
         <!-- Right: Motivating Headlines & Action Buttons -->
         <div class="hero-intro-text">
-          <h2 data-i18n="hero_title">مرحباً بكم في منصة <span>PharmReady</span> 🚀</h2>
-          <p data-i18n="hero_desc">اكتشف عالماً من المعرفة والمهارات العملية مع صيدليات آل مغاوري. انضم إلينا الآن وابدأ رحلتك التدريبية الممتعة والمفيدة لتأهيلك لسوق العمل الصيدلاني.</p>
+          <h2 data-i18n="hero_title">مرحباً بكم في منصة <span>Fadelopram Rx Academy</span> 🚀</h2>
+          <p data-i18n="hero_desc">اكتشف عالماً من المعرفة والمهارات العملية مع Fadelopram Rx Academy. انضم إلينا الآن وابدأ رحلتك التدريبية الممتعة والمفيدة لتأهيلك لسوق العمل الصيدلاني.</p>
           
           <!-- Student counter -->
           <div class="trainee-counter-row">
@@ -184,6 +233,24 @@
 
     </div>
 
+    <!-- Animated Announcements Carousel Banner -->
+    <div id="index-announcements-wrapper" style="margin: 25px auto 15px; max-width: 1200px; padding: 0 15px;">
+      <div id="index-announcements-carousel" class="announcements-banner-card" style="background: linear-gradient(135deg, rgba(197, 160, 89, 0.12) 0%, rgba(20, 20, 35, 0.95) 100%); border: 1px solid var(--color-gold-glow); border-radius: 16px; padding: 16px 24px; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(197, 160, 89, 0.15); display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 70px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(197,160,89,0.2); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--color-gold);">
+            <i class="fa-solid fa-bullhorn" id="ann-banner-icon"></i>
+          </div>
+          <div>
+            <h4 id="ann-banner-title" style="font-size: 15px; font-weight: 800; color: var(--color-gold); margin: 0 0 3px;">جاري تحميل أحدث الإعلانات...</h4>
+            <p id="ann-banner-desc" style="font-size: 12px; color: var(--text-muted); margin: 0;">تابع جديد الأكاديمية والعروض المتاحة هنا.</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <a id="ann-banner-btn" href="register.html" class="btn btn-gold" style="padding: 8px 18px; font-size: 12px; font-weight: 800; white-space: nowrap;">استكشف المزيد <i class="fa-solid fa-arrow-left"></i></a>
+        </div>
+      </div>
+    </div>
+
     <!-- 1. Category Section -->
     <section class="category-section" id="levels-catalog" style="scroll-margin-top: 80px;">
       <div style="text-align: center; margin-bottom: 30px;">
@@ -191,50 +258,50 @@
         <p data-i18n="cat_desc" style="font-size: 13px; color: var(--text-muted); max-width: 600px; margin: 0 auto;">ابحث عن المناهج والمستويات التدريبية التي تود التخصص وتطوير مهاراتك الميدانية بها.</p>
       </div>
 
-      <div class="category-grid">
+      <div class="category-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin: 30px 0; direction: rtl;">
         
-        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-0');">
-          <div class="icon-wrap">
-            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=80&auto=format&fit=crop&q=60" alt="Formulations" loading="lazy">
-          </div>
-          <div class="content-wrap">
-            <h6 class="title" data-i18n="cat_form">الصيدلة والتركيبات</h6>
-          </div>
-        </a>
-
-        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-1');">
-          <div class="icon-wrap">
-            <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=80&auto=format&fit=crop&q=60" alt="OTC" loading="lazy">
-          </div>
-          <div class="content-wrap">
-            <h6 class="title" data-i18n="cat_otc">التدريب الميداني والـ OTC</h6>
+        <!-- L0 Card -->
+        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-0');" style="border: 1px solid rgba(156, 163, 175, 0.25); background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(156, 163, 175, 0.05) 100%); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 25px 18px; border-radius: 16px;">
+          <div class="icon-wrap" style="width: 60px; height: 60px; border-radius: 18px; background: rgba(156, 163, 175, 0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #9ca3af; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(156, 163, 175, 0.1);">🌱</div>
+          <div class="content-wrap" style="text-align: center;">
+            <h6 class="title" data-i18n="cat_form" style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">الصيدلي الواعد (L0)</h6>
+            <p data-i18n="cat_form_desc" style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin: 0;">أساسيات حفظ الأدوية، الهيكل التنظيمي للصيدلية والإسعافات الأولية</p>
           </div>
         </a>
 
-        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-2');">
-          <div class="icon-wrap">
-            <img src="https://images.unsplash.com/photo-1576602976047-174e57a47881?w=80&auto=format&fit=crop&q=60" alt="Pharma" loading="lazy">
-          </div>
-          <div class="content-wrap">
-            <h6 class="title" data-i18n="cat_pharma">أساسيات علم الأدوية</h6>
-          </div>
-        </a>
-
-        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-3');">
-          <div class="icon-wrap">
-            <img src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=80&auto=format&fit=crop&q=60" alt="Cosmo" loading="lazy">
-          </div>
-          <div class="content-wrap">
-            <h6 class="title" data-i18n="cat_cosmo">العناية بالبشرة والتجميل</h6>
+        <!-- L1 Card -->
+        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-1');" style="border: 1px solid rgba(16, 185, 129, 0.25); background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(16, 185, 129, 0.05) 100%); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 25px 18px; border-radius: 16px;">
+          <div class="icon-wrap" style="width: 60px; height: 60px; border-radius: 18px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #10b981; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.1);">💊</div>
+          <div class="content-wrap" style="text-align: center;">
+            <h6 class="title" data-i18n="cat_otc" style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">ممارس الـ OTC والتواصل (L1)</h6>
+            <p data-i18n="cat_otc_desc" style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin: 0;">تشخيص وعلاج الحالات الشائعة وقراءة التحاليل الطبية والبدائل</p>
           </div>
         </a>
 
-        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-4');">
-          <div class="icon-wrap">
-            <img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=80&auto=format&fit=crop&q=60" alt="Diabetes" loading="lazy">
+        <!-- L2 Card -->
+        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-2');" style="border: 1px solid rgba(14, 165, 233, 0.25); background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(14, 165, 233, 0.05) 100%); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 25px 18px; border-radius: 16px;">
+          <div class="icon-wrap" style="width: 60px; height: 60px; border-radius: 18px; background: rgba(14, 165, 233, 0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #0ea5e9; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(14, 165, 233, 0.1);">🩺</div>
+          <div class="content-wrap" style="text-align: center;">
+            <h6 class="title" data-i18n="cat_pharma" style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">خبير الروشتات والجرعات (L2)</h6>
+            <p data-i18n="cat_pharma_desc" style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin: 0;">فك رموز الروشتات الصعبة وحساب جرعات الأطفال والمضادات الحيوية</p>
           </div>
-          <div class="content-wrap">
-            <h6 class="title" data-i18n="cat_diab">ليفل الوحش والتركيبات المتقدمة</h6>
+        </a>
+
+        <!-- L3 Card -->
+        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-3');" style="border: 1px solid rgba(168, 85, 247, 0.25); background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(168, 85, 247, 0.05) 100%); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 25px 18px; border-radius: 16px;">
+          <div class="icon-wrap" style="width: 60px; height: 60px; border-radius: 18px; background: rgba(168, 85, 247, 0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #a855f7; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(168, 85, 247, 0.1);">⚡</div>
+          <div class="content-wrap" style="text-align: center;">
+            <h6 class="title" data-i18n="cat_cosmo" style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">صيدلي الحالات الحرجة والتركيبات (L3)</h6>
+            <p data-i18n="cat_cosmo_desc" style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin: 0;">إدارة الروشتات للأمراض المزمنة وصناعة التركيبات الجلدية والكوزمو</p>
+          </div>
+        </a>
+
+        <!-- L4 Card -->
+        <a href="#popular-courses-sec" class="category-card" onclick="filterCategory('level-4');" style="border: 1px solid rgba(245, 158, 11, 0.25); background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(245, 158, 11, 0.05) 100%); transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 25px 18px; border-radius: 16px;">
+          <div class="icon-wrap" style="width: 60px; height: 60px; border-radius: 18px; background: rgba(245, 158, 11, 0.15); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #f59e0b; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.1);">👑</div>
+          <div class="content-wrap" style="text-align: center;">
+            <h6 class="title" data-i18n="cat_diab" style="font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px;">صيدلي أول وممارس متقدم (L4)</h6>
+            <p data-i18n="cat_diab_desc" style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin: 0;">السريريات المتقدمة، إدارة المخزون وتفقد الصلاحيات وتوجيه الكوادر</p>
           </div>
         </a>
 
@@ -247,7 +314,7 @@
         
         <!-- Left: YouTube Video Play Mockup -->
         <div class="thumb-wrap">
-          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=600&auto=format&fit=crop&q=80" alt="Fadelopram Work Mockup">
+          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&auto=format&fit=crop&q=60" alt="Fadelopram Work Mockup" loading="lazy" decoding="async">
           <div class="popup-video-wrap">
             <div class="promo-video">
               <div class="waves-block">
@@ -371,13 +438,13 @@
               <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-body">
-              <p data-i18n="a1">يجب التقديم أولاً من رابط "سجل الآن كمتدرب جديد" وملء استمارة الترشيح. سيقوم مديرو صيدليات آل مغاوري بمراجعة طلبك وإرسال البريد الإلكتروني والرمز السري الخاص بك عند قبولك.</p>
+              <p data-i18n="a1">يجب التقديم أولاً من رابط "سجل الآن كمتدرب جديد" وملء استمارة الترشيح. سيقوم إدارة Fadelopram Rx Academy بمراجعة طلبك وإرسال البريد الإلكتروني والرمز السري الخاص بك عند قبولك.</p>
             </div>
           </div>
           <!-- Q2 -->
           <div class="accordion-item">
             <div class="accordion-header">
-              <span data-i18n="q2">ما هي فروع صيدليات آل مغاوري؟</span>
+              <span data-i18n="q2">ما هي فروع التدريب المعتمدة؟</span>
               <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-body">
@@ -404,7 +471,7 @@
               <i class="fa-solid fa-chevron-down"></i>
             </div>
             <div class="accordion-body">
-              <p data-i18n="a4">نعم، جميع الشهادات الصادرة لكل مرحلة مجانية تماماً للمتدربين المقبولين داخل صيدليات آل مغاوري، وتحمل توقيع د. أحمد فاضل وتكون معتمدة وصالحة للطباعة الفورية.</p>
+              <p data-i18n="a4">نعم، جميع الشهادات الصادرة لكل مرحلة مجانية تماماً للمتدربين المقبولين داخل Fadelopram Rx Academy، وتحمل توقيع د. أحمد فاضل وتكون معتمدة وصالحة للطباعة الفورية.</p>
             </div>
           </div>
         </div>
@@ -412,53 +479,86 @@
       </div>
     </section>
 
-    <!-- 6. Testimonials Section -->
+    <!-- 6. Verified Clinical Reviews Section -->
     <section class="testimonial-section">
-      <div style="text-align: center; margin-bottom: 30px;">
-        <h2 data-i18n="test_title" style="font-size: 26px; font-weight: 800; color: var(--text-main); margin: 0 0 10px;">آراء المتدربين الخريجين</h2>
-        <p data-i18n="test_desc" style="font-size: 13px; color: var(--text-muted); max-width: 600px; margin: 0 auto;">تجارب وقصص نجاح حقيقية لطلاب الصيدلة الذين أتموا تدريبهم بنجاح داخل الأكاديمية.</p>
+      <div style="text-align: center; margin-bottom: 35px;">
+        <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; background: rgba(197, 160, 89, 0.15); color: var(--color-gold); font-size: 11.5px; font-weight: bold; margin-bottom: 8px;">
+          <i class="fa-solid fa-star"></i> تقييمات حقيقية من خريجي المسارات
+        </div>
+        <h2 data-i18n="test_title" style="font-size: 26px; font-weight: 800; color: var(--text-main); margin: 0 0 10px;">آراء المتدربين والخريجين</h2>
+        <p data-i18n="test_desc" style="font-size: 13px; color: var(--text-muted); max-width: 600px; margin: 0 auto;">تجارب وقصص نجاح حقيقية لطلاب وصيادلة أتموا تدريبهم الإكلينيكي والميداني بالأكاديمية.</p>
       </div>
 
-      <div class="testimonial-grid">
+      <div class="testimonial-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 20px; direction: rtl;">
         
         <!-- Card 1 -->
-        <div class="testimonial-card">
-          <p class="quote-text" data-i18n="t1_text">"كان التدريب في صيدليات آل مغاوري نقطة تحول هامة في مساري المهني. تنظيم المنهج والمستويات وسهولة متابعة المحاضرات جعلني أمتلك ثقة تامة أثناء التعامل مع الحالات والـ OTC."</p>
-          <div class="client-info">
-            <div class="client-thumb">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Trainee A">
+        <div class="testimonial-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px; position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="color: #f59e0b; font-size: 13px; display: flex; gap: 2px;">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <span style="font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 10px; background: #10b98122; color: #10b981; border: 1px solid #10b98144;">
+              <i class="fa-solid fa-circle-check"></i> متدرب معتمد
+            </span>
+          </div>
+          <p class="quote-text" data-i18n="t1_text" style="font-size: 13px; color: var(--text-main); line-height: 1.6; margin-bottom: 16px; font-style: italic;">
+            "التدريب في Fadelopram Rx Academy غيّر مهاراتي الميدانية تماماً. أتقنت فك رموز الروشتات الصعبة وحساب جرعات الأطفال والمضادات الحيوية بدقة، مع ثقة كاملة في التعامل مع الحالات."
+          </p>
+          <div class="client-info" style="display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+            <div class="client-thumb" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid var(--color-gold);">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=60" alt="د. آلاء محمود" loading="lazy" decoding="async">
             </div>
             <div class="client-details">
-              <h5 data-i18n="t1_name">د. آلاء محمود</h5>
-              <p data-i18n="t1_job">خريجة مستوى Movers | فرع البنك</p>
+              <h5 data-i18n="t1_name" style="margin: 0; font-size: 14px; font-weight: 800; color: var(--text-main);">د. آلاء محمود</h5>
+              <p data-i18n="t1_job" style="margin: 2px 0 0; font-size: 11px; color: var(--color-gold);">صيدلية إكلينيكية متدربة | مسار الروشتات L2</p>
             </div>
           </div>
         </div>
 
         <!-- Card 2 -->
-        <div class="testimonial-card">
-          <p class="quote-text" data-i18n="t2_text">"المنصة رائعة وتفاعلية جداً، والاختبارات تقيس مدى استيعابنا بدقة. بفضل إرشادات د. أحمد فاضل تمكنت من الارتقاء إلى المستوى الثالث في وقت قياسي."</p>
-          <div class="client-info">
-            <div class="client-thumb">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Trainee B">
+        <div class="testimonial-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px; position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="color: #f59e0b; font-size: 13px; display: flex; gap: 2px;">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <span style="font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 10px; background: #10b98122; color: #10b981; border: 1px solid #10b98144;">
+              <i class="fa-solid fa-circle-check"></i> متدرب معتمد
+            </span>
+          </div>
+          <p class="quote-text" data-i18n="t2_text" style="font-size: 13px; color: var(--text-main); line-height: 1.6; margin-bottom: 16px; font-style: italic;">
+            "شرح د. أحمد فاضل لحالات التشخيص الأولي وقراءة التحاليل الطبية والبدائل كان وافياً وعملياً جداً. امتحانات التقييم الذكية جعلتني أتأكد من استيعابي قبل الانتقال للمستوى التالي."
+          </p>
+          <div class="client-info" style="display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+            <div class="client-thumb" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid var(--color-gold);">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=60" alt="د. محمد الشناوي" loading="lazy" decoding="async">
             </div>
             <div class="client-details">
-              <h5 data-i18n="t2_name">د. محمد الشناوي</h5>
-              <p data-i18n="t2_job">خريج مستوى Starters | فرع السبعين</p>
+              <h5 data-i18n="t2_name" style="margin: 0; font-size: 14px; font-weight: 800; color: var(--text-main);">د. محمد الشناوي</h5>
+              <p data-i18n="t2_job" style="margin: 2px 0 0; font-size: 11px; color: var(--color-gold);">صيدلي حديث التخرج | مسار الـ OTC L1</p>
             </div>
           </div>
         </div>
 
         <!-- Card 3 -->
-        <div class="testimonial-card">
-          <p class="quote-text" data-i18n="t3_text">"ليفل الوحش كان تحدياً كبيراً، ولكن دبلومة السكر وشرح التركيبات التجميلية جعلتني متمكناً للغاية في إعداد التركيبات للمرضى بدقة شديدة."</p>
-          <div class="client-info">
-            <div class="client-thumb">
-              <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=80" alt="Trainee C">
+        <div class="testimonial-card" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 22px; position: relative;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="color: #f59e0b; font-size: 13px; display: flex; gap: 2px;">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <span style="font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 10px; background: #10b98122; color: #10b981; border: 1px solid #10b98144;">
+              <i class="fa-solid fa-circle-check"></i> متدرب معتمد
+            </span>
+          </div>
+          <p class="quote-text" data-i18n="t3_text" style="font-size: 13px; color: var(--text-main); line-height: 1.6; margin-bottom: 16px; font-style: italic;">
+            "دبلومة السكر وشرح التركيبات الجلدية والكوزمو مكنتني من إعداد التركيبات للمرضى باحترافية وتحديد الجرعات للأمراض المزمنة بدقة شديدة."
+          </p>
+          <div class="client-info" style="display: flex; align-items: center; gap: 12px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+            <div class="client-thumb" style="width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid var(--color-gold);">
+              <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&auto=format&fit=crop&q=60" alt="د. سارة إبراهيم" loading="lazy" decoding="async">
             </div>
             <div class="client-details">
-              <h5 data-i18n="t3_name">د. سارة إبراهيم</h5>
-              <p data-i18n="t3_job">خريجة ليفل الوحش | فرع أبو الخير</p>
+              <h5 data-i18n="t3_name" style="margin: 0; font-size: 14px; font-weight: 800; color: var(--text-main);">د. سارة إبراهيم</h5>
+              <p data-i18n="t3_job" style="margin: 2px 0 0; font-size: 11px; color: var(--color-gold);">طالبة امتياز صيدلة | مسار التركيبات L3</p>
             </div>
           </div>
         </div>
@@ -476,9 +576,10 @@
         
         <!-- Col 1 -->
         <div class="footer-item">
-          <div class="logo-normal" style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
-            <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" style="height: 52px; width: 52px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 15px rgba(251,191,36,0.3);">
-            <div style="font-weight: 900; font-size: 18px; color: var(--color-gold);">منظومة Fadelopram</div>
+          <div class="logo-normal" style="display: flex; align-items: center; gap: 8px; filter: brightness(0) invert(1);">
+            <img src="logo_pr.png" alt="PharmReady" style="height: 45px; max-height: 45px; width: auto; object-fit: contain;">
+            <i class="fa-solid fa-handshake" style="font-size: 20px; margin: 0 4px;"></i>
+            <img src="logo.png" alt="Fadelopram Rx Academy" style="height: 45px; max-height: 45px; width: auto; object-fit: contain;">
           </div>
           <p data-i18n="foot_bio">منظومة Fadelopram هي أكاديمية تعليمية وتدريبية مبتكرة تقدم دبلومات ومحاضرات تدريبية مخصصة للصيادلة والمتدربين لتهيئة مهاراتهم الميدانية والتنافسية بأعلى معايير الرعاية الصحية.</p>
         </div>
@@ -507,7 +608,7 @@
           </div>
           <div class="footer-contact-info">
             <i class="fa-solid fa-location-dot"></i>
-            <p data-i18n="foot_addr">دمياط الجديدة - فروع صيدليات آل مغاوري</p>
+            <p data-i18n="foot_addr">دمياط الجديدة - Fadelopram Rx Academy</p>
           </div>
         </div>
 
@@ -525,7 +626,7 @@
 
       <!-- Bottom Bar -->
       <div class="footer-bottom">
-        <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري</p>
+        <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لـ Fadelopram Rx Academy</p>
         <p style="color: #4b5563;">Support Call Center: 01107118948</p>
       </div>
 
@@ -624,13 +725,13 @@
     // Translation dictionary for Trainee login page
     const langData = {
       ar: {
-        logo_title: "صيدليات آل مغاوري",
-        logo_sub: "منصة تأهيل المتدربين الجدد لسوق العمل",
+        logo_title: "Fadelopram Rx Academy",
+        logo_sub: "المنصة الأكاديمية الصيدلانية المتقدمة",
         tab_0: "🌱 الصيدلي الواعد (L0)",
         tab_1: "💊 ممارس الـ OTC والتواصل (L1)",
         tab_2: "🩺 خبير الروشتات والجرعات (L2)",
         tab_3: "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
-        tab_4: "👑 استشاري الرعاية الصيدلانية وقائد الفرع (L4)",
+        tab_4: "👑 صيدلي أول وممارس متقدم (L4)",
         c1_title: "أدبيات العمل الصيدلي، الإسعافات الأولية وأساسيات علم الدواء",
         c_duration: "محاضرات تفاعلية",
         c2_title: "التشخيص بدون روشتة OTC وقراءة التحاليل الطبية",
@@ -650,7 +751,7 @@
         q3: "كيف أحصل على شهادة اجتياز المستوى؟",
         q3_ans: "بعد مشاهدة المحاضرات، يفتح لك اختبار الترقية التلقائي. عند تحقيق 80% أو أكثر تصدر لك شهادة معتمدة موثقة بكود تحقق.",
         contact_title: "تواصل مع الإدارة الأكاديمية",
-        contact_desc: "نسعد باستفساراتكم وتواصلكم المباشر مع إدارة صيدليات آل مغاوري.",
+        contact_desc: "نسعد باستفساراتكم وتواصلكم المباشر مع إدارة Fadelopram Rx Academy.",
         menu_levels: "المناهج والمستويات",
         menu_waiting: "صفحة الانتظار",
         btn_login_nav: "تسجيل دخول",
@@ -667,11 +768,16 @@
         feat_3_desc: "اجتز اختبارات التقييم واطبع شهادتك المعتمدة",
         cat_title: "أكتشف المناهج التدريبية",
         cat_desc: "ابحث عن المناهج والمستويات التدريبية التي تود التخصص وتطوير مهاراتك الميدانية بها.",
-        cat_form: "الصيدلة والتركيبات",
-        cat_otc: "التدريب الميداني والـ OTC",
-        cat_pharma: "أساسيات علم الأدوية",
-        cat_cosmo: "العناية بالبشرة والتجميل",
-        cat_diab: "ليفل الوحش والتركيبات المتقدمة",
+        cat_form: "🌱 الصيدلي الواعد (L0)",
+        cat_form_desc: "أساسيات حفظ الأدوية، الهيكل التنظيمي للصيدلية والإسعافات الأولية",
+        cat_otc: "💊 ممارس الـ OTC والتواصل (L1)",
+        cat_otc_desc: "تشخيص وعلاج الحالات الشائعة وقراءة التحاليل الطبية والبدائل",
+        cat_pharma: "🩺 خبير الروشتات والجرعات (L2)",
+        cat_pharma_desc: "فك رموز الروشتات الصعبة وحساب جرعات الأطفال والمضادات الحيوية",
+        cat_cosmo: "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
+        cat_cosmo_desc: "إدارة الروشتات للأمراض المزمنة وصناعة التركيبات الجلدية والكوزمو",
+        cat_diab: "👑 صيدلي أول وممارس متقدم (L4)",
+        cat_diab_desc: "السريريات المتقدمة، إدارة المخزون وتفقد الصلاحيات وتوجيه الكوادر",
         how_title: "كيف تعمل منصة Fadelopram؟",
         how_desc: "من خلال خطوات بسيطة وسهلة يمكنك تأهيل نفسك لسوق العمل الصيدلاني واجتياز المستويات بنجاح.",
         step_1_title: "التسجيل والتحقق",
@@ -691,11 +797,11 @@
         courses_title: "الكورسات والبرامج التدريبية",
         courses_desc: "تصفح البرامج التدريبية المعتمدة للمستويات الخمسة المتسلسلة بالأكاديمية.",
         tab_all: "الكل",
-        tab_0: "Passengers (تمهيدي)",
-        tab_1: "Starters (المستوى 1)",
-        tab_2: "Movers (المستوى 2)",
-        tab_3: "Flyers (المستوى 3)",
-        tab_4: "ليفل الوحش 👑 (المستوى 4)",
+        tab_0: "🌱 الصيدلي الواعد (L0)",
+        tab_1: "💊 ممارس الـ OTC والتواصل (L1)",
+        tab_2: "🩺 خبير الروشتات والجرعات (L2)",
+        tab_3: "⚡ صيدلي الحالات الحرجة والتركيبات (L3)",
+        tab_4: "👑 صيدلي أول وممارس متقدم (L4)",
         c1_title: "أدبيات العمل الصيدلي، الإسعافات الأولية وأساسيات علم الدواء",
         c_duration: "محاضرات تفاعلية",
         c2_title: "التشخيص بدون روشتة OTC وقراءة التحاليل الطبية",
@@ -704,29 +810,29 @@
         c_duration_3: "محاضرات تفاعلية",
         c4_title: "صناعة التركيبات التجميلية، الكوزمو ودبلومة السكر",
         c_duration_4: "محاضرات تفاعلية",
-        c5_title: "مستوى الوحش: محتوى متقدم وتطبيقات سريرية مكثفة (يُحدد لاحقاً)",
+        c5_title: "👑 صيدلي أول وممارس متقدم (L4): محتوى متقدم وتطبيقات سريرية مكثفة (يُحدد لاحقاً)",
         free_tag: "مجاني",
         faq_title: "الأسئلة الشائعة",
         faq_desc: "كل ما تود معرفته عن نظام المناهج والامتحانات وطباعة الشهادات بالمنصة.",
         q1: "كيف أحصل على حساب معتمد في المنصة؟",
-        a1: "يجب التقديم أولاً من رابط 'سجل الآن كمتدرب جديد' وملء استمارة الترشيح. سيقوم مديرو صيدليات آل مغاوري بمراجعة طلبك وإرسال البريد الإلكتروني والرمز السري الخاص بك عند قبولك.",
-        q2: "ما هي فروع صيدليات آل مغاوري؟",
-        a2: "لدينا فروع متميزة تغطي مدينة دمياط الجديدة بالكامل وهي: فرع ابو الخير، فرع البنك، فرع السبعين، فرع الصعيدي القديم، فرع الازهر، بالإضافة إلى قسم الكول سنتر الموحد.",
+        a1: "يجب التقديم أولاً من رابط 'سجل الآن كمتدرب جديد' وملء استمارة الترشيح. سيقوم إدارة Fadelopram Rx Academy بمراجعة طلبك وإرسال البريد الإلكتروني والرمز السري الخاص بك عند قبولك.",
+        q2: "ما هي المسارات التدريبية المتاحة؟",
+        a2: "توفر الأكاديمية 5 مسارات متسلسلة: L0 (الصيدلي الواعد)، L1 (ممارس الـ OTC والتواصل)، L2 (خبير الروشتات والجرعات)، L3 (صيدلي الحالات الحرجة والتركيبات)، L4 (صيدلي أول وممارس متقدم).",
         q3: "كيف أنتقل من مستوى إلى آخر؟",
         a3: "بمجرد مشاهدتك لجميع الفيديوهات المطلوبة لمستواك الحالي، سيفتح لك اختبار التقييم التلقائي. بعد اجتياز الامتحان بنجاح، سيتم إرسال طلب الترقية للمشرف لاعتماده وترقيتك فوراً للمستوى التالي.",
         q4: "هل الشهادات الصادرة مجانية ومعتمدة؟",
-        a4: "نعم، جميع الشهادات الصادرة لكل مرحلة مجانية تماماً للمتدربين المقبولين داخل صيدليات آل مغاوري، وتحمل توقيع د. أحمد فاضل وتكون معتمدة وصالحة للطباعة الفورية.",
-        test_title: "آراؤنا وقصص نجاحنا",
-        test_desc: "تجارب وقصص نجاح حقيقية لطلاب الصيدلة الذين أتموا تدريبهم بنجاح داخل الأكاديمية.",
-        t1_text: "\"كان التدريب في صيدليات آل مغاوري نقطة تحول هامة في مساري المهني. تنظيم المنهج والمستويات وسهولة متابعة المحاضرات جعلني أمتلك ثقة تامة أثناء التعامل مع الحالات والـ OTC.\"",
+        a4: "نعم، جميع الشهادات الصادرة لكل مرحلة مجانية تماماً للمتدربين المقبولين داخل Fadelopram Rx Academy، وتحمل توقيع د. أحمد فاضل وتكون معتمدة وصالحة للطباعة الفورية.",
+        test_title: "آراء المتدربين والخريجين",
+        test_desc: "تجارب وقصص نجاح حقيقية لطلاب وصيادلة أتموا تدريبهم الإكلينيكي والميداني بالأكاديمية.",
+        t1_text: "\"التدريب في Fadelopram Rx Academy غيّر مهاراتي الميدانية تماماً. أتقنت فك رموز الروشتات الصعبة وحساب جرعات الأطفال والمضادات الحيوية بدقة، مع ثقة كاملة في التعامل مع الحالات.\"",
         t1_name: "د. آلاء محمود",
-        t1_job: "خريجة مستوى Movers | فرع البنك",
-        t2_text: "\"المنصة رائعة وتفاعلية جداً، والاختبارات تقيس مدى استيعابنا بدقة. بفضل إرشادات د. أحمد فاضل تمكنت من الارتقاء إلى المستوى الثالث في وقت قياسي.\"",
+        t1_job: "صيدلية إكلينيكية متدربة | مسار الروشتات L2",
+        t2_text: "\"شرح د. أحمد فاضل لحالات التشخيص الأولي وقراءة التحاليل الطبية والبدائل كان وافياً وعملياً جداً. امتحانات التقييم الذكية جعلتني أتأكد من استيعابي قبل الانتقال للمستوى التالي.\"",
         t2_name: "د. محمد الشناوي",
-        t2_job: "خريج مستوى Starters | فرع السبعين",
-        t3_text: "\"ليفل الوحش كان تحدياً كبيراً، ولكن دبلومة السكر وشرح التركيبات التجميلية جعلتني متمكناً للغاية في إعداد التركيبات للمرضى بدقة شديدة.\"",
+        t2_job: "صيدلي حديث التخرج | مسار الـ OTC L1",
+        t3_text: "\"دبلومة السكر وشرح التركيبات الجلدية والكوزمو مكنتني من إعداد التركيبات للمرضى باحترافية وتحديد الجرعات للأمراض المزمنة بدقة شديدة.\"",
         t3_name: "د. سارة إبراهيم",
-        t3_job: "خريجة ليفل الوحش | فرع أبو الخير",
+        t3_job: "طالبة امتياز صيدلة | مسار التركيبات L3",
         foot_bio: "منصة Fadelopram Rx Academy هي منصة تعليمية وتدريبية مبتكرة تقدم دبلومات ومحاضرات صيدلانية متخصصة لتطوير المهارات الميدانية والسريرية وإعداد صيدلي متميز.",
         foot_links_title: "روابط تهمك",
         foot_contact_title: "تواصل معنا",
@@ -771,11 +877,16 @@
         feat_3_desc: "Pass assessments and instantly print certified credentials",
         cat_title: "Explore Training Tracks",
         cat_desc: "Discover training tracks and structured paths you can enroll in.",
-        cat_form: "Compounding & Pharmaceutics",
-        cat_otc: "Clinical OTC & Training",
-        cat_pharma: "Basic Pharmacology",
-        cat_cosmo: "Skincare & Cosmetics",
-        cat_diab: "Beast Level & Compounding",
+        cat_form: "🌱 Pharmacy Trainee (L0)",
+        cat_form_desc: "Pharmacy foundations, layout, storage conditions, and basic first aid",
+        cat_otc: "💊 OTC Specialist (L1)",
+        cat_otc_desc: "OTC clinical protocols, simple lab analysis, and safe substitutions",
+        cat_pharma: "🩺 Clinical Dispenser (L2)",
+        cat_pharma_desc: "Decoding complex prescriptions, pediatric dosing, and antibiotics",
+        cat_cosmo: "⚡ Advanced Pharmacist (L3)",
+        cat_cosmo_desc: "Chronic care management, master compounding, and custom cosmetics",
+        cat_diab: "👑 Senior Pharmacist (L4)",
+        cat_diab_desc: "Advanced clinical cases, branch inventory operations, and leadership",
         how_title: "How Fadelopram Works?",
         how_desc: "With simple structured phases, qualify yourself and graduate levels successfully.",
         step_1_title: "Registration",
@@ -795,11 +906,11 @@
         courses_title: "Syllabus Levels & Programs",
         courses_desc: "Explore certified training content across the 5 structured phases.",
         tab_all: "All Tracks",
-        tab_0: "Passengers (Prep)",
-        tab_1: "Starters (Level 1)",
-        tab_2: "Movers (Level 2)",
-        tab_3: "Flyers (Level 3)",
-        tab_4: "Beast Level 👑 (Level 4)",
+        tab_0: "🌱 Pharmacy Trainee (L0)",
+        tab_1: "💊 OTC Specialist (L1)",
+        tab_2: "🩺 Clinical Dispenser (L2)",
+        tab_3: "⚡ Advanced Pharmacist (L3)",
+        tab_4: "👑 Senior Pharmacist (L4)",
         c1_title: "Pharmacy Ethics, First Aid & Basic Pharmacology",
         c_duration: "Interactive Lectures",
         c2_title: "OTC Diagnostics & Medical Analysis",
@@ -808,7 +919,7 @@
         c_duration_3: "Interactive Lectures",
         c4_title: "Cosmetics Formulation, Cosmetics & Diabetes Diploma",
         c_duration_4: "Interactive Lectures",
-        c5_title: "Beast Level: Advanced Content & Clinical Practice (TBD)",
+        c5_title: "Senior Pharmacist (L4): Advanced Content & Clinical Practice (TBD)",
         free_tag: "Free of charge",
         faq_title: "Frequently Asked Questions",
         faq_desc: "Everything you need to know about the curriculum, examinations, and certificates.",
@@ -824,13 +935,13 @@
         test_desc: "Real experiences and success stories of pharmacy trainees who completed their internship.",
         t1_text: "\"Training with Fadelopram Rx Academy was a game-changer. The structured levels gave me huge confidence during patient dispensing and OTC diagnostics.\"",
         t1_name: "Dr. Alaa Mahmoud",
-        t1_job: "Movers Graduate",
+        t1_job: "Clinical Dispenser (L2) Graduate | Bank Branch",
         t2_text: "\"Excellent interactive LMS! The progress tracking and exams are highly accurate. Thanks to Dr. Ahmed Fadel, I finished Level 2 in record time.\"",
         t2_name: "Dr. Mohamed El-Shennawy",
-        t2_job: "Starters Graduate",
-        t3_text: "\"The Beast level was challenging, but the cosmetics labs and diabetes diplomas made me highly professional in patient care.\"",
+        t2_job: "OTC Specialist (L1) Graduate | Sabeen Branch",
+        t3_text: "\"The Senior Pharmacist level (L4) was challenging, but the cosmetics labs and diabetes diplomas made me highly professional in patient care.\"",
         t3_name: "Dr. Sara Ibrahim",
-        t3_job: "Beast Level Graduate",
+        t3_job: "Senior Pharmacist (L4) Graduate | Abu El-Kheir Branch",
         foot_bio: "Fadelopram Rx Academy is an innovative LMS designed to empower and evaluate pharmacists to deliver state-of-the-art medical services.",
         foot_links_title: "Useful Links",
         foot_contact_title: "Contact Us",
@@ -1061,6 +1172,7 @@
     // Initial load apply
     applySettings();
     loadDynamicCoursePrices();
+    loadAnnouncementsBanner();
 
     async function loadDynamicCoursePrices() {
       try {
@@ -1068,11 +1180,12 @@
         if (response.success && response.prices) {
           response.prices.forEach(price => {
             let levelClass = "";
-            if (price.Level === "Passengers") levelClass = "level-0";
-            else if (price.Level === "Starters") levelClass = "level-1";
-            else if (price.Level === "Movers") levelClass = "level-2";
-            else if (price.Level === "Flyers") levelClass = "level-3";
-            else if (price.Level === "Beast") levelClass = "level-4";
+            const lvl = String(price.Level || price.LevelName || '').trim();
+            if (lvl === "L0" || lvl === "Passengers" || lvl.includes("L0") || lvl.includes("الواعد")) levelClass = "level-0";
+            else if (lvl === "L1" || lvl === "Starters" || lvl.includes("L1") || lvl.includes("OTC")) levelClass = "level-1";
+            else if (lvl === "L2" || lvl === "Movers" || lvl.includes("L2") || lvl.includes("الاستشارات")) levelClass = "level-2";
+            else if (lvl === "L3" || lvl === "Flyers" || lvl.includes("L3") || lvl.includes("متقدم")) levelClass = "level-3";
+            else if (lvl === "L4" || lvl === "Beast" || lvl.includes("L4") || lvl.includes("استشاري")) levelClass = "level-4";
             
             if (levelClass) {
               const card = document.querySelector(`.courses-grid .${levelClass}`);
@@ -1083,15 +1196,24 @@
                 const orig = parseFloat(price.OriginalPrice) || 0;
                 const offer = (price.OfferPrice && String(price.OfferPrice).trim() !== "") ? parseFloat(price.OfferPrice) : null;
                 const isFree = price.IsFree === "true" || price.IsFree === true;
+                const freeUntil = price.FreeUntil || "";
+                const offerLabel = price.OfferLabel || "";
+                const badgeColor = price.OfferBadgeColor || "#f59e0b";
                 
+                let isExpiredFree = false;
+                if (freeUntil) {
+                  if (new Date(freeUntil) < new Date()) isExpiredFree = true;
+                }
+
                 if (priceWrap) {
-                  if (isFree || (offer !== null && offer === 0)) {
+                  if (isFree || (offer !== null && offer === 0) || (freeUntil && !isExpiredFree)) {
                     priceWrap.innerHTML = `
-                      <h6 class="price" data-i18n="free_tag">${currentLang === "ar" ? "مجاني" : "Free of charge"}</h6>
-                      <p class="dis-price" style="text-decoration: line-through;">EGP ${orig}</p>
+                      <h6 class="price" style="color: #10b981;">${currentLang === "ar" ? "مجاني" : "Free"} ${freeUntil && !isExpiredFree ? `<span style="font-size:10px; color:#f59e0b;">(مؤقت)</span>` : ''}</h6>
+                      ${orig > 0 ? `<p class="dis-price" style="text-decoration: line-through;">EGP ${orig}</p>` : ''}
                     `;
                     if (disTag) {
-                      disTag.textContent = "-100%";
+                      disTag.textContent = offerLabel || (freeUntil ? "مجاني مؤقتاً ⏰" : "مجاني 🎉");
+                      disTag.style.background = badgeColor;
                       disTag.style.display = "block";
                     }
                   } else if (offer !== null && offer > 0 && offer < orig) {
@@ -1101,7 +1223,8 @@
                       <p class="dis-price" style="text-decoration: line-through;">EGP ${orig}</p>
                     `;
                     if (disTag) {
-                      disTag.textContent = `-${pct}%`;
+                      disTag.textContent = offerLabel || `-${pct}%`;
+                      disTag.style.background = badgeColor;
                       disTag.style.display = "block";
                     }
                   } else {
@@ -1109,7 +1232,13 @@
                       <h6 class="price">EGP ${orig}</h6>
                     `;
                     if (disTag) {
-                      disTag.style.display = "none";
+                      if (offerLabel) {
+                        disTag.textContent = offerLabel;
+                        disTag.style.background = badgeColor;
+                        disTag.style.display = "block";
+                      } else {
+                        disTag.style.display = "none";
+                      }
                     }
                   }
                 }
@@ -1119,6 +1248,50 @@
         }
       } catch (err) {
         console.error("Failed to load course prices:", err);
+      }
+    }
+
+    async function loadAnnouncementsBanner() {
+      try {
+        const response = await apiRequest({ action: "getAnnouncements" });
+        if (response.success && response.announcements && response.announcements.length > 0) {
+          const activeAnnouncements = response.announcements.filter(a => a.active);
+          if (activeAnnouncements.length === 0) return;
+          
+          let currentIndex = 0;
+          const carouselEl = document.getElementById("index-announcements-carousel");
+          const iconEl = document.getElementById("ann-banner-icon");
+          const titleEl = document.getElementById("ann-banner-title");
+          const descEl = document.getElementById("ann-banner-desc");
+          const btnEl = document.getElementById("ann-banner-btn");
+          const marqueeTextEl = document.getElementById("index-marquee-text");
+
+          function updateBanner() {
+            const current = activeAnnouncements[currentIndex];
+            if (!current) return;
+            
+            if (carouselEl) {
+              carouselEl.classList.remove("ann-slide-item");
+              void carouselEl.offsetWidth; // trigger reflow
+              carouselEl.classList.add("ann-slide-item");
+            }
+
+            if (iconEl) iconEl.className = `fa-solid ${current.icon || 'fa-bullhorn'}`;
+            if (titleEl) titleEl.textContent = current.title;
+            if (descEl) descEl.textContent = current.content;
+            if (btnEl && current.link) btnEl.href = current.link;
+            if (marqueeTextEl) marqueeTextEl.textContent = `${current.title} — ${current.content}`;
+
+            currentIndex = (currentIndex + 1) % activeAnnouncements.length;
+          }
+
+          updateBanner();
+          if (activeAnnouncements.length > 1) {
+            setInterval(updateBanner, 5000);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load announcements banner:", err);
       }
     }
 
