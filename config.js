@@ -618,7 +618,7 @@ async function handleDemoRequest(params) {
 
     // Fetch Demo Curriculum
     const allCurr = getTable("Curriculum") || [];
-    const filteredCurr = allCurr.filter(x => String(x.Level || "Passengers").trim() === currentLevel);
+    const filteredCurr = allCurr;
     const sortedCurr = [...filteredCurr].sort((a, b) => {
       const orderA = parseInt(a.SortOrder || a.Index || a.Order || a.sort_order || 9999);
       const orderB = parseInt(b.SortOrder || b.Index || b.Order || b.sort_order || 9999);
@@ -881,7 +881,79 @@ async function handleDemoRequest(params) {
 
     return { success: true, message: "🎉 تم تسجيل الحالة الإكلينيكية بنجاح وإضافة +25 XP لرصيدك!", newPoints: trainees[tIndex].Points };
 
-  } else if (action === "submitPromotionRequest") {
+  } else if (action === "requestGroupJoin") {
+      const email = String(params.email).trim().toLowerCase();
+      const password = String(params.password).trim();
+      const requestedGroup = String(params.requestedGroup).trim();
+
+      let { data: t } = await supabaseClient
+        .from('trainees')
+        .select('*')
+        .ilike('email', email)
+        .maybeSingle();
+
+      if (!t) return { success: false, message: "غير مصرح بالدخول." };
+
+      try {
+        await supabaseClient
+          .from('promotions')
+          .insert([{
+            email: email,
+            from_level: t.current_level || "Passengers",
+            to_level: `طلب انضمام لـ: ${requestedGroup}`,
+            score: 100,
+            status: "pending"
+          }]);
+      } catch(e) {
+        console.warn("Supabase promotion insert error:", e);
+      }
+
+      try {
+        let currentCourses = [];
+        if (t.selected_courses) {
+          currentCourses = typeof t.selected_courses === 'string' ? JSON.parse(t.selected_courses) : t.selected_courses;
+        }
+        if (!currentCourses.includes(requestedGroup)) {
+          currentCourses.push(requestedGroup);
+        }
+        await supabaseClient
+          .from('trainees')
+          .update({ selected_courses: JSON.stringify(currentCourses) })
+          .ilike('email', email);
+      } catch(e) {}
+
+      return { success: true, message: `🎉 تم إرسال طلب الانضمام لـ (${requestedGroup}) إلى مشرف الأكاديمية بنجاح!` };
+
+    } else if (action === "setTrainingGroup") {
+      const email = String(params.email).trim().toLowerCase();
+      const groupName = String(params.groupName).trim();
+      if (email && groupName) {
+        try {
+          const { data: t } = await supabaseClient.from('trainees').select('*').ilike('email', email).maybeSingle();
+          if (t) {
+            let currentCourses = [];
+            if (t.selected_courses) {
+              currentCourses = typeof t.selected_courses === 'string' ? JSON.parse(t.selected_courses) : t.selected_courses;
+            }
+            if (!currentCourses.includes(groupName)) {
+              currentCourses.push(groupName);
+            }
+            await supabaseClient.from('trainees').update({ selected_courses: JSON.stringify(currentCourses) }).ilike('email', email);
+          }
+        } catch(e) {}
+      }
+      return { success: true, message: "تم حفظ الجروب التدريبي بنجاح." };
+
+    } else if (action === "getPlatformBranding" || action === "adminGetPlatformBranding") {
+      return { success: true, branding: { academy_name: "Fadelopram Rx Academy", logo_url: "logo_pr.png" } };
+
+    } else if (action === "adminSavePlatformBranding") {
+      return { success: true, message: "تم حفظ الهوية بنجاح." };
+
+    } else if (action === "getCoursePrices") {
+      return { success: true, prices: [] };
+
+} else if (action === "submitPromotionRequest") {
     const trainees = getTable("Trainees");
     const email = String(params.email).trim().toLowerCase();
     const password = String(params.password).trim();
@@ -2014,11 +2086,10 @@ async function handleSupabaseRequest(params) {
       
       const currentLevel = t.current_level || "Passengers";
       
-      // Fetch level videos
+      // Fetch all videos from videos table
       const { data: videos } = await supabaseClient
         .from('videos')
-        .select('*')
-        .eq('level', currentLevel);
+        .select('*');
         
       // Fetch progress
       const { data: prog } = await supabaseClient
@@ -2066,11 +2137,10 @@ async function handleSupabaseRequest(params) {
         .from('video_questions')
         .select('*');
         
-      // Fetch curriculum topics
+      // Fetch ALL curriculum nodes (places, courses, levels, subjects, videos)
       const { data: curr } = await supabaseClient
         .from('curriculum')
-        .select('*')
-        .eq('level', currentLevel);
+        .select('*');
         
       const sortedCurr = [...(curr || [])].sort((a, b) => {
         const orderA = parseInt(a.sort_order || a.index || a.order || 9999);

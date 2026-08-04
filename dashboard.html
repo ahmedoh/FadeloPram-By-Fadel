@@ -463,9 +463,7 @@
           <button class="btn btn-primary" id="btn-sidebar-lectures" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
             <i class="fa-solid fa-graduation-cap"></i> المحاضرات التعليمية
           </button>
-          <button class="btn btn-secondary" id="btn-sidebar-reports" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
-            <i class="fa-solid fa-book-medical" style="color: var(--color-gold);"></i> دفتر الحالات والمهام العملية
-          </button>
+          
           <button class="btn btn-secondary" id="btn-sidebar-league" onclick="openLeagueModal()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px; border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.05); color: #f59e0b;">
             <i class="fa-solid fa-trophy"></i> 🏆 دوري الفروع والأبطال
           </button>
@@ -842,7 +840,38 @@
         <div id="player-placeholder" style="display: flex; flex-direction: column; align-items: stretch; text-align: right; width: 100%; position: relative; z-index: 10;">
           
           <!-- Advanced Level Progress Card -->
-          <div id="level-progress-container" style="
+          
+          <!-- Pinned Live Meeting Room Banner -->
+          <div id="pinned-meeting-banner" style="
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(245, 158, 11, 0.15));
+            border: 1px solid var(--color-gold);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+          ">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--color-gold); display: flex; align-items: center; justify-content: center; font-size: 20px; color: #000; box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);">
+                <i class="fa-solid fa-video"></i>
+              </div>
+              <div>
+                <h4 style="margin: 0; font-size: 15px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                  📌 غرفة الاجتماعات والتقييم المباشر (Meeting Room)
+                  <span style="font-size: 10px; padding: 2px 8px; border-radius: 10px; background: #10b981; color: #fff; font-weight: 700;">ميعاد أسبوعي ثابت</span>
+                </h4>
+                <p style="margin: 3px 0 0; font-size: 12px; color: var(--text-muted);">اجتماع أسبوعي مباشر مع د. أحمد فاضل والمشرفين لمناقشة التقدم والإجابة عن الاستفسارات.</p>
+              </div>
+            </div>
+            <a href="https://meet.google.com" target="_blank" class="btn btn-gold" style="padding: 10px 20px; font-size: 13px; font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;">
+              <i class="fa-solid fa-door-open"></i> دخول غرفة الاجتماع الآن
+            </a>
+          </div>
+<div id="level-progress-container" style="
             background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
             border: 1px solid var(--border-color);
             border-radius: 16px;
@@ -899,7 +928,41 @@
           <!-- Tab Pane: Videos List (Moved inside main panel to prevent sidebar scroll locks) -->
           <div class="tab-pane active" id="pane-videos" style="direction: rtl;">
             <h3 style="font-size: 16px; font-weight: 800; color: var(--color-primary); margin-bottom: 15px;"><i class="fa-solid fa-circle-play"></i> قائمة المحاضرات التدريبية للمستوى</h3>
-            <div id="main-lectures-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
+            
+          <!-- Quick Feature Carousel Slider -->
+          <div style="margin-bottom: 25px; overflow: hidden; border-radius: 14px;">
+            <div style="font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--color-gold);"></i> أدوات ومزايا المنصة التفاعلية
+            </div>
+            <div class="feature-slider" style="display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin;">
+              <div onclick="openLeagueModal()" style="min-width: 170px; flex: 1; padding: 14px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); cursor: pointer; text-align: center; transition: all 0.2s;">
+                <div style="font-size: 24px; margin-bottom: 6px;">🏆</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">دوري الأبطال</div>
+                <div style="font-size: 10.5px; color: var(--text-muted);">ترتيب الطلاب والفروع</div>
+              </div>
+              <div onclick="openSimulatorModal()" style="min-width: 170px; flex: 1; padding: 14px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); cursor: pointer; text-align: center; transition: all 0.2s;">
+                <div style="font-size: 24px; margin-bottom: 6px;">🤖</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">المحاكي الذكي</div>
+                <div style="font-size: 10.5px; color: var(--text-muted);">محاكاة حالات المرضى</div>
+              </div>
+              <div onclick="openPassportModal()" style="min-width: 170px; flex: 1; padding: 14px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); cursor: pointer; text-align: center; transition: all 0.2s;">
+                <div style="font-size: 24px; margin-bottom: 6px;">🪪</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">الجواز الصيدلي</div>
+                <div style="font-size: 10.5px; color: var(--text-muted);">هويتك وإنجازاتك</div>
+              </div>
+              <div onclick="openRequestGroupModal()" style="min-width: 170px; flex: 1; padding: 14px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); cursor: pointer; text-align: center; transition: all 0.2s;">
+                <div style="font-size: 24px; margin-bottom: 6px;">📚</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">طلب انضمام لجروب</div>
+                <div style="font-size: 10.5px; color: var(--text-muted);">التسجيل في كورس جديد</div>
+              </div>
+              <div onclick="showAcademicGuideModal(true)" style="min-width: 170px; flex: 1; padding: 14px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); cursor: pointer; text-align: center; transition: all 0.2s;">
+                <div style="font-size: 24px; margin-bottom: 6px;">ℹ️</div>
+                <div style="font-size: 13px; font-weight: 800; color: var(--text-main);">الدليل الأكاديمي</div>
+                <div style="font-size: 10.5px; color: var(--text-muted);">تعليمات وإرشادات المنصة</div>
+              </div>
+            </div>
+          </div>
+<div id="main-lectures-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px;">
               <!-- Dynamically populated with fast responsive video cards -->
             </div>
           </div>
