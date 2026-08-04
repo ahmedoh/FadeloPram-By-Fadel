@@ -577,11 +577,14 @@
       <!-- PANEL: Curriculum -->
       <div class="admin-panel" id="panel-curriculum">
         <div class="card">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-book-bookmark"></i> المناهج والمحاضرات</h3>
-            <button class="btn btn-gold" onclick="openAddCurriculumModal()"><i class="fa-solid fa-plus"></i> إضافة عنصر جديد</button>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-sitemap"></i> شجرة المناهج والكورسات</h3>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-gold" onclick="openCurrModal(null,'entity')"><i class="fa-solid fa-building"></i> إضافة مكان جديد</button>
+              <button class="btn btn-outline" onclick="loadCurriculum()"><i class="fa-solid fa-rotate"></i> تحديث</button>
+            </div>
           </div>
-          <div id="curriculum-tree">جاري التحميل...</div>
+          <div id="curriculum-tree" style="min-height:60px;">جاري التحميل...</div>
         </div>
       </div>
 
@@ -729,11 +732,101 @@
     </div>
   </div>
 
+  <!-- CURRICULUM NODE MODAL -->
+  <div class="modal-overlay" id="curr-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3 id="curr-modal-title"><i class="fa-solid fa-sitemap"></i> إضافة عنصر</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeCurrModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="curr-form" class="modal-body">
+        <input type="hidden" id="curr-id">
+        <input type="hidden" id="curr-parent-id">
+
+        <label>نوع العنصر</label>
+        <select id="curr-type" onchange="toggleCurrFields()">
+          <option value="entity">🏢 مكان / جهة</option>
+          <option value="course">📚 كورس</option>
+          <option value="level">📊 مرحلة (Level)</option>
+          <option value="subject">📂 مادة / مجلد</option>
+          <option value="video">🎬 فيديو / محاضرة</option>
+          <option value="folder">📁 مجلد فرعي</option>
+        </select>
+
+        <label>العنوان *</label>
+        <input type="text" id="curr-title" required placeholder="مثال: صيدليات آل مغاوري">
+
+        <div id="curr-level-row">
+          <label>المرحلة (Level Key)</label>
+          <input type="text" id="curr-level" placeholder="Passengers / Starters / Movers">
+        </div>
+
+        <div id="curr-video-row" style="display:none;">
+          <label>رابط الفيديو</label>
+          <input type="text" id="curr-video-url" placeholder="https://www.youtube.com/watch?v=...">
+          <label>Video ID</label>
+          <input type="text" id="curr-video-id" placeholder="d3_xQ4o6N38">
+        </div>
+
+        <label>الترتيب</label>
+        <input type="number" id="curr-sort" value="1" min="1">
+
+        <button type="submit" class="btn btn-gold" style="width:100%;padding:12px;font-weight:900;margin-top:8px;">
+          <i class="fa-solid fa-check"></i> حفظ العنصر
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- QUESTION MODAL -->
+  <div class="modal-overlay" id="question-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-file-circle-question"></i> إضافة سؤال جديد لبنك الأسئلة</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeQuestionModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="question-form" class="modal-body">
+        <label>المرحلة / المستوى *</label>
+        <select id="q-level" required>
+          <option value="Passengers">مرحلة المسافرين (Passengers)</option>
+          <option value="Starters">مرحلة المبتدئين (Starters)</option>
+          <option value="Movers">مرحلة المتقدمين (Movers)</option>
+          <option value="Flyers">مرحلة الطائرين (Flyers)</option>
+          <option value="Beast">مرحلة الوحوش (Beast)</option>
+        </select>
+
+        <label>نص السؤال (بالعربية) *</label>
+        <textarea id="q-ar" required placeholder="مثال: ما هي درجة الحرارة المناسبة لتخزين الأنسولين؟"></textarea>
+
+        <label>الخيار الأول (1) *</label>
+        <input type="text" id="q-opt1-ar" required placeholder="الخيار الأول...">
+
+        <label>الخيار الثاني (2) *</label>
+        <input type="text" id="q-opt2-ar" required placeholder="الخيار الثاني...">
+
+        <label>الخيار الثالث (3)</label>
+        <input type="text" id="q-opt3-ar" placeholder="الخيار الثالث (اختياري)...">
+
+        <label>الإجابة الصحيحة *</label>
+        <select id="q-correct" required>
+          <option value="1">الخيار الأول (1)</option>
+          <option value="2">الخيار الثاني (2)</option>
+          <option value="3">الخيار الثالث (3)</option>
+        </select>
+
+        <button type="submit" class="btn btn-gold" style="width:100%;padding:12px;font-weight:900;margin-top:8px;">
+          <i class="fa-solid fa-paper-plane"></i> إضافة السؤال لبنك الأسئلة
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=11.0"></script>
+  <script src="config.js?v=13.0"></script>
   <script>
     let adminUsername = "", adminPassword = "";
-    let allTrainees = [], allAnnouncements = [];
+    let allTrainees = [], allAnnouncements = [], allCurrNodes = [];
+    let allPromotions = [], allQuestions = [], allReports = [];
 
     /* ===== THEME ===== */
     function toggleTheme() {
@@ -742,7 +835,6 @@
       localStorage.setItem('admin_theme', isDark ? 'light' : 'dark');
       document.getElementById('theme-toggle').innerHTML = isDark ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
     }
-    // Load saved theme — default is LIGHT
     (function initTheme() {
       const saved = localStorage.getItem('admin_theme');
       if (saved === 'dark') {
@@ -753,11 +845,10 @@
 
     /* ===== TAB SWITCHING ===== */
     const panelTitles = {
-      overview: "النظرة العامة", pending: "طلبات الاشتراك", trainees: "المتدربين المقبولين",
-      curriculum: "المناهج والكورسات", promotions: "الترقيات والشهادات", announcements: "الإعلانات",
-      questions: "بنك الأسئلة", reports: "تقارير الحالات", settings: "الإعدادات"
+      overview:"النظرة العامة", pending:"طلبات الاشتراك", trainees:"المتدربين المقبولين",
+      curriculum:"المناهج والكورسات", promotions:"الترقيات والشهادات", announcements:"الإعلانات",
+      questions:"بنك الأسئلة", reports:"تقارير الحالات", settings:"الإعدادات"
     };
-
     function switchTab(id, el) {
       document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -772,213 +863,458 @@
       e.preventDefault();
       const user = document.getElementById('admin-user-input').value.trim();
       const pass = document.getElementById('admin-pass-input').value.trim();
-      const res = await apiRequest({ action: 'adminLogin', username: user, password: pass });
-      if (res.success) {
-        adminUsername = user; adminPassword = pass;
-        localStorage.setItem('admin_user', user);
-        localStorage.setItem('admin_pass', pass);
-        showDashboard();
-      } else {
-        alert('اسم المستخدم أو كلمة المرور غير صحيحة!');
-      }
+      const res = await apiRequest({ action:'adminLogin', username:user, password:pass });
+      if (res.success) { adminUsername=user; adminPassword=pass; localStorage.setItem('admin_user',user); localStorage.setItem('admin_pass',pass); showDashboard(); }
+      else { alert('اسم المستخدم أو كلمة المرور غير صحيحة!'); }
     });
-
     function showDashboard() {
-      document.getElementById('admin-login-overlay').style.display = 'none';
-      document.getElementById('admin-dashboard').style.display = 'flex';
+      document.getElementById('admin-login-overlay').style.display='none';
+      document.getElementById('admin-dashboard').style.display='flex';
       loadAll();
     }
-
     (async function autoLogin() {
-      const u = localStorage.getItem('admin_user'), p = localStorage.getItem('admin_pass');
-      if (u && p) {
-        const res = await apiRequest({ action: 'adminLogin', username: u, password: p });
-        if (res.success) { adminUsername = u; adminPassword = p; showDashboard(); }
-      }
+      const u=localStorage.getItem('admin_user'), p=localStorage.getItem('admin_pass');
+      if(u&&p){ const r=await apiRequest({action:'adminLogin',username:u,password:p}); if(r.success){adminUsername=u;adminPassword=p;showDashboard();} }
     })();
+    function adminLogout() { localStorage.removeItem('admin_user'); localStorage.removeItem('admin_pass'); location.reload(); }
 
-    function adminLogout() {
-      localStorage.removeItem('admin_user');
-      localStorage.removeItem('admin_pass');
-      location.reload();
-    }
-
-    /* ===== PARALLEL DATA LOADING (FAST!) ===== */
+    /* ===== PARALLEL DATA LOADING FOR ALL PANELS ===== */
     async function loadAll() {
-      const [traineesRes, annRes] = await Promise.all([
-        apiRequest({ action: 'adminGetTrainees', adminPassword }),
-        apiRequest({ action: 'adminGetAnnouncements' })
+      const [traineesRes, annRes, currRes, promoRes, qRes, rRes] = await Promise.all([
+        apiRequest({ action:'adminGetTrainees', adminPassword }),
+        apiRequest({ action:'adminGetAnnouncements' }),
+        apiRequest({ action:'adminGetCurriculumTree', adminPassword, level:'all' }),
+        apiRequest({ action:'adminGetPromotions', adminPassword }),
+        apiRequest({ action:'adminGetQuestions', adminPassword }),
+        apiRequest({ action:'adminGetReports', adminPassword })
       ]);
-      if (traineesRes.success && traineesRes.trainees) {
-        allTrainees = traineesRes.trainees;
-        renderPending();
-        renderApproved();
-      }
-      if (annRes.success && annRes.announcements) {
-        allAnnouncements = annRes.announcements;
-        renderAnns();
-      }
+
+      if (traineesRes.success && traineesRes.trainees) { allTrainees=traineesRes.trainees; renderPending(); renderApproved(); }
+      if (annRes.success && annRes.announcements) { allAnnouncements=annRes.announcements; renderAnns(); }
+      if (currRes.success && currRes.nodes) { allCurrNodes=currRes.nodes; renderCurrTree(); }
+      else { document.getElementById('curriculum-tree').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد بيانات. اضغط "إضافة مكان جديد" للبدء.</p>'; }
+      if (promoRes.success && promoRes.promotions) { allPromotions=promoRes.promotions; renderPromotions(); }
+      else { document.getElementById('tbody-promotions').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد طلبات ترقية معلقة.</td></tr>'; }
+      if (qRes.success && qRes.questions) { allQuestions=qRes.questions; renderQuestions(); }
+      else { document.getElementById('questions-list').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد أسئلة في البنك بعد.</p>'; }
+      if (rRes.success && rRes.reports) { allReports=rRes.reports; renderReports(); }
+      else { document.getElementById('tbody-reports').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد تقارير مرفوعة بعد.</td></tr>'; }
+
       updateKPIs();
     }
 
+    async function loadCurriculum() {
+      const r = await apiRequest({ action:'adminGetCurriculumTree', adminPassword, level:'all' });
+      if (r.success && r.nodes) { allCurrNodes=r.nodes; renderCurrTree(); }
+    }
+
     function updateKPIs() {
-      const total = allTrainees.length;
-      const pending = allTrainees.filter(t => (t.status||t.Status) === 'pending').length;
-      document.getElementById('kpi-total').textContent = total;
-      document.getElementById('kpi-pending').textContent = pending;
-      document.getElementById('badge-pending').textContent = pending;
-      document.getElementById('badge-trainees').textContent = total - pending;
+      const total=allTrainees.length;
+      const pending=allTrainees.filter(t=>(t.status||t.Status)==='pending').length;
+      const vids = allCurrNodes.filter(n=>(n.type||n.Type)==='video').length;
+      const certs = allPromotions.filter(p=>(p.Status||p.status)==='approved').length;
+
+      document.getElementById('kpi-total').textContent=total;
+      document.getElementById('kpi-pending').textContent=pending;
+      document.getElementById('badge-pending').textContent=pending;
+      document.getElementById('badge-trainees').textContent=total-pending;
+      document.getElementById('kpi-videos').textContent=vids;
+      document.getElementById('kpi-certs').textContent=certs;
     }
 
     /* ===== RENDER PENDING ===== */
     function renderPending() {
-      const tbody = document.getElementById('tbody-pending');
-      const list = allTrainees.filter(t => (t.status||t.Status) === 'pending');
-      if (!list.length) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--success);padding:20px;">✅ لا توجد طلبات معلقة!</td></tr>'; return; }
-      tbody.innerHTML = list.map((t, i) => {
-        let courses = [];
-        try { courses = typeof t.selected_courses === 'string' ? JSON.parse(t.selected_courses) : (t.selected_courses || []); } catch(e) {}
-        const cs = Array.isArray(courses) ? courses.join('، ') : 'التدريب مع فاضل';
-        return `<tr>
-          <td>${i+1}</td>
-          <td><strong>${t.name||t.Name}</strong><br><small style="color:var(--text-muted)">السن: ${t.age||t.Age||'-'}</small></td>
-          <td>${t.age||'-'}</td>
-          <td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td>
-          <td><span class="status-badge status-pending">${t.pharmacy_group||t.PharmacyGroup||'آل مغاوري'}</span></td>
-          <td style="color:var(--gold);font-weight:700;font-size:12px;">${cs}</td>
-          <td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-microchip"></i> تشخيصات</button></td>
-          <td>
-            <button class="btn btn-gold btn-sm" onclick="approve('${t.phone||t.Phone}')"><i class="fa-solid fa-check"></i> موافقة</button>
-            <button class="btn btn-danger-outline btn-sm" onclick="reject('${t.phone||t.Phone}')"><i class="fa-solid fa-xmark"></i> رفض</button>
-          </td>
-        </tr>`;
+      const tbody=document.getElementById('tbody-pending');
+      const list=allTrainees.filter(t=>(t.status||t.Status)==='pending');
+      if(!list.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--success);padding:20px;">✅ لا توجد طلبات معلقة!</td></tr>';return;}
+      tbody.innerHTML=list.map((t,i)=>{
+        let courses=[];try{courses=typeof t.selected_courses==='string'?JSON.parse(t.selected_courses):(t.selected_courses||[]);}catch(e){}
+        const cs=Array.isArray(courses)?courses.join('، '):'التدريب مع فاضل';
+        return `<tr><td>${i+1}</td><td><strong>${t.name||t.Name}</strong><br><small style="color:var(--text-muted)">السن: ${t.age||t.Age||'-'}</small></td><td>${t.age||'-'}</td><td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td><td><span class="status-badge status-pending">${t.pharmacy_group||t.PharmacyGroup||'آل مغاوري'}</span></td><td style="color:var(--gold);font-weight:700;font-size:12px;">${cs}</td><td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-microchip"></i></button></td><td><button class="btn btn-gold btn-sm" onclick="approve('${t.phone||t.Phone}')"><i class="fa-solid fa-check"></i> موافقة</button> <button class="btn btn-danger-outline btn-sm" onclick="reject('${t.phone||t.Phone}')"><i class="fa-solid fa-xmark"></i></button></td></tr>`;
       }).join('');
     }
 
     /* ===== RENDER APPROVED ===== */
     function renderApproved() {
-      const tbody = document.getElementById('tbody-approved');
-      const list = allTrainees.filter(t => (t.status||t.Status) !== 'pending');
-      if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا يوجد متدربون مقبولون بعد.</td></tr>'; return; }
-      tbody.innerHTML = list.map((t, i) => {
-        const blocked = (t.status||t.Status) === 'blocked';
+      const tbody=document.getElementById('tbody-approved');
+      const list=allTrainees.filter(t=>(t.status||t.Status)!=='pending');
+      if(!list.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا يوجد متدربون بعد.</td></tr>';return;}
+      tbody.innerHTML=list.map((t,i)=>{
+        const blocked=(t.status||t.Status)==='blocked';
+        return `<tr><td>${i+1}</td><td><strong>${t.name||t.Name}</strong></td><td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td><td><span class="status-badge status-pending">${t.pharmacy_group||'آل مغاوري'}</span></td><td><span class="status-badge ${blocked?'status-blocked':'status-active'}">${blocked?'محظور ❌':'نشط 🟢'}</span></td><td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-sliders"></i></button></td><td><button class="btn btn-outline btn-sm" onclick="toggleBlock('${t.phone||t.Phone}',${blocked})">${blocked?'إلغاء الحظر':'حظر'}</button></td></tr>`;
+      }).join('');
+    }
+    async function approve(ph){const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'accept'});if(r.success){alert('تم التفعيل! 🟢');loadAll();}}
+    async function reject(ph){const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'reject',rejectReason:'عدم استيفاء'});if(r.success){alert('تم الرفض.');loadAll();}}
+    async function toggleBlock(ph,b){const r=await apiRequest({action:'adminToggleBlockTrainee',adminPassword,phone:ph,blockState:!b});if(r.success){alert(r.message||'تم.');loadAll();}}
+
+    /* ===== RENDER PROMOTIONS ===== */
+    function renderPromotions() {
+      const tbody = document.getElementById('tbody-promotions');
+      if (!allPromotions || !allPromotions.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد طلبات ترقية أو شهادات بعد.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = allPromotions.map((p, i) => {
+        const name = p.TraineeName || p.trainee_name || p.Email || p.email || 'متدرب';
+        const fromLvl = p.CurrentLevel || p.from_level || 'Passengers';
+        const toLvl = p.TargetLevel || p.to_level || 'Starters';
+        const score = p.Score || p.score || 0;
+        const status = p.Status || p.status || 'pending';
+        const isApproved = status === 'approved';
+        const isRejected = status === 'rejected';
+        const badgeClass = isApproved ? 'status-active' : (isRejected ? 'status-blocked' : 'status-pending');
+        const badgeText = isApproved ? 'معتمد 🟢' : (isRejected ? 'مرفوض 🔴' : 'قيد المراجعة ⏳');
+        const phone = p.TraineePhone || p.phone || p.Email || p.email;
+
         return `<tr>
           <td>${i+1}</td>
-          <td><strong>${t.name||t.Name}</strong></td>
-          <td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td>
-          <td><span class="status-badge status-pending">${t.pharmacy_group||'آل مغاوري'}</span></td>
-          <td><span class="status-badge ${blocked?'status-blocked':'status-active'}">${blocked?'محظور ❌':'نشط 🟢'}</span></td>
-          <td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-sliders"></i> تشخيصات</button></td>
-          <td><button class="btn btn-outline btn-sm" onclick="toggleBlock('${t.phone||t.Phone}',${blocked})">${blocked?'إلغاء الحظر':'حظر'}</button></td>
+          <td><strong>${name}</strong><br><small style="color:var(--text-muted);">${p.Email||p.email||''}</small></td>
+          <td><span class="status-badge" style="background:var(--input-bg);color:var(--text-muted);">${fromLvl}</span></td>
+          <td><span class="status-badge status-pending" style="color:var(--gold);">${toLvl}</span></td>
+          <td><strong>${score}%</strong></td>
+          <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+          <td>
+            ${!isApproved ? `<button class="btn btn-gold btn-sm" onclick="approvePromo('${phone}','${toLvl}')"><i class="fa-solid fa-check"></i> ترقية وإصدار</button>` : '<span style="color:var(--success);font-size:12px;font-weight:700;">تمت الترقية 🎓</span>'}
+          </td>
         </tr>`;
       }).join('');
     }
 
-    async function approve(phone) {
-      const r = await apiRequest({ action:'adminApproveTrainee', adminPassword, phone, actionState:'accept' });
-      if (r.success) { alert('تم التفعيل بنجاح! 🟢'); loadAll(); }
-    }
-    async function reject(phone) {
-      const r = await apiRequest({ action:'adminApproveTrainee', adminPassword, phone, actionState:'reject', rejectReason:'عدم استيفاء البيانات' });
-      if (r.success) { alert('تم الرفض.'); loadAll(); }
-    }
-    async function toggleBlock(phone, blocked) {
-      const r = await apiRequest({ action:'adminToggleBlockTrainee', adminPassword, phone, blockState:!blocked });
-      if (r.success) { alert(r.message||'تم التحديث.'); loadAll(); }
+    async function approvePromo(phone, targetLevel) {
+      const r = await apiRequest({ action:'adminApprovePromotion', adminPassword, phone, targetLevel });
+      if (r.success) { alert('تم ترقية المتدرب وإصدار الشهادة بنجاح! 🎓'); loadAll(); }
+      else { alert(r.message || 'حدث خطأ أثناء الترقية'); }
     }
 
-    /* ===== SLIDER DRAWER ===== */
-    function openSlider(email, phone) {
-      const t = allTrainees.find(x => String(x.email||x.Email).toLowerCase()===String(email).toLowerCase() || String(x.phone||x.Phone)===String(phone));
-      if (!t) return;
-      document.getElementById('sl-name').textContent = t.name||t.Name;
-      document.getElementById('sl-email').textContent = t.email||t.Email||'-';
-      document.getElementById('sl-phone').textContent = t.phone||t.Phone||'-';
-      let d = {};
-      try { d = typeof t.device_info==='string' ? JSON.parse(t.device_info) : (t.device_info||{}); } catch(e) {}
-      document.getElementById('sl-ip').textContent = d.ipAddress||t.ip_address||'-';
-      document.getElementById('sl-device').textContent = d.deviceType||'-';
-      document.getElementById('sl-os').textContent = d.systemName||d.os||'-';
-      document.getElementById('sl-browser').textContent = d.browser||'-';
-      document.getElementById('sl-network').textContent = d.network||'-';
-      document.getElementById('sl-fp').textContent = d.fingerprint||'-';
-      document.getElementById('slider-backdrop').classList.add('active');
-      document.getElementById('slider-drawer').classList.add('open');
-    }
-    function closeSlider() {
-      document.getElementById('slider-backdrop').classList.remove('active');
-      document.getElementById('slider-drawer').classList.remove('open');
-    }
-    function toggleDiag() {
-      const c = document.getElementById('diag-content');
-      const ic = document.getElementById('diag-icon');
-      if (c.style.display === 'none') { c.style.display = 'block'; ic.className = 'fa-solid fa-chevron-up'; }
-      else { c.style.display = 'none'; ic.className = 'fa-solid fa-chevron-down'; }
+    /* ===== RENDER QUESTIONS ===== */
+    function renderQuestions() {
+      const container = document.getElementById('questions-list');
+      if (!allQuestions || !allQuestions.length) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد أسئلة في بنك الأسئلة بعد. اضغط "إضافة سؤال" للبدء.</p>';
+        return;
+      }
+
+      // Group by level
+      const grouped = {};
+      allQuestions.forEach((q, idx) => {
+        const lvl = q.Level || q.level || 'Passengers';
+        if (!grouped[lvl]) grouped[lvl] = [];
+        grouped[lvl].push({ ...q, origIndex: idx });
+      });
+
+      let html = '';
+      for (const [lvl, qList] of Object.entries(grouped)) {
+        html += `<div style="margin-bottom:20px;background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:16px;">
+          <h4 style="color:var(--gold);margin:0 0 12px;font-size:15px;display:flex;align-items:center;justify-content:space-between;">
+            <span><i class="fa-solid fa-layer-group"></i> مستوى: ${lvl}</span>
+            <span style="font-size:12px;color:var(--text-muted);font-weight:normal;">(${qList.length} سؤال)</span>
+          </h4>
+          <div style="display:flex;flex-direction:column;gap:10px;">`;
+
+        qList.forEach(q => {
+          const qText = q.QuestionAr || q.question_ar || '';
+          const opt1 = q.Option1Ar || q.option1_ar || '';
+          const opt2 = q.Option2Ar || q.option2_ar || '';
+          const opt3 = q.Option3Ar || q.option3_ar || '';
+          const correct = parseInt(q.CorrectIndex || q.correct_index || 1);
+
+          html += `<div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:8px;padding:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+              <strong style="font-size:14px;color:var(--text-primary);">${qText}</strong>
+              <button class="btn btn-danger-outline btn-sm" onclick="delQuestion(${q.origIndex})" style="padding:2px 8px;font-size:11px;"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px;margin-top:10px;font-size:12.5px;">
+              <div style="padding:6px 10px;border-radius:6px;background:${correct===1?'rgba(16,185,129,0.12)':'var(--input-bg)'};border:1px solid ${correct===1?'#10b981':'var(--card-border)'};color:${correct===1?'#10b981':'var(--text-secondary)'};">1. ${opt1} ${correct===1?'✅':''}</div>
+              <div style="padding:6px 10px;border-radius:6px;background:${correct===2?'rgba(16,185,129,0.12)':'var(--input-bg)'};border:1px solid ${correct===2?'#10b981':'var(--card-border)'};color:${correct===2?'#10b981':'var(--text-secondary)'};">2. ${opt2} ${correct===2?'✅':''}</div>
+              ${opt3 ? `<div style="padding:6px 10px;border-radius:6px;background:${correct===3?'rgba(16,185,129,0.12)':'var(--input-bg)'};border:1px solid ${correct===3?'#10b981':'var(--card-border)'};color:${correct===3?'#10b981':'var(--text-secondary)'};">3. ${opt3} ${correct===3?'✅':''}</div>` : ''}
+            </div>
+          </div>`;
+        });
+
+        html += `</div></div>`;
+      }
+
+      container.innerHTML = html;
     }
 
-    /* ===== ANNOUNCEMENTS ===== */
-    function renderAnns() {
-      const g = document.getElementById('announcements-grid');
-      if (!allAnnouncements.length) { g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;">لا توجد إعلانات. اضغط "إضافة إعلان" للبدء.</div>'; return; }
-      g.innerHTML = allAnnouncements.map(a => `
-        <div style="background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-            <span class="status-badge status-pending"><i class="fa-solid ${a.icon||'fa-bullhorn'}"></i> ${a.type==='urgent'?'عاجل':'عام'}</span>
-            <span style="font-size:11px;color:${a.active?'var(--success)':'var(--danger)'};font-weight:700;">${a.active?'نشط 🟢':'معطل 🔴'}</span>
-          </div>
-          <h4 style="color:var(--gold);margin:0 0 4px;font-size:14px;">${a.title}</h4>
-          <p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px;line-height:1.4;flex:1;">${a.content}</p>
-          <div style="border-top:1px solid var(--card-border);padding-top:8px;">
-            <button class="btn btn-danger-outline btn-sm" style="width:100%;" onclick="delAnn('${a.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
-          </div>
-        </div>
-      `).join('');
+    function openAddQuestionModal() {
+      document.getElementById('q-ar').value = '';
+      document.getElementById('q-opt1-ar').value = '';
+      document.getElementById('q-opt2-ar').value = '';
+      document.getElementById('q-opt3-ar').value = '';
+      document.getElementById('question-modal').classList.add('active');
     }
+    function closeQuestionModal() { document.getElementById('question-modal').classList.remove('active'); }
 
-    function openAnnModal() {
-      document.getElementById('ann-id').value = '';
-      document.getElementById('ann-title').value = '';
-      document.getElementById('ann-content').value = '';
-      document.getElementById('ann-modal').classList.add('active');
-    }
-    function closeAnnModal() { document.getElementById('ann-modal').classList.remove('active'); }
-
-    document.getElementById('ann-form').addEventListener('submit', async (e) => {
+    document.getElementById('question-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const r = await apiRequest({
-        action: 'adminSaveAnnouncement', adminPassword,
-        id: document.getElementById('ann-id').value,
-        title: document.getElementById('ann-title').value.trim(),
-        content: document.getElementById('ann-content').value.trim(),
-        type: document.getElementById('ann-type').value,
-        icon: document.getElementById('ann-icon').value,
-        link: document.getElementById('ann-link').value.trim(),
-        active: document.getElementById('ann-active').checked
+        action: 'adminAddQuestion', adminPassword,
+        level: document.getElementById('q-level').value,
+        questionAr: document.getElementById('q-ar').value.trim(),
+        option1Ar: document.getElementById('q-opt1-ar').value.trim(),
+        option2Ar: document.getElementById('q-opt2-ar').value.trim(),
+        option3Ar: document.getElementById('q-opt3-ar').value.trim(),
+        correctIndex: document.getElementById('q-correct').value
       });
-      if (r.success) { alert('تم حفظ الإعلان بنجاح!'); closeAnnModal(); loadAll(); }
+      if (r.success) {
+        alert('تم إضافة السؤال بنجاح!');
+        closeQuestionModal();
+        loadAll();
+      } else {
+        alert(r.message || 'حدث خطأ أثناء إضافة السؤال');
+      }
     });
 
-    async function delAnn(id) {
-      if (confirm('هل أنت متأكد من حذف هذا الإعلان؟')) {
-        const r = await apiRequest({ action:'adminDeleteAnnouncement', adminPassword, id });
+    async function delQuestion(index) {
+      if (confirm('هل أنت متأكد من حذف هذا السؤال؟')) {
+        const r = await apiRequest({ action:'adminDeleteQuestion', adminPassword, index });
         if (r.success) { alert('تم الحذف.'); loadAll(); }
       }
     }
 
-    /* ===== SETTINGS ===== */
-    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+    /* ===== RENDER REPORTS ===== */
+    function renderReports() {
+      const tbody = document.getElementById('tbody-reports');
+      if (!allReports || !allReports.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد تقارير مرفوعة بعد.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = allReports.map((r, i) => {
+        const name = r.trainee_name || r.TraineeName || r.email || r.Email || 'متدرب';
+        const title = r.title || r.Title || 'تقرير حالة إكلينيكية';
+        const lvl = r.level || r.Level || 'Passengers';
+        const status = r.status || r.Status || 'accepted';
+        const fileUrl = r.attachment_url || r.attachmentUrl || '';
+        const isApproved = status === 'accepted' || status === 'approved';
+
+        return `<tr>
+          <td>${i+1}</td>
+          <td><strong>${name}</strong><br><small style="color:var(--text-muted);">${r.email||r.Email||''}</small></td>
+          <td><strong>${title}</strong></td>
+          <td><span class="status-badge status-pending">${lvl}</span></td>
+          <td>${fileUrl ? `<a href="${fileUrl}" target="_blank" class="btn btn-outline btn-sm" style="font-size:11px;"><i class="fa-solid fa-paperclip"></i> عرض المرفق</a>` : '<span style="color:var(--text-muted);font-size:11px;">بدون مرفق</span>'}</td>
+          <td>
+            <span class="status-badge ${isApproved?'status-active':'status-blocked'}">${isApproved?'معتمد 🟢':'قيد المراجعة ⏳'}</span>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    /* ===== SLIDER DRAWER ===== */
+    function openSlider(email,phone){
+      const t=allTrainees.find(x=>String(x.email||x.Email).toLowerCase()===String(email).toLowerCase()||String(x.phone||x.Phone)===String(phone));
+      if(!t)return;
+      document.getElementById('sl-name').textContent=t.name||t.Name;
+      document.getElementById('sl-email').textContent=t.email||t.Email||'-';
+      document.getElementById('sl-phone').textContent=t.phone||t.Phone||'-';
+      let d={};try{d=typeof t.device_info==='string'?JSON.parse(t.device_info):(t.device_info||{});}catch(e){}
+      document.getElementById('sl-ip').textContent=d.ipAddress||t.ip_address||'-';
+      document.getElementById('sl-device').textContent=d.deviceType||'-';
+      document.getElementById('sl-os').textContent=d.systemName||d.os||'-';
+      document.getElementById('sl-browser').textContent=d.browser||'-';
+      document.getElementById('sl-network').textContent=d.network||'-';
+      document.getElementById('sl-fp').textContent=d.fingerprint||'-';
+      document.getElementById('slider-backdrop').classList.add('active');
+      document.getElementById('slider-drawer').classList.add('open');
+    }
+    function closeSlider(){document.getElementById('slider-backdrop').classList.remove('active');document.getElementById('slider-drawer').classList.remove('open');}
+    function toggleDiag(){const c=document.getElementById('diag-content'),ic=document.getElementById('diag-icon');if(c.style.display==='none'){c.style.display='block';ic.className='fa-solid fa-chevron-up';}else{c.style.display='none';ic.className='fa-solid fa-chevron-down';}}
+
+    /* ===== ANNOUNCEMENTS ===== */
+    function renderAnns(){
+      const g=document.getElementById('announcements-grid');
+      if(!allAnnouncements.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;">لا توجد إعلانات.</div>';return;}
+      g.innerHTML=allAnnouncements.map(a=>`<div style="background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span class="status-badge status-pending"><i class="fa-solid ${a.icon||'fa-bullhorn'}"></i> ${a.type==='urgent'?'عاجل':'عام'}</span><span style="font-size:11px;color:${a.active?'var(--success)':'var(--danger)'};font-weight:700;">${a.active?'نشط 🟢':'معطل 🔴'}</span></div><h4 style="color:var(--gold);margin:0 0 4px;font-size:14px;">${a.title}</h4><p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px;line-height:1.4;flex:1;">${a.content}</p><div style="border-top:1px solid var(--card-border);padding-top:8px;"><button class="btn btn-danger-outline btn-sm" style="width:100%;" onclick="delAnn('${a.id}')"><i class="fa-solid fa-trash"></i> حذف</button></div></div>`).join('');
+    }
+    function openAnnModal(){document.getElementById('ann-id').value='';document.getElementById('ann-title').value='';document.getElementById('ann-content').value='';document.getElementById('ann-modal').classList.add('active');}
+    function closeAnnModal(){document.getElementById('ann-modal').classList.remove('active');}
+    document.getElementById('ann-form').addEventListener('submit',async(e)=>{e.preventDefault();const r=await apiRequest({action:'adminSaveAnnouncement',adminPassword,id:document.getElementById('ann-id').value,title:document.getElementById('ann-title').value.trim(),content:document.getElementById('ann-content').value.trim(),type:document.getElementById('ann-type').value,icon:document.getElementById('ann-icon').value,link:document.getElementById('ann-link').value.trim(),active:document.getElementById('ann-active').checked});if(r.success){alert('تم حفظ الإعلان!');closeAnnModal();loadAll();}});
+    async function delAnn(id){if(confirm('حذف هذا الإعلان؟')){const r=await apiRequest({action:'adminDeleteAnnouncement',adminPassword,id});if(r.success){alert('تم الحذف.');loadAll();}}}
+
+    /* =========================================================
+       CURRICULUM TREE — Full Hierarchical CRUD
+       ========================================================= */
+    const typeIcons = {
+      entity:'🏢', course:'📚', level:'📊', subject:'📂', video:'🎬', folder:'📁'
+    };
+    const typeLabels = {
+      entity:'مكان / جهة', course:'كورس', level:'مرحلة', subject:'مادة', video:'فيديو', folder:'مجلد'
+    };
+    const childTypeMap = {
+      entity:'course', course:'level', level:'subject', subject:'video', folder:'video'
+    };
+
+    function renderCurrTree() {
+      const container = document.getElementById('curriculum-tree');
+      const roots = allCurrNodes.filter(n => !n.parent_id);
+      if (!roots.length && !allCurrNodes.length) {
+        container.innerHTML = '<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد بيانات. اضغط "إضافة مكان جديد" للبدء.</p>';
+        return;
+      }
+      const sorted = [...roots].sort((a,b) => (a.sort_order||1) - (b.sort_order||1));
+      container.innerHTML = sorted.map(n => renderNodeHTML(n, 0)).join('');
+    }
+
+    function getChildren(parentId) {
+      return allCurrNodes
+        .filter(n => String(n.parent_id) === String(parentId))
+        .sort((a,b) => (a.sort_order||1) - (b.sort_order||1));
+    }
+
+    function renderNodeHTML(node, depth) {
+      const id = node.id || node.Id;
+      const type = node.type || 'folder';
+      const title = node.title || node.Title || '';
+      const icon = typeIcons[type] || '📄';
+      const children = getChildren(id);
+      const hasChildren = children.length > 0;
+      const indent = depth * 24;
+      const childType = childTypeMap[type] || 'folder';
+      const childLabel = typeLabels[childType] || 'عنصر';
+
+      const borderColors = {entity:'var(--gold)',course:'#6366f1',level:'#10b981',subject:'#f59e0b',video:'#ef4444',folder:'#64748b'};
+      const borderColor = borderColors[type] || 'var(--card-border)';
+
+      let html = `<div style="margin-right:${indent}px;margin-bottom:8px;">`;
+      html += `<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--card-bg);border:1px solid var(--card-border);border-right:4px solid ${borderColor};border-radius:10px;transition:all 0.2s;" onmouseover="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">`;
+
+      if (hasChildren) {
+        html += `<i class="fa-solid fa-chevron-down" style="cursor:pointer;color:var(--text-muted);font-size:11px;transition:transform 0.2s;" onclick="toggleTreeNode(this)" data-target="children-${id}"></i>`;
+      } else {
+        html += `<span style="width:11px;"></span>`;
+      }
+
+      html += `<span style="font-size:16px;">${icon}</span>`;
+      html += `<span style="flex:1;font-weight:700;font-size:13.5px;color:var(--text-primary);">${title}</span>`;
+      html += `<span style="font-size:10px;color:var(--text-muted);background:var(--input-bg);padding:2px 8px;border-radius:10px;">${typeLabels[type]||type}</span>`;
+
+      if (type !== 'video') {
+        html += `<button class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:11px;" onclick="openCurrModal('${id}','${childType}')" title="إضافة ${childLabel}"><i class="fa-solid fa-plus"></i></button>`;
+      }
+      html += `<button class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:11px;" onclick="editCurrNode('${id}')" title="تعديل"><i class="fa-solid fa-pen"></i></button>`;
+      html += `<button class="btn btn-danger-outline btn-sm" style="padding:3px 8px;font-size:11px;" onclick="deleteCurrNode('${id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>`;
+
+      html += `</div>`;
+
+      if (hasChildren) {
+        html += `<div id="children-${id}" style="margin-top:4px;">`;
+        html += children.map(c => renderNodeHTML(c, depth + 1)).join('');
+        html += `</div>`;
+      }
+
+      html += `</div>`;
+      return html;
+    }
+
+    function toggleTreeNode(arrowEl) {
+      const targetId = arrowEl.getAttribute('data-target');
+      const target = document.getElementById(targetId);
+      if (!target) return;
+      if (target.style.display === 'none') {
+        target.style.display = 'block';
+        arrowEl.style.transform = 'rotate(0deg)';
+      } else {
+        target.style.display = 'none';
+        arrowEl.style.transform = 'rotate(-90deg)';
+      }
+    }
+
+    /* ===== CURRICULUM MODAL ===== */
+    function openCurrModal(parentId, type) {
+      document.getElementById('curr-id').value = '';
+      document.getElementById('curr-parent-id').value = parentId || '';
+      document.getElementById('curr-type').value = type || 'entity';
+      document.getElementById('curr-title').value = '';
+      document.getElementById('curr-level').value = '';
+      document.getElementById('curr-video-url').value = '';
+      document.getElementById('curr-video-id').value = '';
+      document.getElementById('curr-sort').value = '1';
+      document.getElementById('curr-modal-title').innerHTML = `<i class="fa-solid fa-plus"></i> إضافة ${typeLabels[type]||'عنصر'} جديد`;
+      toggleCurrFields();
+      document.getElementById('curr-modal').classList.add('active');
+    }
+    function closeCurrModal() { document.getElementById('curr-modal').classList.remove('active'); }
+
+    function toggleCurrFields() {
+      const type = document.getElementById('curr-type').value;
+      document.getElementById('curr-video-row').style.display = (type === 'video') ? 'block' : 'none';
+      document.getElementById('curr-level-row').style.display = (type === 'level' || type === 'video' || type === 'subject') ? 'block' : 'none';
+    }
+
+    function editCurrNode(id) {
+      const node = allCurrNodes.find(n => String(n.id||n.Id) === String(id));
+      if (!node) return;
+      document.getElementById('curr-id').value = id;
+      document.getElementById('curr-parent-id').value = node.parent_id || '';
+      document.getElementById('curr-type').value = node.type || 'folder';
+      document.getElementById('curr-title').value = node.title || node.Title || '';
+      document.getElementById('curr-level').value = node.level || node.Level || '';
+      document.getElementById('curr-video-url').value = node.video_url || '';
+      document.getElementById('curr-video-id').value = node.video_id || '';
+      document.getElementById('curr-sort').value = node.sort_order || 1;
+      document.getElementById('curr-modal-title').innerHTML = `<i class="fa-solid fa-pen"></i> تعديل: ${node.title||''}`;
+      toggleCurrFields();
+      document.getElementById('curr-modal').classList.add('active');
+    }
+
+    document.getElementById('curr-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const waI = document.getElementById('s-wa-inst').value.trim();
-      const waK = document.getElementById('s-wa-key').value.trim();
-      const tgT = document.getElementById('s-tg-token').value.trim();
-      const tgC = document.getElementById('s-tg-chat').value.trim();
-      const ent = document.getElementById('s-entities').value.trim();
-      localStorage.setItem('maghawry_whatsapp_instance', waI);
-      localStorage.setItem('maghawry_whatsapp_key', waK);
-      localStorage.setItem('maghawry_telegram_token', tgT);
-      localStorage.setItem('maghawry_telegram_chat_id', tgC);
-      await apiRequest({ action:'saveSettings', adminPassword, settings:{ whatsappInstance:waI, whatsappKey:waK, telegramToken:tgT, telegramChatId:tgC, customEntities:ent }});
-      alert('تم حفظ الإعدادات بنجاح! ⚡');
+      const id = document.getElementById('curr-id').value;
+      const parentId = document.getElementById('curr-parent-id').value || null;
+      const type = document.getElementById('curr-type').value;
+      const title = document.getElementById('curr-title').value.trim();
+      const level = document.getElementById('curr-level').value.trim();
+      const videoUrl = document.getElementById('curr-video-url').value.trim();
+      const videoId = document.getElementById('curr-video-id').value.trim();
+      const sortOrder = parseInt(document.getElementById('curr-sort').value) || 1;
+
+      if (!title) { alert('يجب إدخال العنوان!'); return; }
+
+      const payload = {
+        adminPassword, title, type, parent_id: parentId,
+        level: level || '', video_url: videoUrl, video_id: videoId, sort_order: sortOrder
+      };
+
+      let r;
+      if (id) {
+        r = await apiRequest({ action:'adminUpdateCurriculumNode', ...payload, id });
+      } else {
+        r = await apiRequest({ action:'adminAddCurriculumNode', ...payload });
+      }
+
+      if (r.success) {
+        alert(id ? 'تم التعديل بنجاح!' : 'تم الإضافة بنجاح!');
+        closeCurrModal();
+        loadCurriculum();
+      } else {
+        alert(r.message || 'حدث خطأ');
+      }
+    });
+
+    async function deleteCurrNode(id) {
+      const node = allCurrNodes.find(n => String(n.id||n.Id) === String(id));
+      const children = getChildren(id);
+      let msg = `هل أنت متأكد من حذف "${node?.title||''}"`;
+      if (children.length > 0) msg += ` وكل العناصر الفرعية (${children.length} عنصر)`;
+      msg += '؟';
+      if (!confirm(msg)) return;
+      const r = await apiRequest({ action:'adminDeleteCurriculumNode', adminPassword, id });
+      if (r.success) { alert('تم الحذف بنجاح.'); loadCurriculum(); }
+      else { alert(r.message || 'حدث خطأ'); }
+    }
+
+    /* ===== SETTINGS ===== */
+    document.getElementById('settings-form').addEventListener('submit',async(e)=>{
+      e.preventDefault();
+      const waI=document.getElementById('s-wa-inst').value.trim();const waK=document.getElementById('s-wa-key').value.trim();
+      const tgT=document.getElementById('s-tg-token').value.trim();const tgC=document.getElementById('s-tg-chat').value.trim();
+      const ent=document.getElementById('s-entities').value.trim();
+      localStorage.setItem('maghawry_whatsapp_instance',waI);localStorage.setItem('maghawry_whatsapp_key',waK);
+      localStorage.setItem('maghawry_telegram_token',tgT);localStorage.setItem('maghawry_telegram_chat_id',tgC);
+      await apiRequest({action:'saveSettings',adminPassword,settings:{whatsappInstance:waI,whatsappKey:waK,telegramToken:tgT,telegramChatId:tgC,customEntities:ent}});
+      alert('تم حفظ الإعدادات! ⚡');
     });
   </script>
 </body>
