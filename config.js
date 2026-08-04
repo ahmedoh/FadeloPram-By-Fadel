@@ -112,8 +112,17 @@ async function apiRequest(params) {
 
   let result;
   // Intercept and route to Supabase handler if configured
-  if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
-    result = await handleSupabaseRequest(params);
+  if (SUPABASE_URL && SUPABASE_KEY && window.supabase && supabaseClient) {
+    try {
+      result = await handleSupabaseRequest(params);
+      if (!result.success && result.message && (result.message.includes("NetworkError") || result.message.includes("fetch") || result.message.includes("Failed to fetch"))) {
+        console.warn("Supabase network error, falling back to LocalStorage for action:", params.action);
+        result = await handleDemoRequest(params);
+      }
+    } catch (e) {
+      console.warn("Supabase exception, falling back to LocalStorage for action:", params.action, e);
+      result = await handleDemoRequest(params);
+    }
   } else if (isDemoMode) {
     result = await handleDemoRequest(params);
   } else {
@@ -283,8 +292,8 @@ async function handleDemoRequest(params) {
       return { success: false, message: "رقم الهاتف هذا مسجل بالفعل في النظام!" };
     }
     
-    if (String(params.securityAnswer) !== "1") {
-      return { success: false, message: "إجابة سؤال الأمان خاطئة. يرجى التأكد من الإجابة الصحيحة." };
+    if (params.securityAnswer && String(params.securityAnswer) !== "1") {
+      return { success: false, message: "إجابة سؤال الأمان خاطئة." };
     }
     
     trainees.push({

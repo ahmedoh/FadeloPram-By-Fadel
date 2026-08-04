@@ -269,6 +269,72 @@
               </select>
             </div>
 
+            <!-- Mandatory Branch Selector (Appears when صيدليات آل مغاوري is selected) -->
+            <div id="branch-selection-section" style="background: rgba(251, 191, 36, 0.04); border: 2px solid var(--color-gold); border-radius: 14px; padding: 18px; margin-bottom: 20px;">
+              <h4 style="font-size: 15px; font-weight: 900; color: var(--color-gold); margin: 0 0 6px; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-code-branch"></i> الفرع اللي انت نازل فيه؟ <span class="required" style="color: red;">*</span>
+              </h4>
+              <p style="font-size: 12px; color: var(--text-muted); margin: 0 0 14px; line-height: 1.4;">
+                اختر الفرع الميداني التابع له حالياً لإدارته وتخصيص جداول المتابعة والتقارير.
+              </p>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
+                <!-- Option: الصعيدي القديم (Gold) -->
+                <label class="course-option-card" style="margin:0; border: 2px solid #fbbf24; background: rgba(251, 191, 36, 0.12);">
+                  <input type="radio" name="branch-selection" value="الصعيدي القديم">
+                  <div>
+                    <div style="font-weight: 900; font-size: 13.5px; color: #d97706;">🥇 الصعيدي القديم</div>
+                    <div style="font-size: 10.5px; color: var(--text-muted);">الفرع الذهبي</div>
+                  </div>
+                </label>
+
+                <!-- Option: أبو الخير (Silver) -->
+                <label class="course-option-card" style="margin:0; border: 2px solid #9ca3af; background: rgba(156, 163, 175, 0.12);">
+                  <input type="radio" name="branch-selection" value="أبو الخير">
+                  <div>
+                    <div style="font-weight: 900; font-size: 13.5px; color: #4b5563;">🥈 أبو الخير</div>
+                    <div style="font-size: 10.5px; color: var(--text-muted);">الفرع الفضي</div>
+                  </div>
+                </label>
+
+                <!-- Option: البنك -->
+                <label class="course-option-card" style="margin:0;">
+                  <input type="radio" name="branch-selection" value="البنك">
+                  <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main);">🏥 البنك</div>
+                </label>
+
+                <!-- Option: السبعين / الصعيدي الجديد -->
+                <label class="course-option-card" style="margin:0;">
+                  <input type="radio" name="branch-selection" value="السبعين / الصعيدي الجديد">
+                  <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main);">🏬 السبعين / الصعيدي الجديد</div>
+                </label>
+
+                <!-- Option: الأزهر -->
+                <label class="course-option-card" style="margin:0;">
+                  <input type="radio" name="branch-selection" value="الأزهر">
+                  <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main);">🕌 الأزهر</div>
+                </label>
+
+                <!-- Option: كول سنتر -->
+                <label class="course-option-card" style="margin:0;">
+                  <input type="radio" name="branch-selection" value="كول سنتر">
+                  <div style="font-weight: 800; font-size: 13.5px; color: var(--text-main);">🎧 كول سنتر</div>
+                </label>
+
+                <!-- Option: لسه متحددتش -->
+                <label class="course-option-card" style="margin:0;">
+                  <input type="radio" name="branch-selection" value="لسه متحددتش">
+                  <div style="font-weight: 700; font-size: 13px; color: var(--text-muted);">⏳ لسه متحددتش</div>
+                </label>
+
+                <!-- Option: لسه مش عارف -->
+                <label class="course-option-card" style="margin:0;">
+                  <input type="radio" name="branch-selection" value="لسه مش عارف">
+                  <div style="font-weight: 700; font-size: 13px; color: var(--text-muted);">❓ لسه مش عارف</div>
+                </label>
+              </div>
+            </div>
+
             <!-- "بتسجل علشان؟" Course Selection Container (Shows when صيدليات آل مغاوري is selected) -->
             <div id="course-purpose-section" style="background: rgba(251, 191, 36, 0.05); border: 2px solid var(--color-gold); border-radius: 14px; padding: 18px; margin-bottom: 20px;">
               <h4 style="font-size: 15px; font-weight: 900; color: var(--color-gold); margin: 0 0 6px; display: flex; align-items: center; gap: 8px;">
@@ -436,15 +502,14 @@
     }
     loadAdminEntities();
 
-    // Toggle "بتسجل علشان؟" visibility based on entity selection
+    // Toggle "الفرع" and "بتسجل علشان؟" visibility based on entity selection
     const entitySelect = document.getElementById("reg-entity-select");
+    const branchSection = document.getElementById("branch-selection-section");
     const courseSection = document.getElementById("course-purpose-section");
     entitySelect.addEventListener("change", () => {
-      if (entitySelect.value === "صيدليات آل مغاوري") {
-        courseSection.style.display = "block";
-      } else {
-        courseSection.style.display = "none";
-      }
+      const isMaghawry = entitySelect.value === "صيدليات آل مغاوري";
+      if (branchSection) branchSection.style.display = isMaghawry ? "block" : "none";
+      if (courseSection) courseSection.style.display = isMaghawry ? "block" : "none";
     });
 
     // Playful Animation & Dodge behavior for Fadelopram card
@@ -498,11 +563,11 @@
     });
     updateCardStyles();
 
-    // Auto-sync Phone field to WhatsApp Number field
+    // Auto-sync Phone field to WhatsApp Number field in real-time
     const phoneInput = document.getElementById("reg-phone");
     const waInput = document.getElementById("reg-whatsapp-number");
     phoneInput.addEventListener("input", () => {
-      if (!waInput.value || waInput.value === phoneInput.value.slice(0, -1)) {
+      if (!waInput.readOnly) {
         waInput.value = phoneInput.value;
       }
     });
@@ -650,9 +715,19 @@
         return;
       }
 
-      // Collect selected courses
+      let selectedBranch = "";
       const selectedCourses = [];
+
       if (entitySelect.value === "صيدليات آل مغاوري") {
+        // Validate Branch Selection
+        const branchRadio = document.querySelector('input[name="branch-selection"]:checked');
+        if (!branchRadio) {
+          showToast("يرجى اختيار الفرع الذي تتدرب فيه أولاً.", "error");
+          return;
+        }
+        selectedBranch = branchRadio.value;
+
+        // Collect selected courses
         if (chkFadel.checked) selectedCourses.push("التدريب مع فاضل");
         if (chkNancy.checked) selectedCourses.push("كورس الكوزماتكس مع د. نانسي");
         if (chkEssam.checked) selectedCourses.push("كورس الميديكال مع د. عصام");
@@ -661,6 +736,9 @@
           return;
         }
       }
+
+      const regPhone = document.getElementById("reg-phone").value.trim();
+      const regName = document.getElementById("reg-name").value.trim();
 
       btnSubmit.disabled = true;
       btnSubmit.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> جاري إرسال الطلب...`;
@@ -671,22 +749,28 @@
       try {
         const response = await apiRequest({
           action: "register",
-          name: document.getElementById("reg-name").value.trim(),
+          name: regName,
           age: document.getElementById("reg-age").value.trim(),
-          phone: document.getElementById("reg-phone").value.trim(),
+          phone: regPhone,
           email: document.getElementById("reg-email").value.trim(),
           password: document.getElementById("reg-password").value.trim(),
           whatsApp: waInput.value.trim(),
           pharmacyGroup: entitySelect.value,
+          trainingBranch: selectedBranch,
           selectedCourses: selectedCourses,
           deviceInfo: diagnostics
         });
 
         if (response.success) {
-          showToast("🎉 تم إرسال طلب الاشتراك بنجاح! حسابك قيد الانتظار لموافقة الإدارة.", "success");
+          localStorage.setItem("trainee_pending_phone", regPhone);
+          localStorage.setItem("trainee_name", regName);
+          localStorage.setItem("trainee_branch", selectedBranch);
+          sessionStorage.setItem("trainee_phone", regPhone);
+
+          showToast("🎉 تم إرسال طلب الاشتراك بنجاح! جاري تحويلك لصفحة المتابعة...", "success");
           setTimeout(() => {
-            window.location.href = "index.html?registered=true";
-          }, 2000);
+            window.location.href = "waiting.html";
+          }, 1500);
         } else {
           btnSubmit.disabled = false;
           btnSubmit.innerHTML = `إرسال طلب الانضمام <i class="fa-solid fa-paper-plane"></i>`;

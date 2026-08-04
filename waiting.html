@@ -3,366 +3,430 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fadelopram Rx Academy — صفحة الانتظار والتحقق</title>
+  <title>Fadelopram Rx Academy — بوابة متابعة طلب الاعتماد</title>
   <!-- Google Fonts: Cairo -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3.5">
   <style>
-    .bio-img-placeholder {
-      width: 70px;
-      height: 70px;
+    .status-hero-card {
+      background: var(--bg-secondary);
+      border: 2px dashed var(--color-gold);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .status-hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-gold), var(--color-primary));
+      background-size: 200% 100%;
+      animation: statusGradient 3s linear infinite;
+    }
+    @keyframes statusGradient {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+    .status-icon-box {
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--color-primary), var(--color-gold));
+      margin: 0 auto 20px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
-      font-weight: 900;
-      color: #0b0f19;
-      margin-bottom: 15px;
+      font-size: 36px;
+      position: relative;
     }
-    .check-box {
-      background: var(--bg-secondary);
+    .status-icon-box.pending {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--color-gold);
+      border: 2px solid var(--color-gold);
+      animation: pulseBorder 2s infinite ease-in-out;
+    }
+    .status-icon-box.accepted {
+      background: rgba(16, 185, 129, 0.12);
+      color: #10b981;
+      border: 2px solid #10b981;
+    }
+    .status-icon-box.rejected {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--color-danger);
+      border: 2px solid var(--color-danger);
+    }
+    @keyframes pulseBorder {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+      50% { box-shadow: 0 0 0 12px rgba(251, 191, 36, 0); }
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin: 20px 0;
+      text-align: right;
+    }
+    .detail-item {
+      background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      margin-top: 20px;
+      padding: 12px 16px;
+    }
+    .detail-item label {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      display: block;
+      margin-bottom: 4px;
+    }
+    .detail-item val {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: block;
+    }
+    .preview-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 16px;
+      transition: all 0.25s ease;
+    }
+    .preview-card:hover {
+      border-color: var(--color-gold);
+      transform: translateY(-3px);
+    }
+    .whatsapp-fast-btn {
+      background: #25D366;
+      color: #fff;
+      font-weight: 900;
+      font-size: 15px;
+      padding: 14px 24px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
+      transition: all 0.2s ease;
+    }
+    .whatsapp-fast-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 25px rgba(37, 211, 102, 0.5);
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Utilities bar -->
-  <div class="app-container" style="max-width: 1200px; padding: 20px 20px 0; display: flex; justify-content: flex-end; gap: 10px;">
-    <button class="theme-switch-btn" id="btn-theme" title="تبديل المظهر / Toggle Theme"><i class="fa-solid fa-moon"></i></button>
-    <button class="lang-switch-btn" id="btn-lang" title="Toggle Language / تبديل اللغة"><i class="fa-solid fa-globe"></i></button>
-  </div>
-
-  <!-- App Header -->
-  <header class="app-container" style="max-width: 1200px; padding: 0 20px 0;">
-    <div class="app-header" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border-color);">
-      <div class="logo-section" style="display: flex; align-items: center; gap: 10px;">
-        <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 44px; width: 44px; border-radius: 10px; object-fit: cover;">
-        <div style="border-right: 1px solid var(--border-color); padding-right: 10px; margin-right: 4px;">
-          <h1 style="font-size: 16px; font-weight: 900; line-height: 1.2; color: var(--color-gold);" data-i18n="logo_title">Fadelopram Rx Academy</h1>
-          <p style="font-size: 10px; color: var(--text-muted); margin: 0;" data-i18n="logo_sub">بوابة متابعة طلبات المتدربين</p>
+  <!-- Top Navigation Bar -->
+  <header class="app-container" style="max-width: 1200px; padding: 20px 20px 0;">
+    <div class="app-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+        <img src="fadelopram_logo.jpg" alt="Fadelopram Logo" class="logo-img" style="height: 48px; width: 48px; border-radius: 12px; object-fit: cover; box-shadow: 0 4px 15px rgba(251,191,36,0.3);">
+        <div>
+          <h1 style="font-size: 18px; font-weight: 900; color: var(--color-gold); margin: 0;">Fadelopram Rx Academy</h1>
+          <p style="font-size: 11px; color: var(--text-muted); margin: 0;">بوابة التتبع المباشر لطلبات الانضمام والتفعيل</p>
         </div>
       </div>
-      <div class="header-actions">
-        <a href="index.html" class="btn btn-secondary" style="padding: 8px 15px; font-size: 13px;"><i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="btn_login">تسجيل الدخول</span></a>
+      <div class="header-actions" style="display: flex; gap: 10px;">
+        <button class="theme-switch-btn" id="btn-theme" title="تبديل المظهر"><i class="fa-solid fa-moon"></i></button>
+        <a href="index.html" class="btn btn-secondary" style="font-size: 13px; font-weight: bold;"><i class="fa-solid fa-right-to-bracket"></i> تسجيل الدخول</a>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="app-container" style="flex: 1; padding: 25px 20px;">
-    <div style="display: grid; grid-template-columns: 3fr 2fr; gap: 25px;">
+  <!-- Main Container -->
+  <main class="app-container" style="max-width: 1100px; padding: 25px 20px; flex: 1;">
+
+    <div style="display: grid; grid-template-columns: 1fr 340px; gap: 25px;">
       
-      <!-- Status Checking Panel -->
-      <div class="card" style="display: flex; flex-direction: column; justify-content: center;">
-        <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-circle-info"></i> <span data-i18n="status_card_title">حالة طلب الانضمام للمنصة</span></h3>
+      <!-- Main Status Viewport -->
+      <div>
         
-        <div id="status-container">
-          <!-- Manual phone input -->
-          <div class="check-box" id="no-phone-saved" style="display: none;">
-            <p style="margin-bottom: 15px;" data-i18n="enter_phone_check">لم نجد رقم هاتف مسجل في الذاكرة المحلية لجهازك. يرجى إدخال رقم هاتفك للتحقق من حالة طلبك:</p>
-            <div style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
-              <input type="tel" id="check-phone-input" placeholder="01XXXXXXXXX" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color);">
-              <button class="btn btn-primary" id="btn-check-manual" style="padding: 10px 20px;"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="btn_verify">تحقق</span></button>
+        <!-- Manual Phone Input if no stored session -->
+        <div id="box-no-phone" class="card" style="display: none; text-align: center; padding: 30px; margin-bottom: 20px;">
+          <h3 style="color: var(--color-gold); font-weight: 900; margin-bottom: 10px;"><i class="fa-solid fa-magnifying-glass"></i> الاستعلام عن حالة طلب انضمامك</h3>
+          <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">لم نجد رقم مسجل في جهازك. يرجى كتابة رقم الهاتف المكون من 11 رقم الذي سجلت به للتحقق من حالة الحساب:</p>
+          <div style="display: flex; gap: 10px; max-width: 420px; margin: 0 auto;">
+            <input type="tel" id="input-search-phone" placeholder="مثال: 01012345678" style="flex: 1; padding: 12px; border-radius: 10px; border: 1px solid var(--border-color); font-weight: bold; font-size: 15px; text-align: center;">
+            <button id="btn-search-phone" class="btn btn-gold" style="padding: 12px 20px; font-weight: bold;"><i class="fa-solid fa-search"></i> متابعة</button>
+          </div>
+        </div>
+
+        <!-- 1. PENDING STATE -->
+        <div class="status-hero-card" id="state-pending" style="display: none;">
+          <div class="status-icon-box pending">
+            <i class="fa-solid fa-hourglass-half fa-spin"></i>
+          </div>
+          <h2 style="font-size: 22px; font-weight: 900; color: var(--color-gold); margin: 0 0 8px;">
+            طلبك قيد المراجعة والاعتماد الفوري ⏳
+          </h2>
+          <p style="font-size: 14px; color: var(--text-main); margin: 0 0 16px;">
+            مرحباً بك يا دكتور <strong id="p-name" style="color: var(--color-gold);">...</strong> 👨‍⚕️ تم تسجيل بياناتك بنجاح ونقوم حالياً بمراجعتها للقبول.
+          </p>
+
+          <!-- Trainee Details Summary Box -->
+          <div class="details-grid">
+            <div class="detail-item">
+              <label>رقم الجوال المسجل:</label>
+              <val id="p-phone">...</val>
+            </div>
+            <div class="detail-item">
+              <label>الفرع الميداني المحدد:</label>
+              <val id="p-branch" style="color: var(--color-gold);">...</val>
+            </div>
+            <div class="detail-item">
+              <label>جهة التقديم:</label>
+              <val>صيدليات آل مغاوري</val>
             </div>
           </div>
 
-          <!-- Pending status -->
-          <div class="status-card pending" id="status-pending" style="display: none; padding: 30px; text-align: center; border-radius: 12px; background: rgba(195,159,104,0.05); border: 1px dashed var(--color-primary);">
-            <div style="font-size: 40px; color: var(--color-primary); margin-bottom: 15px;"><i class="fa-solid fa-hourglass-half fa-spin"></i></div>
-            <h3 data-i18n="pending_status_title">طلبك قيد المراجعة والموافقة ⏳</h3>
-            <p style="margin-top: 10px;"><span data-i18n="welcome_dr">مرحباً يا دكتور</span> <span id="trainee-name-pending" style="font-weight: bold; color: var(--color-primary);">...</span>. <span data-i18n="pending_welcome_msg">تم تسجيل بياناتك بنجاح في نظام المراجعة لصيدليات آل مغاوري.</span></p>
-            <p style="margin-top: 15px; font-size: 12px; color: var(--text-muted);" data-i18n="pending_auto_refresh">نقوم بمراجعة الطلبات والتحقق من فروع التدريب يدوياً. يتم تحديث هذه الصفحة تلقائياً كل 15 ثانية فور اتخاذ المدير قرار القبول.</p>
-            <button class="btn btn-secondary" style="margin-top: 20px;" onclick="checkCurrentStatus()"><i class="fa-solid fa-rotate"></i> <span data-i18n="btn_refresh_now">تحديث الحالة الآن</span></button>
+          <div style="background: rgba(251, 191, 36, 0.08); border: 1px dashed var(--color-gold); border-radius: 12px; padding: 14px; margin-bottom: 20px; font-size: 12.5px; color: var(--text-main); line-height: 1.6;">
+            <i class="fa-solid fa-bolt" style="color: var(--color-gold);"></i> <strong>ملاحظة التحديث التلقائي:</strong>
+            تم تفعيل الفحص التلقائي الحي لهذه الصفحة. بمجرد موافقة المدير العام على حسابك، <strong>سيتم توجيهك مباشرة وبشكل آلي إلى لوحة التدريب الكبرى دون الحاجة لإعادة التسجيل!</strong>
           </div>
 
-          <!-- Accepted status -->
-          <div class="status-card accepted" id="status-accepted" style="display: none; padding: 30px; text-align: center; border-radius: 12px; background: rgba(16,185,129,0.05); border: 1px dashed #10b981;">
-            <div style="font-size: 50px; color: #10b981; margin-bottom: 15px;"><i class="fa-solid fa-circle-check"></i></div>
-            <h3 data-i18n="accepted_status_title">تهانينا! تم قبول طلبك بنجاح 🎉</h3>
-            <p style="margin-bottom: 20px; margin-top: 10px;"><span data-i18n="welcome_dr">مرحباً بك يا دكتور</span> <span id="trainee-name-accepted" style="font-weight: bold; color: #10b981;">...</span> <span data-i18n="accepted_welcome_msg">كمتدرب رسمي في المنصة. تم تفعيل حسابك ويمكنك الدخول فوراً:</span></p>
-            
-            <div class="check-box" style="background: var(--bg-primary); text-align: right; max-width: 450px; margin: 15px auto; padding: 15px; border-radius: 10px; border: 1px dashed var(--border-color);">
-              <div style="margin-bottom: 12px;">
-                <strong>رقم الهاتف (اسم الدخول):</strong>
-                <div style="font-family: monospace; font-size: 15px; margin-top: 5px; color: var(--text-main); background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border: 1px dashed var(--border-color);">
-                  <span id="trainee-phone-disp">...</span>
-                  <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 11px;" onclick="copyText('trainee-phone-disp')"><i class="fa-regular fa-copy"></i> <span data-i18n="btn_copy">نسخ</span></button>
-                </div>
+          <!-- Fast Track WhatsApp Button -->
+          <div style="margin-top: 15px;">
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">تريد تسريع تفعيل حسابك فوراً؟ تواصل مع الإدارة عبر الواتساب الرسمي:</p>
+            <a href="#" id="link-whatsapp-fast" target="_blank" class="whatsapp-fast-btn">
+              <i class="fa-brands fa-whatsapp" style="font-size: 22px;"></i> طلب تسريع تفعيل الحساب عبر الواتساب 💬
+            </a>
+          </div>
+
+          <div style="margin-top: 20px;">
+            <button class="btn btn-secondary" onclick="fetchLiveStatus()"><i class="fa-solid fa-arrows-rotate"></i> تحديث حالة الطلب الآن</button>
+          </div>
+        </div>
+
+        <!-- 2. ACCEPTED STATE -->
+        <div class="status-hero-card" id="state-accepted" style="display: none; border-color: #10b981; background: rgba(16,185,129,0.03);">
+          <div class="status-icon-box accepted">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <h2 style="font-size: 24px; font-weight: 900; color: #10b981; margin: 0 0 8px;">
+            تهانينا دكتور! تم اعتماد وتفعيل حسابك بنجاح 🎉
+          </h2>
+          <p style="font-size: 14px; color: var(--text-main); margin: 0 0 20px;">
+            أهلاً بك كمتدرب رسمي في أكاديمية <strong style="color: #10b981;">Fadelopram Rx Academy</strong>. يمكنك الدخول فوراً للبدء في مشاهدة المحاضرات.
+          </p>
+
+          <div style="background: var(--bg-primary); border: 2px solid #10b981; border-radius: 14px; padding: 20px; max-width: 480px; margin: 0 auto 20px; text-align: right;">
+            <div style="font-size: 13px; margin-bottom: 10px;">
+              <strong>اسم الحساب (رقم الهاتف):</strong>
+              <div style="font-size: 16px; font-weight: 900; color: #10b981; font-family: monospace; margin-top: 4px;" id="acc-phone">...</div>
+            </div>
+            <div style="font-size: 13px;">
+              <strong>كلمة المرور:</strong>
+              <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">🔒 كلمة السر التي قمت بإنشائها بنفسك أثناء التسجيل.</div>
+            </div>
+          </div>
+
+          <button class="btn btn-gold" id="btn-enter-app" onclick="enterDashboard()" style="padding: 14px 32px; font-size: 16px; font-weight: 900; box-shadow: 0 6px 20px rgba(251,191,36,0.35);">
+            <i class="fa-solid fa-graduation-cap"></i> دخول الأكاديمية وبدء التدريب الآن 🚀
+          </button>
+        </div>
+
+        <!-- 3. REJECTED STATE -->
+        <div class="status-hero-card" id="state-rejected" style="display: none; border-color: var(--color-danger); background: rgba(239,68,68,0.03);">
+          <div class="status-icon-box rejected">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+          <h2 style="font-size: 22px; font-weight: 900; color: var(--color-danger); margin: 0 0 8px;">
+            عذراً، تعذر قبول طلب الانضمام ❌
+          </h2>
+          <p style="font-size: 14px; color: var(--text-main); margin: 0 0 15px;">
+            نأسف لإبلاغك بأنه لم يتم تفعيل حسابك حالياً.
+          </p>
+
+          <div style="background: var(--bg-primary); border: 1px dashed var(--color-danger); border-radius: 12px; padding: 14px; max-width: 480px; margin: 0 auto 20px; text-align: right;">
+            <strong style="color: var(--color-danger); font-size: 13px;">سبب التحديث من الإدارة:</strong>
+            <p id="reject-reason-text" style="font-size: 13.5px; font-weight: bold; margin: 6px 0 0;">عدم استيفاء الشروط أو البيانات المدخلة.</p>
+          </div>
+
+          <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="register.html" class="btn btn-secondary" style="font-size: 13px;"><i class="fa-solid fa-rotate-left"></i> إعادة التسجيل ببيانات صحيحة</a>
+            <a href="https://wa.me/201107118948" target="_blank" class="btn btn-outline" style="font-size: 13px;"><i class="fa-brands fa-whatsapp"></i> التواصل مع الدعم الفني</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Sidebar: Sneak Peek & Academy Features -->
+      <div>
+        <div class="card" style="padding: 20px;">
+          <h3 style="font-size: 15px; font-weight: 900; color: var(--color-gold); margin: 0 0 16px; border-bottom: 1px dashed var(--border-color); padding-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-star"></i> ماذا ينتظرك داخل الأكاديمية؟
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div class="preview-card">
+              <div style="font-weight: 900; font-size: 13.5px; color: var(--color-primary); margin-bottom: 4px;">
+                🎓 المسارات والمناهج الميدانية
               </div>
-              <div>
-                <strong>كلمة المرور:</strong>
-                <div style="font-family: monospace; font-size: 14px; margin-top: 5px; color: var(--color-primary); background: rgba(16,185,129,0.08); padding: 8px 12px; border-radius: 6px; font-weight: bold;">
-                  🔒 كلمة المرور السرية التي اخترتها بنفسك أثناء التسجيل
-                </div>
+              <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5;">
+                دروس تفاعلية في OTC وممارسة الصيدلة والروشتات الإكلينيكية خطوة بخطوة.
               </div>
             </div>
 
-            <button class="btn btn-primary" id="btn-auto-enter-dashboard" style="margin-top: 15px; padding: 12px 25px; font-weight: bold; font-size: 15px;" onclick="enterDashboardDirectly()"><i class="fa-solid fa-graduation-cap"></i> دخول الأكاديمية وبدء التدريب الآن 🚀</button>
-          </div>
-
-          <!-- Rejected status -->
-          <div class="status-card rejected" id="status-rejected" style="display: none; padding: 30px; text-align: center; border-radius: 12px; background: rgba(225,29,72,0.05); border: 1px dashed var(--color-danger);">
-            <div style="font-size: 50px; color: var(--color-danger); margin-bottom: 15px;"><i class="fa-solid fa-circle-xmark"></i></div>
-            <h3 data-i18n="rejected_status_title">عذراً، تم رفض طلب الانضمام ❌</h3>
-            <p style="margin-top: 10px;"><span data-i18n="welcome_dr">مرحباً يا دكتور</span> <span id="trainee-name-rejected" style="font-weight: bold; color: var(--color-danger);">...</span>. <span data-i18n="rejected_welcome_msg">نأسف لإبلاغك بأنه تم رفض طلب انضمامك للأكاديمية.</span></p>
-            
-            <div class="check-box" style="background: var(--bg-primary); text-align: right; max-width: 450px; margin: 15px auto; padding: 15px; border-radius: 10px; border: 1px dashed var(--border-color);">
-              <strong data-i18n="reject_reason_label">سبب الرفض المسجل من الإدارة:</strong>
-              <p style="margin-top: 8px; font-size: 14px; font-weight: 600;" id="trainee-reject-reason">...</p>
+            <div class="preview-card">
+              <div style="font-weight: 900; font-size: 13.5px; color: var(--color-gold); margin-bottom: 4px;">
+                🤖 محاكي المريض الافتراضي
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5;">
+                اختبار مهاراتك التشخيصية مع سيناريوهات مرضية حقيقية ذكية.
+              </div>
             </div>
 
-            <p style="margin-top: 20px;" data-i18n="reject_support_msg">للمزيد من الاستفسارات أو مراجعة الطلب، يرجى التواصل مع رقم الدعم الفني المباشر:</p>
-            <div style="font-size: 20px; font-weight: bold; color: var(--color-gold); margin-top: 10px;">
-              <i class="fa-solid fa-phone-volume"></i> 01107118948
+            <div class="preview-card">
+              <div style="font-weight: 900; font-size: 13.5px; color: #10b981; margin-bottom: 4px;">
+                🏆 دوري أبطال الفروع
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5;">
+                تنافس مع زملائك في فروع صيدليات آل مغاوري واكسب نقاط التفوق.
+              </div>
             </div>
-            <a href="register.html" class="btn btn-secondary" style="margin-top: 20px;"><i class="fa-solid fa-user-plus"></i> <span data-i18n="btn_re_register">إعادة التسجيل ببيانات أخرى</span></a>
+
+            <div class="preview-card">
+              <div style="font-weight: 900; font-size: 13.5px; color: #a855f7; margin-bottom: 4px;">
+                📜 الشهادات الرقمية المعتمدة
+              </div>
+              <div style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5;">
+                إصدار شهادات وتصاريح رسمية فور اجتياز كل مرحلة وتصفيات الترقية.
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Biography & History -->
-      <div class="bio-section" style="display: flex; flex-direction: column; gap: 20px;">
-        <div class="card bio-card">
-          <div class="bio-img-placeholder"><i class="fa-solid fa-prescription-bottle-medical"></i></div>
-          <h4 style="font-size: 16px; margin-bottom: 10px;" data-i18n="maghawry_history_title">نبذة عن صيدليات آل مغاوري</h4>
-          <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted);" data-i18n="maghawry_history_p">
-            تأسست صيدليات آل مغاوري كواحدة من الكيانات الصيدلانية الرائدة في محافظة دمياط. ترتكز رؤية المجموعة على تقديم خدمات صيدلانية متكاملة ورعاية صحية متطورة تليق بالمجتمع. وتولي المجموعة اهتماماً بالغاً بتدريب وتأهيل الأجيال الجديدة من خريجي وطلاب كليات الصيدلة، وتزويدهم بالخبرة العملية المطلوبة للانخراط بكفاءة في سوق العمل الدوائي، معتمدين على أحدث الأساليب التعليمية والمعايير المهنية العالمية. المدير التنفيذي للصيدليات هو الدكتور عبد العزيز المغاوري.
-          </p>
-        </div>
-
-        <div class="card bio-card">
-          <div class="bio-img-placeholder" style="background: linear-gradient(135deg, var(--color-gold), #fff);"><i class="fa-solid fa-code"></i></div>
-          <h4 style="font-size: 16px; margin-bottom: 10px;" data-i18n="dev_bio_title">نبذة عن المطور (أحمد فاضل)</h4>
-          <p style="font-size: 13px; line-height: 1.6; color: var(--text-muted);" data-i18n="dev_bio_p">
-            أحمد فاضل، هو المهندس والمطور المسؤول عن تصميم وتطوير المنصة الأكاديمية (Fadelopram). تم بناء هذا النظام خصيصاً لتسهيل إدارة العملية التدريبية وتأمين المحتوى العلمي المقدم للطلاب. يهدف النظام لتسجيل المتدربين الجدد وإصدار حسابات الدخول الرسمية ومتابعة مستويات التقدم الدراسي إلكترونياً وبطريقة ذكية بدون أي تعقيد تقني أو استهلاك غير مبرر لباقات الإنترنت.
-          </p>
-        </div>
-      </div>
-      
     </div>
+
   </main>
 
   <footer class="app-footer" style="text-align: center; padding: 20px 0; margin-top: auto; border-top: 1px solid var(--border-color); background: var(--bg-secondary);">
-    <p data-i18n="footer_text">برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لمنظومة Fadelopram</p>
+    <p>برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري</p>
     <p style="font-size: 10px; margin-top: 5px; color: rgba(128,128,128,0.4)">Support: 01107118948</p>
   </footer>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
+  <script src="config.js?v=13.0"></script>
   <script>
-    const langData = {
-      ar: {
-        logo_title: "صيدليات آل مغاوري",
-        logo_sub: "بوابة متابعة طلبات المتدربين",
-        btn_login: "تسجيل الدخول",
-        status_card_title: "حالة طلب الانضمام للمنصة",
-        enter_phone_check: "لم نجد رقم هاتف مسجل في الذاكرة المحلية لجهازك. يرجى إدخال رقم هاتفك للتحقق من حالة طلبك:",
-        btn_verify: "تحقق",
-        pending_status_title: "طلبك قيد المراجعة والموافقة ⏳",
-        welcome_dr: "مرحباً يا دكتور",
-        pending_welcome_msg: "تم تسجيل بياناتك بنجاح في نظام المراجعة لصيدليات آل مغاوري.",
-        pending_auto_refresh: "نقوم بمراجعة الطلبات والتحقق من فروع التدريب يدوياً. يتم تحديث هذه الصفحة تلقائياً كل 15 ثانية فور اتخاذ المدير قرار القبول.",
-        btn_refresh_now: "تحديث الحالة الآن",
-        accepted_status_title: "تهانينا! تم قبول طلبك بنجاح 🎉",
-        accepted_welcome_msg: "كمتدرب رسمي في صيدليات آل مغاوري. إليك بيانات الدخول الخاصة بك:",
-        created_email: "البريد الإلكتروني المنشأ:",
-        temp_pass: "كلمة المرور المؤقتة:",
-        btn_copy: "نسخ",
-        warn_change_pass: "يرجى تغيير كلمة المرور المؤقتة فور تسجيل دخولك الأول لزيادة أمان حسابك.",
-        btn_go_login: "الانتقال لصفحة تسجيل الدخول",
-        rejected_status_title: "عذراً، تم رفض طلب الانضمام ❌",
-        rejected_welcome_msg: "نأسف لإبلاغك بأنه تم رفض طلب انضمامك للأكاديمية.",
-        reject_reason_label: "سبب الرفض المسجل من الإدارة:",
-        reject_support_msg: "للمزيد من الاستفسارات أو مراجعة الطلب، يرجى التواصل مع رقم الدعم الفني المباشر:",
-        btn_re_register: "إعادة التسجيل ببيانات أخرى",
-        maghawry_history_title: "نبذة عن صيدليات آل مغاوري",
-        maghawry_history_p: "تأسست صيدليات آل مغاوري كواحدة من الكيانات الصيدلانية الرائدة في محافظة دمياط. ترتكز رؤية المجموعة على تقديم خدمات صيدلانية متكاملة ورعاية صحية متطورة تليق بالمجتمع. وتولي المجموعة اهتماماً بالغاً بتدريب وتأهيل الأجيال الجديدة من خريجي وطلاب كليات الصيدلة، وتزويدهم بالخبرة العملية المطلوبة للانخراط بكفاءة في سوق العمل الدوائي، معتمدين على أحدث الأساليب التعليمية والمعايير المهنية العالمية. المدير التنفيذي للصيدليات هو الدكتور عبد العزيز المغاوري.",
-        dev_bio_title: "نبذة عن المطور (أحمد فاضل)",
-        dev_bio_p: "أحمد فاضل، هو المهندس والمطور المسؤول عن تصميم وتطوير المنصة الأكاديمية (Fadelopram). تم بناء هذا النظام خصيصاً لتسهيل إدارة العملية التدريبية وتأمين المحتوى العلمي المقدم للطلاب. يهدف النظام لتسجيل المتدربين الجدد وإصدار حسابات الدخول الرسمية ومتابعة مستويات التقدم الدراسي إلكترونياً وبطريقة ذكية بدون أي تعقيد تقني أو استهلاك غير مبرر لباقات الإنترنت.",
-        footer_text: "برمجة وتطوير د. أحمد فاضل © 2026 | جميع الحقوق محفوظة لصيدليات آل مغاوري",
-        copied_success: "📋 تم نسخ النص للحافظة بنجاح!",
-        copied_fail: "فشل في نسخ النص تلقائياً.",
-        invalid_phone_err: "يرجى إدخال رقم هاتف صحيح مكون من 11 رقماً ويبدأ بـ 01."
-      },
-      en: {
-        logo_title: "El-Maghawry Pharmacies",
-        logo_sub: "Trainees Request Tracking Portal",
-        btn_login: "Login Gate",
-        status_card_title: "Your Subscription Request Status",
-        enter_phone_check: "We did not find any registered phone number in this device. Please enter your mobile number to search status:",
-        btn_verify: "Verify",
-        pending_status_title: "Your Request is Under Review ⏳",
-        welcome_dr: "Welcome, Dr.",
-        pending_welcome_msg: "Your information has been successfully registered in El-Maghawry Pharmacies review system.",
-        pending_auto_refresh: "We review registration requests and verify training branch details manually. This page updates automatically every 15 seconds.",
-        btn_refresh_now: "Check Status Now",
-        accepted_status_title: "Congratulations! Request Approved 🎉",
-        accepted_welcome_msg: "as an official trainee in El-Maghawry Pharmacies Group. Here are your credentials:",
-        created_email: "Assigned Login Email:",
-        temp_pass: "Temporary Passcode:",
-        btn_copy: "Copy",
-        warn_change_pass: "Please change this temporary password immediately after your first login for security.",
-        btn_go_login: "Go to Login Page",
-        rejected_status_title: "We Regret to Inform You, Request Declined ❌",
-        rejected_welcome_msg: "Your request to join the training academy has been rejected by the administrator.",
-        reject_reason_label: "Reason for rejection recorded by Admin:",
-        reject_support_msg: "For more details or to appeal, please contact our direct support phone number:",
-        btn_re_register: "Re-Register with New Information",
-        maghawry_history_title: "About El-Maghawry Pharmacies Group",
-        maghawry_history_p: "El-Maghawry Pharmacies Group was established as a premier pharmacy group in Damietta. Our vision is centered on delivering comprehensive pharmacy care and advanced healthcare services. The group prioritizes the training and qualification of new pharmacy graduates and students, providing them with real-world clinical and practical experiences to integrate successfully into the job market, guided by modern educational tools. The group's CEO is Dr. Abdel Aziz El-Maghawry.",
-        dev_bio_title: "About the Developer (Ahmed Fadel)",
-        dev_bio_p: "Ahmed Fadel is the lead software engineer and developer of the Fadelopram academy portal. The system is custom-built to organize training workflows, secure scientific video content from recording, and track trainees' academic progress efficiently, operating with zero server subscription fees and minimal internet data consumption.",
-        footer_text: "Engineered by Dr. Ahmed Fadel © 2026 | El-Maghawry Pharmacies Group",
-        copied_success: "📋 Copied to clipboard successfully!",
-        copied_fail: "Failed to copy text automatically.",
-        invalid_phone_err: "Please enter a valid 11-digit mobile number starting with 01."
-      }
-    };
+    let activePhone = localStorage.getItem("trainee_pending_phone") || sessionStorage.getItem("trainee_phone") || "";
+    let activeName = localStorage.getItem("trainee_name") || "دكتور متدرب";
+    let activeBranch = localStorage.getItem("trainee_branch") || "صيدليات آل مغاوري";
+    let pollTimer = null;
 
-    let pollInterval = null;
-    let traineePhone = localStorage.getItem("trainee_pending_phone");
-    let currentLang = localStorage.getItem("app_lang") || "ar";
-    let currentTheme = localStorage.getItem("app_theme") || "sand";
-
-    function applySettings() {
-      document.body.classList.remove("green-theme", "dark-theme");
-      if (currentTheme === "green") {
-        document.body.classList.add("green-theme");
-        document.getElementById("btn-theme").innerHTML = `<i class="fa-solid fa-leaf" style="color: var(--color-primary);"></i>`;
-      } else if (currentTheme === "dark") {
-        document.body.classList.add("dark-theme");
-        document.getElementById("btn-theme").innerHTML = `<i class="fa-solid fa-sun" style="color: var(--color-gold);"></i>`;
-      } else {
-        document.getElementById("btn-theme").innerHTML = `<i class="fa-solid fa-moon"></i>`;
-      }
-
-      document.documentElement.lang = currentLang;
-      document.body.dir = currentLang === "ar" ? "rtl" : "ltr";
-
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (langData[currentLang][key]) {
-          el.textContent = langData[currentLang][key];
-        }
-      });
+    // Theme Switcher
+    function initTheme() {
+      const savedTheme = localStorage.getItem("app_theme") || "sand";
+      if (savedTheme === "dark") document.body.classList.add("dark-theme");
+      else if (savedTheme === "green") document.body.classList.add("green-theme");
     }
+    initTheme();
 
     document.getElementById("btn-theme").addEventListener("click", () => {
-      currentTheme = currentTheme === "sand" ? "green" : (currentTheme === "green" ? "dark" : "sand");
-      localStorage.setItem("app_theme", currentTheme);
-      applySettings();
-    });
-
-    document.getElementById("btn-lang").addEventListener("click", () => {
-      currentLang = currentLang === "ar" ? "en" : "ar";
-      localStorage.setItem("app_lang", currentLang);
-      applySettings();
-    });
-
-    applySettings();
-
-    document.addEventListener("DOMContentLoaded", () => {
-      if (traineePhone) {
-        checkCurrentStatus();
-        pollInterval = setInterval(checkCurrentStatus, 15000);
+      const isDark = document.body.classList.contains("dark-theme");
+      if (isDark) {
+        document.body.classList.remove("dark-theme");
+        localStorage.setItem("app_theme", "sand");
       } else {
-        document.getElementById("no-phone-saved").style.display = "block";
+        document.body.classList.add("dark-theme");
+        localStorage.setItem("app_theme", "dark");
       }
     });
 
-    document.getElementById("btn-check-manual").addEventListener("click", () => {
-      const phoneInput = document.getElementById("check-phone-input").value.trim();
-      if (phoneInput.length === 11 && phoneInput.startsWith("01")) {
-        traineePhone = phoneInput;
-        localStorage.setItem("trainee_pending_phone", phoneInput);
-        document.getElementById("no-phone-saved").style.display = "none";
-        checkCurrentStatus();
-        pollInterval = setInterval(checkCurrentStatus, 15000);
+    // Populate Initial Info
+    document.getElementById("p-name").textContent = activeName;
+    document.getElementById("p-phone").textContent = activePhone || "غير محدد";
+    document.getElementById("p-branch").textContent = activeBranch;
+
+    // Build WhatsApp Link
+    function updateWhatsAppLink() {
+      const link = document.getElementById("link-whatsapp-fast");
+      const msg = encodeURIComponent(`مرحباً دكتور، أنشأت حساباً جديداً في المنصة باسم: ${activeName} - فرع: ${activeBranch} - رقم الهاتف: ${activePhone}، وأطلب تسريع التفعيل وشكراً.`);
+      link.href = `https://wa.me/201107118948?text=${msg}`;
+    }
+    updateWhatsAppLink();
+
+    // Check Phone search listener
+    document.getElementById("btn-search-phone").addEventListener("click", () => {
+      const val = document.getElementById("input-search-phone").value.trim();
+      if (val.length === 11 && val.startsWith("01")) {
+        activePhone = val;
+        localStorage.setItem("trainee_pending_phone", val);
+        document.getElementById("box-no-phone").style.display = "none";
+        fetchLiveStatus();
       } else {
-        showToast(langData[currentLang].invalid_phone_err, "error");
+        showToast("يرجى كتابة رقم هاتف صحيح مكون من 11 رقم والمبتدئ بـ 01.", "error");
       }
     });
 
-    async function checkCurrentStatus() {
-      if (!traineePhone) return;
+    // Live Status Checker & Auto-Redirect
+    async function fetchLiveStatus() {
+      if (!activePhone) {
+        document.getElementById("box-no-phone").style.display = "block";
+        document.getElementById("state-pending").style.display = "none";
+        document.getElementById("state-accepted").style.display = "none";
+        document.getElementById("state-rejected").style.display = "none";
+        return;
+      }
+
       try {
-        const response = await apiRequest({
-          action: "checkStatus",
-          phone: traineePhone
-        });
+        const res = await apiRequest({ action: "checkStatus", phone: activePhone });
+        
+        document.getElementById("state-pending").style.display = "none";
+        document.getElementById("state-accepted").style.display = "none";
+        document.getElementById("state-rejected").style.display = "none";
 
-        document.getElementById("status-pending").style.display = "none";
-        document.getElementById("status-accepted").style.display = "none";
-        document.getElementById("status-rejected").style.display = "none";
-        document.getElementById("no-phone-saved").style.display = "none";
+        if (res && res.success) {
+          const status = String(res.status || res.Status || "").toLowerCase();
 
-        if (response.success) {
-          if (response.status === "pending") {
-            document.getElementById("status-pending").style.display = "block";
-            document.getElementById("trainee-name-pending").textContent = response.name;
-          } else if (response.status === "accepted") {
-            document.getElementById("status-accepted").style.display = "block";
-            document.getElementById("trainee-name-accepted").textContent = response.name;
-            const phoneDisp = document.getElementById("trainee-phone-disp");
-            if (phoneDisp) phoneDisp.textContent = traineePhone;
-
-            // Store accepted user data locally
-            sessionStorage.setItem("trainee_logged_in", "true");
-            sessionStorage.setItem("trainee_email", response.email || `trainee.${traineePhone}@maghawry.com`);
-            sessionStorage.setItem("trainee_password", localStorage.getItem("saved_trainee_password") || response.password || "");
-            sessionStorage.setItem("trainee_name", response.name);
-            sessionStorage.setItem("trainee_branch", response.branch || "الفرع الرئيسي");
-            sessionStorage.setItem("trainee_level", response.currentLevel || "Passengers");
-            sessionStorage.setItem("login_timestamp", Date.now().toString());
-
-            clearInterval(pollInterval);
-
-            showToast("🎉 تم تفعيل حسابك! جاري تحويلك تلقائياً لداخل المنصة...", "success");
+          if (status === "accepted" || status === "active" || status === "approved") {
+            document.getElementById("state-accepted").style.display = "block";
+            document.getElementById("acc-phone").textContent = activePhone;
+            
+            // Auto redirect to dashboard after 3 seconds!
             setTimeout(() => {
-              window.location.href = "dashboard.html";
-            }, 2000);
-          } else if (response.status === "rejected") {
-            document.getElementById("status-rejected").style.display = "block";
-            document.getElementById("trainee-name-rejected").textContent = response.name;
-            document.getElementById("trainee-reject-reason").textContent = response.rejectReason || "لم يذكر سبب بالتفصيل.";
-            clearInterval(pollInterval);
+              enterDashboard();
+            }, 3500);
+
+          } else if (status === "rejected") {
+            document.getElementById("state-rejected").style.display = "block";
+            if (res.rejectReason || res.RejectReason) {
+              document.getElementById("reject-reason-text").textContent = res.rejectReason || res.RejectReason;
+            }
+          } else {
+            // Still pending
+            document.getElementById("state-pending").style.display = "block";
+            if (res.name || res.Name) {
+              activeName = res.name || res.Name;
+              document.getElementById("p-name").textContent = activeName;
+            }
           }
         } else {
-          document.getElementById("no-phone-saved").style.display = "block";
-          clearInterval(pollInterval);
+          document.getElementById("state-pending").style.display = "block";
         }
-      } catch (err) {
-        console.error("Error polling status:", err);
+      } catch(err) {
+        document.getElementById("state-pending").style.display = "block";
       }
     }
 
-    function enterDashboardDirectly() {
-      showToast("🚀 جاري توجيهك للمنصة وبدء المحاضرات...", "success");
-      setTimeout(() => {
-        window.location.href = "dashboard.html";
-      }, 1200);
+    function enterDashboard() {
+      sessionStorage.setItem("trainee_email", activePhone);
+      sessionStorage.setItem("trainee_phone", activePhone);
+      window.location.href = "dashboard.html";
     }
 
-    function copyText(elementId) {
-      const text = document.getElementById(elementId).textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        showToast(langData[currentLang].copied_success, "success");
-      }).catch(err => {
-        showToast(langData[currentLang].copied_fail, "error");
-      });
-    }
+    // Auto-poll status every 7 seconds
+    fetchLiveStatus();
+    pollTimer = setInterval(fetchLiveStatus, 7000);
   </script>
 </body>
 </html>
