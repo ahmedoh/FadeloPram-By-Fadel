@@ -2656,6 +2656,73 @@ async function handleSupabaseRequest(params) {
       if (error) throw error;
       return { success: true, message: "تم حذف المتدرب بنجاح." };
 
+    } else if (action === "getAnnouncements" || action === "adminGetAnnouncements") {
+      try {
+        const { data, error } = await supabaseClient
+          .from('announcements')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (data && !error && data.length > 0) {
+          return { success: true, announcements: data };
+        }
+      } catch(e) {}
+      const list = getTable("Announcements");
+      return { success: true, announcements: list };
+
+    } else if (action === "adminSaveAnnouncement") {
+      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
+        return { success: false, message: "غير مصرح بالعملية." };
+      }
+      const annObj = {
+        title: params.title || "",
+        content: params.content || "",
+        type: params.type || "general",
+        icon: params.icon || "fa-bullhorn",
+        color: params.color || "gold",
+        link: params.link || "",
+        active: params.active !== undefined ? !!params.active : true
+      };
+
+      try {
+        if (params.id && !String(params.id).startsWith("ann_")) {
+          const { error } = await supabaseClient
+            .from('announcements')
+            .update(annObj)
+            .eq('id', params.id);
+          if (!error) return { success: true, message: "تم حفظ الإعلان بنجاح!" };
+        } else {
+          const { data, error } = await supabaseClient
+            .from('announcements')
+            .insert([annObj])
+            .select()
+            .single();
+          if (!error) return { success: true, message: "تم إضافة الإعلان بنجاح!", id: data ? data.id : undefined };
+        }
+      } catch(e) { console.warn("Supabase announcement save warning:", e); }
+
+      const list = getTable("Announcements");
+      const annId = params.id || ("ann_" + Date.now());
+      const idx = list.findIndex(x => x.id === annId);
+      const localAnn = { id: annId, ...annObj, updatedAt: new Date().toISOString() };
+      if (idx !== -1) list[idx] = localAnn;
+      else list.push(localAnn);
+      saveTable("Announcements", list);
+      return { success: true, message: "تم حفظ الإعلان بنجاح!", id: annId };
+
+    } else if (action === "adminDeleteAnnouncement") {
+      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
+        return { success: false, message: "غير مصرح بالعملية." };
+      }
+      try {
+        if (params.id && !String(params.id).startsWith("ann_")) {
+          await supabaseClient.from('announcements').delete().eq('id', params.id);
+        }
+      } catch(e) {}
+      let list = getTable("Announcements");
+      list = list.filter(x => x.id !== params.id);
+      saveTable("Announcements", list);
+      return { success: true, message: "تم حذف الإعلان بنجاح!" };
+
     } else if (action === "adminGetProgress") {
       if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
         return { success: false, message: "غير مصرح." };
