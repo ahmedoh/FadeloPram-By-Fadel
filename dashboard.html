@@ -487,6 +487,15 @@
         </div>
         
         <div style="margin-top: 10px;">
+          <h3 class="card-title" style="font-size: 15px; margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; color: var(--color-gold);">
+            <i class="fa-solid fa-book-bookmark"></i> كورساتي المشترك فيها
+          </h3>
+          <div id="my-courses-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;">
+            <div style="text-align:center;color:var(--text-muted);font-size:12px;padding:10px;">جاري التحميل...</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 10px;">
           <h3 class="card-title" style="font-size: 15px; margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
             <i class="fa-solid fa-play"></i> <span data-i18n="lectures_list_title">قائمة المحاضرات التدريبية</span>
           </h3>
@@ -762,7 +771,27 @@
             </div>
           </div>
 
-                  <input type="radio" id="team-1" name="eval_team" value="1"><label for="team-1">★</label>
+          <!-- Main Report Submission Form Card -->
+          <div class="card" style="padding: 20px; border: 1px solid var(--border-color); background: var(--bg-secondary); border-radius: 14px;">
+            <form id="report-submit-form">
+              <!-- Section 1: Basic Info -->
+              <div class="report-section-title"><i class="fa-solid fa-file-pen"></i> القسم الأول: بيانات التقرير التدريبي والمهمة الميدانية</div>
+              <div style="margin-bottom: 15px;">
+                <label for="report-title" style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 5px;">عنوان التقرير أو الحالة العملية *</label>
+                <input type="text" id="report-title" placeholder="مثال: تقرير التعامل مع حالة ضغط مرتفع وتدريب الـ OTC..." style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-main); padding: 10px; font-family: inherit; font-size: 13px;" required>
+              </div>
+
+              <!-- Section 2: Self Evaluation -->
+              <div class="report-section-title"><i class="fa-solid fa-star"></i> القسم الثاني: التقييم الذاتي للنشاط</div>
+              <div class="eval-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                <div class="eval-item">
+                  <label>العمل الجماعي والتواصل</label>
+                  <div class="eval-stars">
+                    <input type="radio" id="team-5" name="eval_team" value="5" checked><label for="team-5">★</label>
+                    <input type="radio" id="team-4" name="eval_team" value="4"><label for="team-4">★</label>
+                    <input type="radio" id="team-3" name="eval_team" value="3"><label for="team-3">★</label>
+                    <input type="radio" id="team-2" name="eval_team" value="2"><label for="team-2">★</label>
+<input type="radio" id="team-1" name="eval_team" value="1"><label for="team-1">★</label>
                 </div>
               </div>
               <div class="eval-item">
@@ -804,7 +833,7 @@
             </div>
 
             <button type="submit" class="btn btn-gold" style="width: 100%; cursor: pointer; padding: 13px; font-size: 15px; font-weight: 800;">
-              <i class="fa-solid fa-paper-plane"></i> تقديم الاستمارة الآن للمشرف الأكاديمي
+              <i class="fa-solid fa-paper-plane"></i> إرسال التقرير التدريبي الآن للمشرف الأكاديمي
             </button>
           </form>
         </div>
@@ -1498,7 +1527,24 @@
         });
 
         if (response.success) {
-          videosData = response.videos;
+          videosData = (response.videos || []).map(v => {
+            const vidId = String(v.VideoId || v.id || v.url || v.video_id || '');
+            const urlVal = String(v.Url || v.url || v.video_url || vidId);
+            const titleVal = String(v.Title || v.title || 'محاضرة بدون عنوان');
+            const topicVal = String(v.Topic || v.topic || 'عام');
+            return {
+              ...v,
+              id: vidId,
+              VideoId: vidId,
+              url: urlVal,
+              Url: urlVal,
+              title: titleVal,
+              Title: titleVal,
+              topic: topicVal,
+              Topic: topicVal,
+              created_at: v.created_at || v.CreatedAt || new Date().toISOString()
+            };
+          });
           watchedVideos = response.watched;
           traineeLevel = response.currentLevel;
           sessionStorage.setItem("trainee_level", traineeLevel);
@@ -1508,6 +1554,7 @@
           allCurriculumData = response.curriculum || [];
           window.completedPromotions = response.completedPromotions || [];
           window.levelWelcomeText = response.welcomeHtml || "";
+          sessionStorage.setItem('trainee_selected_courses', typeof response.selectedCourses === 'string' ? response.selectedCourses : JSON.stringify(response.selectedCourses || []));
           traineeProgress = {
             ExamAttempts: response.examAttempts || 0,
             LockoutUntil: response.lockoutUntil || null
@@ -1515,7 +1562,9 @@
           
           applySettings();
           renderGameLevelMap();
+          renderMyCourses();
           renderCurriculumAccordion(response.curriculum || []);
+          renderPlaylist();
           await loadTraineeReports(); // Ensure reports are cached to check checklist
           
           // Initialize gamification (points, streak, leaderboard)
@@ -1892,6 +1941,52 @@
       renderCurriculumTree();
     }
 
+    // ===== Render My Enrolled Courses =====
+    function renderMyCourses() {
+      const container = document.getElementById('my-courses-list');
+      if (!container) return;
+
+      // Get trainee's selected courses
+      let courses = [];
+      try {
+        const raw = sessionStorage.getItem('trainee_selected_courses') || '[]';
+        courses = JSON.parse(raw);
+      } catch(e) {}
+
+      // Also try from trainee data stored at login
+      if (!courses.length) {
+        try {
+          const tData = JSON.parse(sessionStorage.getItem('trainee_data') || '{}');
+          if (tData.selected_courses) {
+            courses = typeof tData.selected_courses === 'string' ? JSON.parse(tData.selected_courses) : tData.selected_courses;
+          }
+        } catch(e) {}
+      }
+
+      // Fallback: default course
+      if (!courses.length) {
+        courses = ['التدريب مع فاضل'];
+      }
+
+      const courseIcons = {
+        'التدريب مع فاضل': { icon: '🎓', color: '#d97706', bg: 'rgba(217,119,6,0.08)' },
+        'كورس الكوزماتكس مع د. نانسي': { icon: '💄', color: '#ec4899', bg: 'rgba(236,72,153,0.08)' },
+        'كورس الميديكال مع د. عصام': { icon: '💊', color: '#6366f1', bg: 'rgba(99,102,241,0.08)' }
+      };
+
+      container.innerHTML = courses.map(c => {
+        const info = courseIcons[c] || { icon: '📚', color: 'var(--color-primary)', bg: 'var(--color-primary-glow)' };
+        return `<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:${info.bg};border:1px solid ${info.color}30;transition:all 0.2s;" onmouseover="this.style.transform='translateX(-3px)'" onmouseout="this.style.transform='none'">
+          <span style="font-size:22px;">${info.icon}</span>
+          <div style="flex:1;">
+            <div style="font-size:12.5px;font-weight:800;color:${info.color};">${c}</div>
+            <div style="font-size:10px;color:var(--text-muted);">مشترك ✅</div>
+          </div>
+          <span style="width:8px;height:8px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;"></span>
+        </div>`;
+      }).join('');
+    }
+
     // ===== Sequential Unlocking System =====
     function isVideoUnlocked(videoId) {
       // Find the video in videosData
@@ -2194,9 +2289,15 @@
       if (quizContainer) quizContainer.style.display = "block";
       
       if (v) {
+        const videoUrl = v.Url || v.url || v.video_url || v.VideoId || v.id || "";
         const iframe = document.getElementById("lecture-preview-iframe");
         if (iframe) {
-          iframe.src = getEmbedUrl(v.Url || v.VideoId || "");
+          iframe.src = getEmbedUrl(videoUrl);
+        }
+      } else {
+        const iframe = document.getElementById("lecture-preview-iframe");
+        if (iframe) {
+          iframe.src = getEmbedUrl(videoId);
         }
       }
       loadInlineVideoQuiz(videoId, title);
@@ -3430,11 +3531,7 @@
       setDisplay("reports-viewport", "block");
       
       // Fill auto-filled header info in the PDF form
-      const nameEl = document.getElementById("report-header-name");
-      const emailEl = document.getElementById("report-header-email");
-      const levelEl = document.getElementById("report-header-level");
-      const dateEl = document.getElementById("report-header-date");
-      const branchEl = document.getElementById("report-header-branch");
+      const nameEl = document.getElementById("report-header-name"); const emailEl = document.getElementById("report-header-email"); const levelEl = document.getElementById("report-header-level"); const dateEl = document.getElementById("report-header-date"); const branchEl = document.getElementById("report-header-branch");
       if (nameEl) nameEl.textContent = traineeName;
       if (emailEl) emailEl.textContent = traineeEmail;
       if (levelEl) levelEl.textContent = traineeLevel;
@@ -3708,7 +3805,7 @@
       
       const btn = e.target.querySelector("button[type='submit']");
       btn.disabled = true;
-      showToast("جاري إرسال الاستمارة للمشرف الأكاديمي...", "info");
+      showToast("جاري إرسال التقرير التدريبي للمشرف الأكاديمي...", "info");
 
       try {
         const response = await apiRequest({
@@ -3731,7 +3828,7 @@
           showToast(response.message, "error");
         }
       } catch (err) {
-        showToast("حدث خطأ أثناء إرسال الاستمارة.", "error");
+        showToast("حدث خطأ أثناء إرسال التقرير التدريبي.", "error");
       } finally {
         btn.disabled = false;
       }
@@ -3744,8 +3841,9 @@
     // Case Tag Chip Selector
     window.selectCaseTypeChip = function(el, typeName) {
       document.querySelectorAll('#case-type-chips .case-tag-chip').forEach(c => c.classList.remove('selected'));
-      el.classList.add('selected');
-      document.getElementById('case-selected-type').value = typeName;
+      if (el) el.classList.add('selected');
+      const targetInput = document.getElementById('case-selected-type');
+      if (targetInput) targetInput.value = typeName;
     };
 
     // Case Logger Form Submission
@@ -3753,9 +3851,12 @@
     if (smartCaseForm) {
       smartCaseForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const caseType = document.getElementById('case-selected-type').value;
-        const title = document.getElementById('case-title-input').value.trim();
-        const notes = document.getElementById('case-note-input').value.trim();
+        const caseTypeEl = document.getElementById('case-selected-type');
+        const titleEl = document.getElementById('case-title-input');
+        const notesEl = document.getElementById('case-note-input');
+        const caseType = caseTypeEl ? caseTypeEl.value : '';
+        const title = titleEl ? titleEl.value.trim() : '';
+        const notes = notesEl ? notesEl.value.trim() : '';
 
         const btn = smartCaseForm.querySelector("button[type='submit']");
         btn.disabled = true;
@@ -4176,13 +4277,13 @@
       if (widthThreshold || heightThreshold) {
         if (!devtoolsOpen) {
           devtoolsOpen = true;
-          document.getElementById("video-wrapper").style.display = "none";
+          const vw = document.getElementById("video-wrapper"); if (vw) vw.style.display = "none";
           showToast("DevTools detected. Playback suspended.", "error");
         }
       } else {
         if (devtoolsOpen) {
           devtoolsOpen = false;
-          document.getElementById("video-wrapper").style.display = "block";
+          const vw = document.getElementById("video-wrapper"); if (vw) vw.style.display = "block";
         }
       }
     }, 1000);

@@ -1,3 +1,24 @@
+
+function normalizeVideoObject(v) {
+  if (!v) return v;
+  const vidId = String(v.VideoId || v.id || v.url || v.video_id || '');
+  const urlVal = String(v.Url || v.url || v.video_url || vidId);
+  const titleVal = String(v.Title || v.title || 'محاضرة بدون عنوان');
+  const topicVal = String(v.Topic || v.topic || 'عام');
+  return {
+    ...v,
+    id: vidId,
+    VideoId: vidId,
+    url: urlVal,
+    Url: urlVal,
+    title: titleVal,
+    Title: titleVal,
+    topic: topicVal,
+    Topic: topicVal,
+    created_at: v.created_at || v.CreatedAt || new Date().toISOString()
+  };
+}
+
 /**
  * PharmReady-AlmaghwryBy-Fadel - Configuration & API Wrapper (Updated)
  * 
@@ -202,17 +223,19 @@ async function sendWhatsAppDirectNotification(targetPhone, msgText) {
     const instanceId = localStorage.getItem("maghawry_whatsapp_instance") || DEFAULT_WHATSAPP_INSTANCE;
     
     if (apiKey && instanceId) {
+      const bodyParams = new URLSearchParams();
+      bodyParams.append("token", apiKey);
+      bodyParams.append("to", formattedPhone);
+      bodyParams.append("body", msgText);
+
       const res = await fetch(`https://api.ultramsg.com/${instanceId}/messages/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          token: apiKey,
-          to: `+${formattedPhone}`,
-          body: msgText
-        })
+        body: bodyParams
       });
       const data = await res.json();
-      return (data.sent === "true" || data.id);
+      console.log("UltraMsg Direct Notification Response:", data);
+      return (data.sent === "true" || data.id || data.status === "queue");
     }
   } catch (err) {
     console.error("WhatsApp notification error:", err);
@@ -662,7 +685,7 @@ async function handleDemoRequest(params) {
 
     return {
       success: true,
-      videos: combinedVideos,
+      videos: combinedVideos.map(normalizeVideoObject),
       watched: watched,
       currentLevel: currentLevel,
       completedLevels: completedLevels,
@@ -1399,11 +1422,11 @@ async function handleDemoRequest(params) {
         // Send WhatsApp Notification (Main Message + Copyable Monospace Credentials Message)
         const msgs = formatTraineeWhatsAppMsg(traineeObj, true);
         if (Array.isArray(msgs)) {
-          (async () => {
-            for (const m of msgs) {
-              await sendWhatsAppDirectNotification(targetPhone, m);
-            }
-          })();
+          for (const m of msgs) {
+            await sendWhatsAppDirectNotification(targetPhone, m);
+          }
+        } else {
+          await sendWhatsAppDirectNotification(targetPhone, msgs);
         }
 
         return { success: true, message: "تم تفعيل حساب المتدرب بنجاح وإرسال كود/إشعار التفعيل وبيانات الدخول عبر الواتساب! 💬🟢" };
@@ -1416,11 +1439,11 @@ async function handleDemoRequest(params) {
         // Send WhatsApp Rejection Notification
         const msgs = formatTraineeWhatsAppMsg(traineeObj, false, reason);
         if (Array.isArray(msgs)) {
-          (async () => {
-            for (const m of msgs) {
-              await sendWhatsAppDirectNotification(targetPhone, m);
-            }
-          })();
+          for (const m of msgs) {
+            await sendWhatsAppDirectNotification(targetPhone, m);
+          }
+        } else {
+          await sendWhatsAppDirectNotification(targetPhone, msgs);
         }
 
         return { success: true, message: "تم رفض طلب المتدرب وإرسال إشعار الواتساب 💬" };
@@ -2123,7 +2146,7 @@ async function handleSupabaseRequest(params) {
 
       return {
         success: true,
-        videos: combinedVideos,
+        videos: combinedVideos.map(normalizeVideoObject),
         watched: watched,
         currentLevel: currentLevel,
         completedLevels: completedLevels,
@@ -2761,11 +2784,11 @@ async function handleSupabaseRequest(params) {
           const targetWhatsApp = traineeObj.whatsapp || traineeObj.phone;
           const waMsgs = formatTraineeWhatsAppMsg(traineeObj, true);
           if (Array.isArray(waMsgs)) {
-            (async () => {
-              for (const m of waMsgs) {
-                await sendWhatsAppDirectNotification(targetWhatsApp, m);
-              }
-            })();
+            for (const m of waMsgs) {
+              await sendWhatsAppDirectNotification(targetWhatsApp, m);
+            }
+          } else {
+            await sendWhatsAppDirectNotification(targetWhatsApp, waMsgs);
           }
         }
 
@@ -2801,11 +2824,11 @@ async function handleSupabaseRequest(params) {
           const targetWhatsApp = traineeObj.whatsapp || traineeObj.phone;
           const waMsgs = formatTraineeWhatsAppMsg(traineeObj, false, reason);
           if (Array.isArray(waMsgs)) {
-            (async () => {
-              for (const m of waMsgs) {
-                await sendWhatsAppDirectNotification(targetWhatsApp, m);
-              }
-            })();
+            for (const m of waMsgs) {
+              await sendWhatsAppDirectNotification(targetWhatsApp, m);
+            }
+          } else {
+            await sendWhatsAppDirectNotification(targetWhatsApp, waMsgs);
           }
         }
         sendTelegramNotification(`⚠️ تم رفض طلب الانضمام لرقم ${params.phone}. السبب: ${reason}`, DEFAULT_TELEGRAM_ADMIN_CHAT_ID).catch(e => console.error(e));
