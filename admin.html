@@ -821,8 +821,52 @@
     </div>
   </div>
 
+  <!-- TRAINEE EDIT MODAL -->
+  <div class="modal-overlay" id="trainee-edit-modal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-user-pen"></i> تعديل بيانات المتدرب</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeEditTraineeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="trainee-edit-form" class="modal-body">
+        <input type="hidden" id="t-edit-phone-orig">
+        
+        <label>الاسم الرباعي *</label>
+        <input type="text" id="t-edit-name" required placeholder="اسم المتدرب...">
+
+        <label>البريد الإلكتروني *</label>
+        <input type="email" id="t-edit-email" required placeholder="البريد الإلكتروني...">
+
+        <label>المستوى الحركي / الأكاديمي *</label>
+        <select id="t-edit-level">
+          <option value="Passengers">مرحلة المسافرين (Passengers)</option>
+          <option value="Starters">مرحلة المبتدئين (Starters)</option>
+          <option value="Movers">مرحلة المتقدمين (Movers)</option>
+          <option value="Flyers">مرحلة الطائرين (Flyers)</option>
+          <option value="Beast">مرحلة الوحوش (Beast)</option>
+        </select>
+
+        <label>الفرع الميداني *</label>
+        <select id="t-edit-branch">
+          <option value="الصعيدي القديم">🥇 الصعيدي القديم</option>
+          <option value="أبو الخير">🥈 أبو الخير</option>
+          <option value="البنك">🏥 البنك</option>
+          <option value="السبعين / الصعيدي الجديد">🏬 السبعين / الصعيدي الجديد</option>
+          <option value="الأزهر">🕌 الأزهر</option>
+          <option value="كول سنتر">🎧 كول سنتر</option>
+          <option value="لسه متحددتش">⏳ لسه متحددتش</option>
+          <option value="لسه مش عارف">❓ لسه مش عارف</option>
+        </select>
+
+        <button type="submit" class="btn btn-gold" style="width:100%;padding:12px;font-weight:900;margin-top:12px;">
+          <i class="fa-solid fa-check"></i> حفظ التعديلات
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=14.0"></script>
+  <script src="config.js?v=15.0"></script>
   <script>
     let adminUsername = "", adminPassword = "";
     let allTrainees = [], allAnnouncements = [], allCurrNodes = [];
@@ -929,9 +973,25 @@
       if(!list.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--success);padding:20px;">✅ لا توجد طلبات معلقة!</td></tr>';return;}
       tbody.innerHTML=list.map((t,i)=>{
         let courses=[];try{courses=typeof t.selected_courses==='string'?JSON.parse(t.selected_courses):(t.selected_courses||[]);}catch(e){}
-        const cs=Array.isArray(courses)?courses.join('، '):'التدريب مع فاضل';
+        const cs=Array.isArray(courses)&&courses.length?courses.join('، '):'التدريب مع فاضل';
         const branch=t.training_branch||t.TrainingBranch||t.pharmacy_group||t.PharmacyGroup||'آل مغاوري';
-        return `<tr><td>${i+1}</td><td><strong>${t.name||t.Name}</strong><br><small style="color:var(--text-muted)">السن: ${t.age||t.Age||'-'}</small></td><td>${t.age||'-'}</td><td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td><td><span class="status-badge status-pending" style="color:var(--gold);font-weight:bold;">${branch}</span></td><td style="color:var(--gold);font-weight:700;font-size:12px;">${cs}</td><td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-microchip"></i></button></td><td><button class="btn btn-gold btn-sm" onclick="approve('${t.phone||t.Phone}')"><i class="fa-solid fa-check"></i> موافقة</button> <button class="btn btn-danger-outline btn-sm" onclick="reject('${t.phone||t.Phone}')"><i class="fa-solid fa-xmark"></i></button></td></tr>`;
+        const ph=t.phone||t.Phone;
+        const name=t.name||t.Name;
+        return `<tr>
+          <td>${i+1}</td>
+          <td><strong>${name}</strong><br><small style="color:var(--text-muted)">السن: ${t.age||t.Age||'-'}</small></td>
+          <td>${t.age||t.Age||'-'}</td>
+          <td>${ph}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td>
+          <td><span class="status-badge status-pending" style="color:var(--gold);font-weight:bold;">${branch}</span></td>
+          <td style="color:var(--gold);font-weight:700;font-size:12px;">${cs}</td>
+          <td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${ph}')"><i class="fa-solid fa-microchip"></i></button></td>
+          <td>
+            <button class="btn btn-gold btn-sm" onclick="approve('${ph}')"><i class="fa-solid fa-check"></i> موافقة</button>
+            <button class="btn btn-danger-outline btn-sm" onclick="reject('${ph}')" title="رفض"><i class="fa-solid fa-xmark"></i></button>
+            <button class="btn btn-outline btn-sm" onclick="openEditTraineeModal('${ph}')" title="تعديل"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-danger-outline btn-sm" onclick="deleteTrainee('${ph}','${name}')" title="حذف نهائي"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>`;
       }).join('');
     }
 
@@ -942,12 +1002,75 @@
       if(!list.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا يوجد متدربون بعد.</td></tr>';return;}
       tbody.innerHTML=list.map((t,i)=>{
         const blocked=(t.status||t.Status)==='blocked';
-        return `<tr><td>${i+1}</td><td><strong>${t.name||t.Name}</strong></td><td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td><td><span class="status-badge status-pending">${t.pharmacy_group||'آل مغاوري'}</span></td><td><span class="status-badge ${blocked?'status-blocked':'status-active'}">${blocked?'محظور ❌':'نشط 🟢'}</span></td><td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-sliders"></i></button></td><td><button class="btn btn-outline btn-sm" onclick="toggleBlock('${t.phone||t.Phone}',${blocked})">${blocked?'إلغاء الحظر':'حظر'}</button></td></tr>`;
+        const ph=t.phone||t.Phone;
+        const name=t.name||t.Name;
+        const branch=t.training_branch||t.TrainingBranch||t.pharmacy_group||'آل مغاوري';
+        return `<tr>
+          <td>${i+1}</td>
+          <td><strong>${name}</strong><br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td>
+          <td>${ph}</td>
+          <td><span class="status-badge status-pending" style="color:var(--gold);">${branch}</span></td>
+          <td><span class="status-badge ${blocked?'status-blocked':'status-active'}">${blocked?'محظور ❌':'نشط 🟢'}</span></td>
+          <td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${ph}')"><i class="fa-solid fa-microchip"></i></button></td>
+          <td>
+            <button class="btn btn-outline btn-sm" onclick="toggleBlock('${ph}',${blocked})">${blocked?'إلغاء الحظر':'حظر'}</button>
+            <button class="btn btn-outline btn-sm" onclick="openEditTraineeModal('${ph}')" title="تعديل"><i class="fa-solid fa-pen"></i></button>
+            <button class="btn btn-danger-outline btn-sm" onclick="deleteTrainee('${ph}','${name}')" title="حذف نهائي"><i class="fa-solid fa-trash"></i></button>
+          </td>
+        </tr>`;
       }).join('');
     }
     async function approve(ph){const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'accept'});if(r.success){alert(r.message || 'تم تفعيل الحساب بنجاح وإرسال رسالة الواتساب! 💬🟢');loadAll();}else{alert(r.message||'حدث خطأ أثناء التفعيل');}}
     async function reject(ph){if(!confirm('هل أنت متأكد من رفض هذا الطلب؟'))return;const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'reject',rejectReason:'عدم استيفاء البيانات'});if(r.success){alert(r.message || 'تم رفض الطلب وإرسال إشعار الواتساب 💬');loadAll();}else{alert(r.message||'حدث خطأ أثناء الرفض');}}
     async function toggleBlock(ph,b){const r=await apiRequest({action:'adminToggleBlockTrainee',adminPassword,phone:ph,blockState:!b});if(r.success){alert(r.message||'تم.');loadAll();}}
+
+    /* ===== EDIT & DELETE TRAINEE ===== */
+    function openEditTraineeModal(ph) {
+      const t = allTrainees.find(x => String(x.phone || x.Phone).trim() === String(ph).trim());
+      if (!t) return;
+      document.getElementById('t-edit-phone-orig').value = ph;
+      document.getElementById('t-edit-name').value = t.name || t.Name || '';
+      document.getElementById('t-edit-email').value = t.email || t.Email || '';
+      document.getElementById('t-edit-level').value = t.current_level || t.CurrentLevel || 'Passengers';
+      document.getElementById('t-edit-branch').value = t.training_branch || t.TrainingBranch || 'الصعيدي القديم';
+      document.getElementById('trainee-edit-modal').classList.add('active');
+    }
+    function closeEditTraineeModal() {
+      document.getElementById('trainee-edit-modal').classList.remove('active');
+    }
+
+    document.getElementById('trainee-edit-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const ph = document.getElementById('t-edit-phone-orig').value;
+      const r = await apiRequest({
+        action: 'adminEditTrainee',
+        adminPassword,
+        phone: ph,
+        name: document.getElementById('t-edit-name').value.trim(),
+        email: document.getElementById('t-edit-email').value.trim(),
+        level: document.getElementById('t-edit-level').value,
+        branch: document.getElementById('t-edit-branch').value
+      });
+
+      if (r.success) {
+        alert('تم تعديل بيانات المتدرب بنجاح! ⚡');
+        closeEditTraineeModal();
+        loadAll();
+      } else {
+        alert(r.message || 'حدث خطأ أثناء التعديل');
+      }
+    });
+
+    async function deleteTrainee(ph, name) {
+      if (!confirm(`⚠️ هل أنت متأكد تماماً من حذف المتدرب "${name}" نهائياً من النظام؟\nلا يمكن التراجع عن هذا الإجراء!`)) return;
+      const r = await apiRequest({ action: 'adminDeleteTrainee', adminPassword, phone: ph });
+      if (r.success) {
+        alert('تم حذف المتدرب بنجاح 🗑️');
+        loadAll();
+      } else {
+        alert(r.message || 'حدث خطأ أثناء حذف المتدرب');
+      }
+    }
 
     /* ===== RENDER PROMOTIONS ===== */
     function renderPromotions() {

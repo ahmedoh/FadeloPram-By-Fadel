@@ -2721,7 +2721,11 @@ async function handleSupabaseRequest(params) {
           Status: t.status,
           Timestamp: t.created_at,
           ExternalFormStatus: t.external_form_status,
-          ExternalFormData: t.external_form_data
+          ExternalFormData: t.external_form_data,
+          device_info: t.device_info,
+          ip_address: t.ip_address,
+          selected_courses: t.selected_courses,
+          training_branch: t.training_branch
         }))
       };
       
