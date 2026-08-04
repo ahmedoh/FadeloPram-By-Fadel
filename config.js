@@ -46,10 +46,18 @@ if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
 
 // ===== Security: SHA-256 Password Hashing =====
 async function sha256Hash(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  try {
+    if (!window.crypto || !window.crypto.subtle) {
+      return String(message);
+    }
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  } catch (err) {
+    console.warn("sha256Hash failed (insecure context?), falling back to raw text:", err);
+    return String(message);
+  }
 }
 // Pre-computed SHA-256 hash of owner credentials for secure comparison
 const OWNER_HASH = '2e6fcd404b105495da8d2a76fb71879f0bc618d649de1fdb23f3ead1830513e8';
@@ -1553,61 +1561,6 @@ async function handleDemoRequest(params) {
     }
     return { success: false, message: "لم يتم العثور على المتدرب." };
 
-
-  } else if (action === "submitTraineeReport") {
-    const trainees = getTable("Trainees");
-    const email = String(params.email).trim().toLowerCase();
-    const password = String(params.password).trim();
-    const t = trainees.find(x => String(x.Email).trim().toLowerCase() === email && String(x.Password).trim() === password);
-    if (!t || t.Status !== "accepted") {
-      return { success: false, message: "غير مصرح لتقديم التقارير." };
-    }
-    const reports = getTable("Reports");
-    reports.push({
-      Timestamp: new Date().toISOString(),
-      Email: email,
-      Name: t.Name,
-      Level: t.CurrentLevel || "Passengers",
-      Title: params.title || "تقرير تدريب بدون عنوان",
-      Content: params.content || "",
-      Attachment: params.attachment || "",
-      AttachmentName: params.attachmentName || "",
-      Status: "pending",
-      AdminComment: ""
-    });
-    saveTable("Reports", reports);
-    return { success: true, message: "تم تقديم التقرير بنجاح للمراجع." };
-
-  } else if (action === "getTraineeReports") {
-    const email = String(params.email).trim().toLowerCase();
-    const reports = getTable("Reports");
-    const filtered = reports.filter(x => String(x.Email).trim().toLowerCase() === email);
-    return { success: true, reports: filtered };
-
-  } else if (action === "adminGetReports") {
-    if (!await verifyLocalAdmin(params.adminPassword)) {
-      return { success: false, message: "غير مصرح بالدخول." };
-    }
-    return { success: true, reports: getTable("Reports") };
-
-  } else if (action === "adminUpdateReportStatus") {
-    if (!await verifyLocalAdmin(params.adminPassword)) {
-      return { success: false, message: "غير مصرح بالعملية." };
-    }
-    const reports = getTable("Reports");
-    const email = String(params.email).trim().toLowerCase();
-    const timestamp = String(params.timestamp).trim();
-    const status = params.status;
-    const comment = params.comment || "";
-
-    const rIndex = reports.findIndex(x => String(x.Email).trim().toLowerCase() === email && (String(x.Timestamp).indexOf(timestamp) !== -1 || String(new Date(x.Timestamp).getTime()) === String(new Date(timestamp).getTime())));
-    if (rIndex !== -1) {
-      reports[rIndex].Status = status;
-      reports[rIndex].AdminComment = comment;
-      saveTable("Reports", reports);
-      return { success: true, message: "تم تحديث حالة التقرير بنجاح." };
-    }
-    return { success: false, message: "لم يتم العثور على التقرير." };
 
   } else if (action === "adminGetProgress") {
     if (!await verifyLocalAdmin(params.adminPassword)) {
@@ -3473,82 +3426,7 @@ async function handleSupabaseRequest(params) {
         }))
       };
       
-    } else if (action === "submitTraineeReport") {
-      const email = String(params.email).trim().toLowerCase();
-      const { data: t, error: tErr } = await supabaseClient
-        .from('trainees')
-        .select('name, branch, current_level')
-        .ilike('email', email)
-        .maybeSingle();
-      if (tErr) throw tErr;
-      if (!t) {
-        return { success: false, message: "لم يتم العثور على حساب الطالب." };
-      }
 
-      const { error } = await supabaseClient
-        .from('reports')
-        .insert([{
-          email: email,
-          name: t.name,
-          branch: t.branch || "",
-          level: t.current_level || "Passengers",
-          title: params.title || "تقرير تدريب بدون عنوان",
-          report_text: params.content || "",
-          attachment_url: params.attachment || "",
-          attachment_name: params.attachmentName || "",
-          status: "pending",
-          admin_comment: ""
-        }]);
-      if (error) throw error;
-      return { success: true, message: "تم تقديم التقرير بنجاح للمراجعة!" };
-      
-    } else if (action === "getTraineeReports") {
-      const email = String(params.email).trim().toLowerCase();
-      const { data, error } = await supabaseClient.from('reports').select('*').ilike('email', email).order('created_at', { ascending: false });
-      if (error) throw error;
-      return {
-        success: true,
-        reports: data.map(r => ({
-          Name: r.name,
-          Branch: r.branch,
-          Level: r.level,
-          ReportText: r.report_text,
-          Status: r.status,
-          Timestamp: r.created_at
-        }))
-      };
-      
-    } else if (action === "adminGetReports") {
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
-      }
-      const { data, error } = await supabaseClient.from('reports').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
-      return {
-        success: true,
-        reports: data.map(r => ({
-          Id: r.id,
-          Email: r.email,
-          Name: r.name,
-          Branch: r.branch,
-          Level: r.level,
-          ReportText: r.report_text,
-          Status: r.status,
-          Timestamp: r.created_at
-        }))
-      };
-      
-    } else if (action === "adminUpdateReportStatus") {
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
-      }
-      const { error } = await supabaseClient
-        .from('reports')
-        .update({ status: params.status })
-        .eq('id', params.reportId);
-      if (error) throw error;
-      return { success: true, message: "تم تحديث حالة التقرير بنجاح." };
-      
     } else if (action === "adminGetNotifications") {
       if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
         return { success: false, message: "غير مصرح." };

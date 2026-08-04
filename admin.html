@@ -476,7 +476,6 @@
         <li class="nav-item" onclick="switchTab('promotions',this)"><span><i class="fa-solid fa-award"></i> الترقيات والشهادات</span></li>
         <li class="nav-item" onclick="switchTab('announcements',this)"><span><i class="fa-solid fa-bullhorn"></i> الإعلانات</span></li>
         <li class="nav-item" onclick="switchTab('questions',this)"><span><i class="fa-solid fa-file-circle-question"></i> بنك الأسئلة</span></li>
-        <li class="nav-item" onclick="switchTab('reports',this)"><span><i class="fa-solid fa-notes-medical"></i> تقارير الحالات</span></li>
         <li class="nav-item" onclick="switchTab('settings',this)"><span><i class="fa-solid fa-sliders"></i> الإعدادات</span></li>
       </ul>
 
@@ -623,18 +622,6 @@
         </div>
       </div>
 
-      <!-- PANEL: Reports -->
-      <div class="admin-panel" id="panel-reports">
-        <div class="card">
-          <h3 class="card-title"><i class="fa-solid fa-notes-medical"></i> تقارير الحالات الإكلينيكية</h3>
-          <div class="table-wrap">
-            <table class="data-table">
-              <thead><tr><th>#</th><th>المتدرب</th><th>العنوان</th><th>المستوى</th><th>المرفق</th><th>الإجراء</th></tr></thead>
-              <tbody id="tbody-reports"><tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">جاري التحميل...</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
 
       <!-- PANEL: Settings -->
       <div class="admin-panel" id="panel-settings">
@@ -870,7 +857,7 @@
   <script>
     let adminUsername = "", adminPassword = "";
     let allTrainees = [], allAnnouncements = [], allCurrNodes = [];
-    let allPromotions = [], allQuestions = [], allReports = [];
+    let allPromotions = [], allQuestions = [];
 
     /* ===== THEME ===== */
     function toggleTheme() {
@@ -891,7 +878,7 @@
     const panelTitles = {
       overview:"النظرة العامة", pending:"طلبات الاشتراك", trainees:"المتدربين المقبولين",
       curriculum:"المناهج والكورسات", promotions:"الترقيات والشهادات", announcements:"الإعلانات",
-      questions:"بنك الأسئلة", reports:"تقارير الحالات", settings:"الإعدادات"
+      questions:"بنك الأسئلة", settings:"الإعدادات"
     };
     function switchTab(id, el) {
       document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
@@ -924,13 +911,12 @@
 
     /* ===== PARALLEL DATA LOADING FOR ALL PANELS ===== */
     async function loadAll() {
-      const [traineesRes, annRes, currRes, promoRes, qRes, rRes] = await Promise.all([
+      const [traineesRes, annRes, currRes, promoRes, qRes] = await Promise.all([
         apiRequest({ action:'adminGetTrainees', adminPassword }),
         apiRequest({ action:'adminGetAnnouncements' }),
         apiRequest({ action:'adminGetCurriculumTree', adminPassword, level:'all' }),
         apiRequest({ action:'adminGetPromotions', adminPassword }),
-        apiRequest({ action:'adminGetQuestions', adminPassword }),
-        apiRequest({ action:'adminGetReports', adminPassword })
+        apiRequest({ action:'adminGetQuestions', adminPassword })
       ]);
 
       if (traineesRes.success && traineesRes.trainees) { allTrainees=traineesRes.trainees; renderPending(); renderApproved(); }
@@ -941,8 +927,6 @@
       else { document.getElementById('tbody-promotions').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد طلبات ترقية معلقة.</td></tr>'; }
       if (qRes.success && qRes.questions) { allQuestions=qRes.questions; renderQuestions(); }
       else { document.getElementById('questions-list').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد أسئلة في البنك بعد.</p>'; }
-      if (rRes.success && rRes.reports) { allReports=rRes.reports; renderReports(); }
-      else { document.getElementById('tbody-reports').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد تقارير مرفوعة بعد.</td></tr>'; }
 
       updateKPIs();
     }
@@ -1198,33 +1182,7 @@
       }
     }
 
-    /* ===== RENDER REPORTS ===== */
-    function renderReports() {
-      const tbody = document.getElementById('tbody-reports');
-      if (!allReports || !allReports.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد تقارير مرفوعة بعد.</td></tr>';
-        return;
-      }
-      tbody.innerHTML = allReports.map((r, i) => {
-        const name = r.trainee_name || r.TraineeName || r.email || r.Email || 'متدرب';
-        const title = r.title || r.Title || 'تقرير حالة إكلينيكية';
-        const lvl = r.level || r.Level || 'Passengers';
-        const status = r.status || r.Status || 'accepted';
-        const fileUrl = r.attachment_url || r.attachmentUrl || '';
-        const isApproved = status === 'accepted' || status === 'approved';
 
-        return `<tr>
-          <td>${i+1}</td>
-          <td><strong>${name}</strong><br><small style="color:var(--text-muted);">${r.email||r.Email||''}</small></td>
-          <td><strong>${title}</strong></td>
-          <td><span class="status-badge status-pending">${lvl}</span></td>
-          <td>${fileUrl ? `<a href="${fileUrl}" target="_blank" class="btn btn-outline btn-sm" style="font-size:11px;"><i class="fa-solid fa-paperclip"></i> عرض المرفق</a>` : '<span style="color:var(--text-muted);font-size:11px;">بدون مرفق</span>'}</td>
-          <td>
-            <span class="status-badge ${isApproved?'status-active':'status-blocked'}">${isApproved?'معتمد 🟢':'قيد المراجعة ⏳'}</span>
-          </td>
-        </tr>`;
-      }).join('');
-    }
 
     /* ===== SLIDER DRAWER ===== */
     function openSlider(email,phone){

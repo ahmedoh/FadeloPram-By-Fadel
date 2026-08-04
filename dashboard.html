@@ -733,108 +733,7 @@
           </div>
         </div>
 
-        <!-- 5. Reports / Smart Clinical Logbook Viewport -->
-        <div id="reports-viewport" style="display: none; flex: 1;">
-          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-            <h2 style="font-size: 22px; color: var(--color-primary); margin: 0; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-solid fa-book-medical" style="color: var(--color-gold);"></i> دفتر الحالات والمهام العملية الميدانية
-            </h2>
-            <button class="btn btn-secondary" style="font-size: 12px; cursor: pointer;" onclick="document.getElementById('reports-history-section').style.display = document.getElementById('reports-history-section').style.display === 'none' ? 'block' : 'none';">
-              <i class="fa-solid fa-clock-rotate-left"></i> سجل الحالات السابقة
-            </button>
-          </div>
-          <p style="font-size: 12px; margin-bottom: 20px; color: var(--text-muted);">سجّل حالتك الميدانية اليومية في ثوانٍ أو أكمل المهام العملية الميدانية لكسب النقاط والارتقاء في المسار الصيدلي.</p>
 
-          <!-- Report History (hidden by default) -->
-          <div id="reports-history-section" style="display: none; margin-bottom: 20px;">
-            <div class="card" style="padding: 15px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
-              <h3 style="font-size: 14px; margin-bottom: 10px; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 8px;">
-                <i class="fa-solid fa-list-check" style="color: var(--color-gold);"></i> سجل تقاريرك وحالاتك السابقة
-              </h3>
-              <div class="admin-table-container" style="max-height: 280px; overflow-y: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                  <thead>
-                    <tr>
-                      <th style="text-align: right; font-size: 12px;">عنوان الحالة / المهمة</th>
-                      <th style="text-align: right; font-size: 12px;">المستوى</th>
-                      <th style="text-align: right; font-size: 12px;">التاريخ</th>
-                      <th style="text-align: right; font-size: 12px;">الحالة</th>
-                    </tr>
-                  </thead>
-                  <tbody id="trainee-reports-table-body">
-                    <tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 15px;">لا توجد حالات مسجلة حالياً.</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          <!-- Main Report Submission Form Card -->
-          <div class="card" style="padding: 20px; border: 1px solid var(--border-color); background: var(--bg-secondary); border-radius: 14px;">
-            <form id="report-submit-form">
-              <!-- Section 1: Basic Info -->
-              <div class="report-section-title"><i class="fa-solid fa-file-pen"></i> القسم الأول: بيانات التقرير التدريبي والمهمة الميدانية</div>
-              <div style="margin-bottom: 15px;">
-                <label for="report-title" style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 5px;">عنوان التقرير أو الحالة العملية *</label>
-                <input type="text" id="report-title" placeholder="مثال: تقرير التعامل مع حالة ضغط مرتفع وتدريب الـ OTC..." style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-main); padding: 10px; font-family: inherit; font-size: 13px;" required>
-              </div>
-
-              <!-- Section 2: Self Evaluation -->
-              <div class="report-section-title"><i class="fa-solid fa-star"></i> القسم الثاني: التقييم الذاتي للنشاط</div>
-              <div class="eval-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                <div class="eval-item">
-                  <label>العمل الجماعي والتواصل</label>
-                  <div class="eval-stars">
-                    <input type="radio" id="team-5" name="eval_team" value="5" checked><label for="team-5">★</label>
-                    <input type="radio" id="team-4" name="eval_team" value="4"><label for="team-4">★</label>
-                    <input type="radio" id="team-3" name="eval_team" value="3"><label for="team-3">★</label>
-                    <input type="radio" id="team-2" name="eval_team" value="2"><label for="team-2">★</label>
-<input type="radio" id="team-1" name="eval_team" value="1"><label for="team-1">★</label>
-                </div>
-              </div>
-              <div class="eval-item">
-                <label>المبادرة والسرعة في التنفيذ</label>
-                <div class="eval-stars">
-                  <input type="radio" id="init-5" name="eval_init" value="5"><label for="init-5">★</label>
-                  <input type="radio" id="init-4" name="eval_init" value="4"><label for="init-4">★</label>
-                  <input type="radio" id="init-3" name="eval_init" value="3" checked><label for="init-3">★</label>
-                  <input type="radio" id="init-2" name="eval_init" value="2"><label for="init-2">★</label>
-                  <input type="radio" id="init-1" name="eval_init" value="1"><label for="init-1">★</label>
-                </div>
-              </div>
-              <div class="eval-item">
-                <label>التعامل مع المرضى بمهنية</label>
-                <div class="eval-stars">
-                  <input type="radio" id="pat-5" name="eval_pat" value="5"><label for="pat-5">★</label>
-                  <input type="radio" id="pat-4" name="eval_pat" value="4"><label for="pat-4">★</label>
-                  <input type="radio" id="pat-3" name="eval_pat" value="3" checked><label for="pat-3">★</label>
-                  <input type="radio" id="pat-2" name="eval_pat" value="2"><label for="pat-2">★</label>
-                  <input type="radio" id="pat-1" name="eval_pat" value="1"><label for="pat-1">★</label>
-                </div>
-              </div>
-            </div>
-
-            <!-- Section 3: Open Notes -->
-            <div class="report-section-title"><i class="fa-solid fa-pen-to-square"></i> القسم الثالث: ملاحظات وتعليقات المتدرب</div>
-            <textarea id="report-content" placeholder="سجّل هنا أي ملاحظات أو أسئلة أو مشكلات تود مشاركتها مع المشرف الأكاديمي..." style="width: 100%; height: 100px; resize: none; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-main); padding: 10px; font-family: inherit; font-size: 13px;" required></textarea>
-
-            <!-- Section 4: Optional Attachment -->
-            <div style="margin: 12px 0;">
-              <label for="report-file-picker" style="font-size: 12px; font-weight: 700; display: block; margin-bottom: 5px;"><i class="fa-solid fa-paperclip" style="color: var(--color-gold);"></i> إرفاق ملف داعم (اختياري - حد أقصى 2MB)</label>
-              <input type="file" id="report-file-picker" style="font-size: 12px; padding: 5px;">
-            </div>
-
-            <!-- Confirmation Checkbox -->
-            <div class="report-confirm-box">
-              <input type="checkbox" id="report-confirm-check" required>
-              <label for="report-confirm-check">أُقِرّ بأن جميع البيانات المُدخلة أعلاه صحيحة ودقيقة وتمثل نشاطي الفعلي خلال الفترة التدريبية المذكورة.</label>
-            </div>
-
-            <button type="submit" class="btn btn-gold" style="width: 100%; cursor: pointer; padding: 13px; font-size: 15px; font-weight: 800;">
-              <i class="fa-solid fa-paper-plane"></i> إرسال التقرير التدريبي الآن للمشرف الأكاديمي
-            </button>
-          </form>
-        </div>
 
         <!-- 6. Default/Placeholder Viewport -->
         <div id="player-placeholder" style="display: flex; flex-direction: column; align-items: stretch; text-align: right; width: 100%; position: relative; z-index: 10;">
@@ -1629,7 +1528,7 @@
           renderCurriculumAccordion(response.curriculum || []);
           renderPlaylist();
           try {
-            await loadTraineeReports();
+            await 
           } catch(e) {
             console.warn('Reports load non-fatal error:', e);
           }
@@ -1677,11 +1576,7 @@
       const allVideosWatched = totalVids > 0 && watchedCount === totalVids;
       const allQuizzesAnswered = allVideosWatched; // Answered inline video quiz is required to mark video as watched
       
-      // Check if student submitted at least one training report in this level
-      const submittedReportsCount = (traineeReports || []).filter(r => String(r.Level || r.level).trim() === String(traineeLevel).trim()).length;
-      const reportSubmitted = submittedReportsCount > 0;
-      
-      const isEligible = allVideosWatched && allQuizzesAnswered && reportSubmitted;
+      const isEligible = allVideosWatched && allQuizzesAnswered;
 
       // Lockout check
       let isLockedOut = false;
@@ -1711,10 +1606,6 @@
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span>2. الإجابة على جميع اختبارات المحاضرات المخصصة:</span>
             <span>${allQuizzesAnswered ? '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> مكتمل' : '<i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> غير مكتمل'}</span>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span>3. تقديم تقرير تدريب ميداني واحد على الأقل للمرحلة الحالية:</span>
-            <span>${reportSubmitted ? '<i class="fa-solid fa-circle-check" style="color: #10b981;"></i> مكتمل' : '<i class="fa-solid fa-circle-xmark" style="color: #ef4444;"></i> غير مكتمل'}</span>
           </div>
         </div>
       `;
@@ -2407,7 +2298,7 @@
         const m = input.match(p);
         if (m) return m[1];
       }
-      return input;
+      return "";
     }
 
     // ── Google Drive Video Redirection & Inline AI Quiz Workflow ────────────────
@@ -3595,18 +3486,6 @@
       setDisplay("exam-viewport", "none");
       setDisplay("promo-pending-viewport", "none");
       setDisplay("certificate-viewport", "none");
-      setDisplay("reports-viewport", "block");
-      
-      // Fill auto-filled header info in the PDF form
-      const nameEl = document.getElementById("report-header-name"); const emailEl = document.getElementById("report-header-email"); const levelEl = document.getElementById("report-header-level"); const dateEl = document.getElementById("report-header-date"); const branchEl = document.getElementById("report-header-branch");
-      if (nameEl) nameEl.textContent = traineeName;
-      if (emailEl) emailEl.textContent = traineeEmail;
-      if (levelEl) levelEl.textContent = traineeLevel;
-      if (dateEl) dateEl.textContent = new Date().toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' });
-      if (branchEl) branchEl.textContent = traineeBranch;
-      
-
-      loadTraineeReports();
     });
 
     // PROFILE WORKFLOW
@@ -3839,68 +3718,7 @@
       }
     });
 
-    document.getElementById("report-submit-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const confirmCheck = document.getElementById("report-confirm-check");
-      if (confirmCheck && !confirmCheck.checked) {
-        showToast("يرجى تأكيد صحة البيانات المدخلة أولاً.", "error");
-        return;
-      }
-      const title = document.getElementById("report-title").value.trim();
-      const content = document.getElementById("report-content").value.trim();
-      
-      // Collect activity table data
-      const activities = [];
-      for (let i = 1; i <= 3; i++) {
-        const dateEl = e.target.querySelector(`[name="act_date_${i}"]`);
-        const taskEl = e.target.querySelector(`[name="act_task_${i}"]`);
-        const noteEl = e.target.querySelector(`[name="act_note_${i}"]`);
-        if (taskEl && taskEl.value.trim()) {
-          activities.push({ date: dateEl ? dateEl.value : '', task: taskEl.value.trim(), note: noteEl ? noteEl.value.trim() : '' });
-        }
-      }
-      
-      // Collect self-evaluation
-      const evalFields = ['comm', 'acc', 'punct', 'team', 'init', 'pat'];
-      const evalLabels = ['التواصل', 'الدقة', 'الانضباط', 'التعاون', 'المبادرة', 'احترافية التعامل'];
-      const selfEval = {};
-      evalFields.forEach((f, idx) => {
-        const sel = e.target.querySelector(`[name="eval_${f}"]:checked`);
-        selfEval[evalLabels[idx]] = sel ? sel.value : '3';
-      });
-      
-      const fullContent = JSON.stringify({ summary: content, activities, selfEval });
-      
-      const btn = e.target.querySelector("button[type='submit']");
-      btn.disabled = true;
-      showToast("جاري إرسال التقرير التدريبي للمشرف الأكاديمي...", "info");
-
-      try {
-        const response = await apiRequest({
-          action: "submitTraineeReport",
-          email: traineeEmail,
-          password: traineePassword,
-          title: title,
-          content: fullContent,
-          attachment: reportFileBase64,
-          attachmentName: reportFileName
-        });
-
-        if (response.success) {
-          showToast("🎉 تم تقديم استمارتك بنجاح للمشرف الأكاديمي!", "success");
-          document.getElementById("report-submit-form").reset();
-          reportFileBase64 = "";
-          reportFileName = "";
-          loadTraineeReports();
-        } else {
-          showToast(response.message, "error");
-        }
-      } catch (err) {
-        showToast("حدث خطأ أثناء إرسال التقرير التدريبي.", "error");
-      } finally {
-        btn.disabled = false;
-      }
-    });
+    // Trainee Form logic has been removed.
 
     // ==========================================================================
     // OVERHAUL & GAMIFICATION HANDLERS
@@ -3946,7 +3764,7 @@
             if (res.newPoints !== undefined) {
               document.getElementById("trainee-points-display").textContent = res.newPoints;
             }
-            loadTraineeReports();
+            
           } else {
             showToast(res.message || "فشل تسجيل الحالة.", "error");
           }
