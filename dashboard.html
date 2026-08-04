@@ -1364,6 +1364,11 @@
     const traineeEmail = sessionStorage.getItem("trainee_email");
     const traineePassword = sessionStorage.getItem("trainee_password");
     const traineeName = sessionStorage.getItem("trainee_name");
+
+    if (!traineeLoggedIn || !traineeEmail) {
+      window.location.href = "index.html";
+      return;
+    }
     const traineeBranch = sessionStorage.getItem("trainee_branch");
     const loginTime = sessionStorage.getItem("login_timestamp");
 
@@ -1771,18 +1776,18 @@
       if (!treeContainer) return;
       treeContainer.innerHTML = '';
 
-      if (!curriculumData || curriculumData.length === 0) {
+      if (!allCurriculumData || allCurriculumData.length === 0) {
         treeContainer.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px;">لا توجد ملفات أو كتب دراسية مضافة لهذا المستوى بعد.</div>`;
         return;
       }
 
       // Build hierarchy, excluding video nodes from tree list
-      const roots = curriculumData.filter(n => !n.parent_id && n.type !== 'video');
+      const roots = allCurriculumData.filter(n => !n.parent_id && n.type !== 'video');
       roots.sort((a,b) => (parseInt(a.sort_order) || 0) - (parseInt(b.sort_order) || 0));
 
       if (roots.length === 0) {
         // Fallback for flat lists
-        const cleanFlat = curriculumData.filter(n => n.type !== 'video');
+        const cleanFlat = allCurriculumData.filter(n => n.type !== 'video');
         cleanFlat.forEach((item, idx) => {
           treeContainer.appendChild(createAccordionNodeUI(item, idx));
         });
@@ -1819,7 +1824,7 @@
         const bodyInner = document.createElement("div");
         bodyInner.style.cssText = "padding: 10px 15px 5px;";
 
-        const children = curriculumData.filter(n => String(n.parent_id) === String(node.id) && n.type !== 'video');
+        const children = allCurriculumData.filter(n => String(n.parent_id) === String(node.id) && n.type !== 'video');
         children.sort((a,b) => (parseInt(a.sort_order) || 0) - (parseInt(b.sort_order) || 0));
 
         if (children.length === 0) {
@@ -2151,24 +2156,7 @@
       });
     }
 
-    function renderCurriculumAccordion(items) {
-      const container = document.getElementById("curriculum-accordion-section");
-      if (!container) return;
-      if (!items || items.length === 0) { container.innerHTML = ""; return; }
-      
-      let html = `<h3 style="font-size: 16px; font-weight: 800; color: var(--color-primary); margin-bottom: 12px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px;"><i class="fa-solid fa-book-open-reader"></i> محتوى المستوى التدريبي</h3><ul class="accordion-list">`;
-      items.forEach((item, idx) => {
-        html += `<li class="accordion-item" id="acc-item-${idx}"><div class="accordion-header" onclick="toggleAccordion(${idx})"><span><i class="fa-solid fa-layer-group" style="color: var(--color-primary); margin-left: 8px;"></i>${item.title}</span><i class="fa-solid fa-chevron-left acc-arrow"></i></div><div class="accordion-body"><div class="accordion-body-inner">${item.content_html || item.content || ''}</div></div></li>`;
-      });
-      html += "</ul>";
-      container.innerHTML = html;
-    }
 
-    function toggleAccordion(idx) {
-      const item = document.getElementById("acc-item-" + idx);
-      if (!item) return;
-      item.classList.toggle("open");
-    }
 
     function getEmbedUrl(url) {
       if (!url) return "";
