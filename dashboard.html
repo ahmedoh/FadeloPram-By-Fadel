@@ -1532,11 +1532,7 @@
           renderMyCourses();
           renderCurriculumAccordion(response.curriculum || []);
           renderPlaylist();
-          try {
-            await 
-          } catch(e) {
-            console.warn('Reports load non-fatal error:', e);
-          }
+
           
           // Initialize gamification (points, streak, leaderboard)
           initGamification(response);
