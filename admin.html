@@ -822,7 +822,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=13.0"></script>
+  <script src="config.js?v=14.0"></script>
   <script>
     let adminUsername = "", adminPassword = "";
     let allTrainees = [], allAnnouncements = [], allCurrNodes = [];
@@ -945,8 +945,8 @@
         return `<tr><td>${i+1}</td><td><strong>${t.name||t.Name}</strong></td><td>${t.phone||t.Phone}<br><small style="color:var(--text-muted)">${t.email||t.Email||''}</small></td><td><span class="status-badge status-pending">${t.pharmacy_group||'آل مغاوري'}</span></td><td><span class="status-badge ${blocked?'status-blocked':'status-active'}">${blocked?'محظور ❌':'نشط 🟢'}</span></td><td><button class="btn btn-outline btn-sm" onclick="openSlider('${t.email||t.Email}','${t.phone||t.Phone}')"><i class="fa-solid fa-sliders"></i></button></td><td><button class="btn btn-outline btn-sm" onclick="toggleBlock('${t.phone||t.Phone}',${blocked})">${blocked?'إلغاء الحظر':'حظر'}</button></td></tr>`;
       }).join('');
     }
-    async function approve(ph){const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'accept'});if(r.success){alert('تم التفعيل! 🟢');loadAll();}}
-    async function reject(ph){const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'reject',rejectReason:'عدم استيفاء'});if(r.success){alert('تم الرفض.');loadAll();}}
+    async function approve(ph){const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'accept'});if(r.success){alert('تم تفعيل الحساب بنجاح! 🟢');loadAll();}else{alert(r.message||'حدث خطأ أثناء التفعيل');}}
+    async function reject(ph){if(!confirm('هل أنت متأكد من رفض هذا الطلب؟'))return;const r=await apiRequest({action:'adminApproveTrainee',adminPassword,phone:ph,actionState:'reject',rejectReason:'عدم استيفاء البيانات'});if(r.success){alert('تم رفض الطلب.');loadAll();}else{alert(r.message||'حدث خطأ أثناء الرفض');}}
     async function toggleBlock(ph,b){const r=await apiRequest({action:'adminToggleBlockTrainee',adminPassword,phone:ph,blockState:!b});if(r.success){alert(r.message||'تم.');loadAll();}}
 
     /* ===== RENDER PROMOTIONS ===== */

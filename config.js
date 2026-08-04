@@ -1276,6 +1276,28 @@ async function handleDemoRequest(params) {
     }
     return { success: false, message: "لم يتم العثور على المتدرب." };
 
+  } else if (action === "adminApproveTrainee" || action === "adminApproveTraineeAccount") {
+    if (!await verifyLocalAdmin(params.adminPassword)) {
+      return { success: false, message: "غير مصرح بالعملية." };
+    }
+    const trainees = getTable("Trainees");
+    const phone = String(params.phone).trim();
+    const tIndex = trainees.findIndex(x => String(x.Phone).trim() === phone || String(x.Email).trim().toLowerCase() === phone.toLowerCase());
+    if (tIndex !== -1) {
+      if (params.actionState === "accept" || params.actionState === "approve") {
+        trainees[tIndex].Status = "accepted";
+        if (params.currentLevel) trainees[tIndex].CurrentLevel = params.currentLevel;
+        saveTable("Trainees", trainees);
+        return { success: true, message: "تم تفعيل حساب المتدرب بنجاح! 🟢" };
+      } else if (params.actionState === "reject") {
+        trainees[tIndex].Status = "rejected";
+        trainees[tIndex].RejectReason = params.rejectReason || "عدم استيفاء البيانات";
+        saveTable("Trainees", trainees);
+        return { success: true, message: "تم رفض طلب المتدرب." };
+      }
+    }
+    return { success: false, message: "لم يتم العثور على المتدرب." };
+
   } else if (action === "adminToggleBlockTrainee") {
     if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح بالعملية." };
@@ -2573,7 +2595,7 @@ async function handleSupabaseRequest(params) {
         }))
       };
       
-    } else if (action === "adminAction") {
+    } else if (action === "adminAction" || action === "adminApproveTrainee" || action === "adminApproveTraineeAccount") {
       if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
         return { success: false, message: "غير مصرح بالعملية." };
       }
