@@ -181,6 +181,110 @@ const verifyLocalAdminGlobal = async (params, optPass) => {
   return admins.some(x => String(x.Username).trim().toLowerCase() === user && String(x.Password).trim().toLowerCase() === pass);
 };
 
+// Automated WhatsApp Notifications Helper
+async function sendWhatsAppDirectNotification(targetPhone, msgText) {
+  if (!targetPhone || !msgText) return false;
+  let formattedPhone = String(targetPhone).replace(/[^0-9]/g, "");
+  if (formattedPhone.startsWith("0")) formattedPhone = "2" + formattedPhone;
+  if (!formattedPhone.startsWith("20") && formattedPhone.length === 10) formattedPhone = "20" + formattedPhone;
+
+  try {
+    // Attempt local whatsapp gateway server if running
+    try {
+      fetch(`http://localhost:3001/send-message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: formattedPhone, message: msgText })
+      }).catch(e => {});
+    } catch(e) {}
+
+    const apiKey = localStorage.getItem("maghawry_whatsapp_key") || DEFAULT_WHATSAPP_KEY;
+    const instanceId = localStorage.getItem("maghawry_whatsapp_instance") || DEFAULT_WHATSAPP_INSTANCE;
+    
+    if (apiKey && instanceId) {
+      const res = await fetch(`https://api.ultramsg.com/${instanceId}/messages/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          token: apiKey,
+          to: `+${formattedPhone}`,
+          body: msgText
+        })
+      });
+      const data = await res.json();
+      return (data.sent === "true" || data.id);
+    }
+  } catch (err) {
+    console.error("WhatsApp notification error:", err);
+  }
+  return false;
+}
+
+function formatTraineeWhatsAppMsg(trainee, isAccept, rejectReason = "") {
+  const name = trainee.name || trainee.Name || "دكتور متدرب";
+  const phone = trainee.phone || trainee.Phone || "";
+  const email = trainee.email || trainee.Email || "غير محدد";
+  const branch = trainee.training_branch || trainee.TrainingBranch || "غير محدد";
+  const group = trainee.pharmacy_group || trainee.PharmacyGroup || "صيدليات آل مغاوري";
+  const rawCourses = trainee.selected_courses || trainee.SelectedCourses || "[]";
+  
+  let coursesList = [];
+  try {
+    coursesList = typeof rawCourses === 'string' ? JSON.parse(rawCourses) : (rawCourses || []);
+  } catch(e) {}
+  const coursesStr = Array.isArray(coursesList) && coursesList.length > 0 ? coursesList.join('، ') : 'التدريب مع فاضل';
+  const appUrl = "https://ahmedoh.github.io/FadeloPram-By-Fadel/";
+
+  if (isAccept) {
+    const mainMsg = `🎉 *تهانينا د. ${name}!*
+
+تمت الموافقة على طلب انضمامك لأكاديمية *Fadelopram Rx Academy* وتفعيل حسابك بنجاح! 🎓✨
+
+📋 *بيانات الحساب المعتمد:*
+👤 *الاسم:* ${name}
+🏢 *الجهة والفرع:* ${group} - ${branch}
+📚 *المسارات الكورسات المعتمدة:* ${coursesStr}
+
+🌐 *رابط دخول المنصة لبدء التدريب:*
+${appUrl}
+
+استعن بالله ولا تعجز 🚀
+Fadelopram Rx Academy`;
+
+    const credsMsg = `🔑 *بيانات تسجيل الدخول للنسخ السريع:*
+
+📱 *اسم الدخول (رقم الهاتف):*
+\`\`\`
+${phone}
+\`\`\`
+
+✉️ *البريد الإلكتروني:*
+\`\`\`
+${email}
+\`\`\`
+
+🔒 *كلمة المرور:* (كلمة المرور التي قمت بكتابتها بنفسك أثناء التسجيل)`;
+
+    return [mainMsg, credsMsg];
+  } else {
+    return [`❌ *إشعار من أكاديمية Fadelopram Rx*
+
+عذراً د. ${name}،
+نأسف لإبلاغك بأنه تم التحديث بشأن طلب انضمامك للأكاديمية.
+
+📋 *بيانات الطلب:*
+👤 *الاسم:* ${name}
+📱 *رقم الهاتف:* \`${phone}\`
+✉️ *البريد الإلكتروني:* \`${email}\`
+⚠️ *سبب عدم القبول:* ${rejectReason || 'عدم استيفاء البيانات'}
+
+📞 للمزيد من الاستفسارات، يمكنك التواصل مع الدعم الفني:
+01107118948
+
+نتمنى لك كل التوفيق 🌸`];
+  }
+}
+
 /**
  * LocalStorage DEMO Database implementation
  */
@@ -1284,16 +1388,42 @@ async function handleDemoRequest(params) {
     const phone = String(params.phone).trim();
     const tIndex = trainees.findIndex(x => String(x.Phone).trim() === phone || String(x.Email).trim().toLowerCase() === phone.toLowerCase());
     if (tIndex !== -1) {
+      const traineeObj = trainees[tIndex];
+      const targetPhone = traineeObj.WhatsApp || traineeObj.whatsApp || traineeObj.Phone || traineeObj.phone;
+
       if (params.actionState === "accept" || params.actionState === "approve") {
         trainees[tIndex].Status = "accepted";
         if (params.currentLevel) trainees[tIndex].CurrentLevel = params.currentLevel;
         saveTable("Trainees", trainees);
-        return { success: true, message: "تم تفعيل حساب المتدرب بنجاح! 🟢" };
+
+        // Send WhatsApp Notification (Main Message + Copyable Monospace Credentials Message)
+        const msgs = formatTraineeWhatsAppMsg(traineeObj, true);
+        if (Array.isArray(msgs)) {
+          (async () => {
+            for (const m of msgs) {
+              await sendWhatsAppDirectNotification(targetPhone, m);
+            }
+          })();
+        }
+
+        return { success: true, message: "تم تفعيل حساب المتدرب بنجاح وإرسال كود/إشعار التفعيل وبيانات الدخول عبر الواتساب! 💬🟢" };
       } else if (params.actionState === "reject") {
+        const reason = params.rejectReason || "عدم استيفاء البيانات";
         trainees[tIndex].Status = "rejected";
-        trainees[tIndex].RejectReason = params.rejectReason || "عدم استيفاء البيانات";
+        trainees[tIndex].RejectReason = reason;
         saveTable("Trainees", trainees);
-        return { success: true, message: "تم رفض طلب المتدرب." };
+
+        // Send WhatsApp Rejection Notification
+        const msgs = formatTraineeWhatsAppMsg(traineeObj, false, reason);
+        if (Array.isArray(msgs)) {
+          (async () => {
+            for (const m of msgs) {
+              await sendWhatsAppDirectNotification(targetPhone, m);
+            }
+          })();
+        }
+
+        return { success: true, message: "تم رفض طلب المتدرب وإرسال إشعار الواتساب 💬" };
       }
     }
     return { success: false, message: "لم يتم العثور على المتدرب." };
@@ -2619,27 +2749,24 @@ async function handleSupabaseRequest(params) {
         // Fetch trainee details for automated notification
         const { data: traineeObj } = await supabaseClient
           .from('trainees')
-          .select('name, phone, whatsapp, pharmacy_group, email, telegram_chat_id, telegram_handle')
+          .select('*')
           .eq('phone', params.phone)
           .maybeSingle();
 
-        const traineeName = traineeObj ? traineeObj.name : "دكتور متدرب";
-        const traineePhone = traineeObj ? traineeObj.phone : params.phone;
-        const msgText = `🎉 *تهانينا د. ${traineeName}!*\n\n` +
-                        `تمت الموافقة على طلب انضمامك لأكاديمية @Fadelopram_bot وتفعيل حسابك بنجاح! 🎓\n\n` +
-                        `📱 *رقم الدخول (اسم الدخول):* \`${traineePhone}\` (يمكنك تسجيل الدخول برقم الهاتف أو البريد الإلكتروني)\n` +
-                        `🔑 *كلمة المرور:* (كلمة المرور التي قمت بكتابتها أثناء إنشاء الحساب)\n\n` +
-                        `🌐 *رابط دخول المنصة:* https://ahmedoh.github.io/PharmReady-By-Fadel/\n\n` +
-                        `استعن بالله ولا تعجز\n\n` +
-                        `Fadelopram\n` +
-                        `< By Fadel >`;
-
-        // 1. Send direct Telegram notification to trainee's personal Telegram account
-        if (traineeObj && traineeObj.telegram_chat_id) {
-          sendTelegramNotification(msgText, traineeObj.telegram_chat_id).catch(e => console.error(e));
+        if (traineeObj) {
+          const targetWhatsApp = traineeObj.whatsapp || traineeObj.phone;
+          const waMsgs = formatTraineeWhatsAppMsg(traineeObj, true);
+          if (Array.isArray(waMsgs)) {
+            (async () => {
+              for (const m of waMsgs) {
+                await sendWhatsAppDirectNotification(targetWhatsApp, m);
+              }
+            })();
+          }
         }
 
-        // 2. Send Telegram notification to Admin Chat ID (941183558)
+        const traineeName = traineeObj ? traineeObj.name : "دكتور متدرب";
+        const traineePhone = traineeObj ? traineeObj.phone : params.phone;
         const adminSummary = `⚡ *تم تفعيل حساب متدرب جديد!*\n\n` +
                              `👤 *الاسم:* ${traineeName}\n` +
                              `📞 *الهاتف:* ${traineePhone}\n` +
@@ -2649,30 +2776,37 @@ async function handleSupabaseRequest(params) {
 
         return { 
           success: true, 
-          message: "تم تفعيل حساب المتدرب بنجاح وإرسال إشعار التفعيل التلقائي على تليجرام!"
+          message: "تم تفعيل حساب المتدرب بنجاح وإرسال رسالة التفعيل للواتساب! 💬🟢"
         };
       } else if (params.actionState === "reject") {
+        const reason = params.rejectReason || "عدم استيفاء شروط الانضمام";
         const { error } = await supabaseClient
           .from('trainees')
-          .update({ status: "rejected", reject_reason: params.rejectReason || "عدم استيفاء شروط الانضمام" })
+          .update({ status: "rejected", reject_reason: reason })
           .eq('phone', params.phone);
         if (error) throw error;
 
         // Fetch trainee details for reject notification
         const { data: traineeObj } = await supabaseClient
           .from('trainees')
-          .select('name, telegram_chat_id, telegram_handle')
+          .select('*')
           .eq('phone', params.phone)
           .maybeSingle();
 
-        const notifText = `❌ *تحديث بشأن طلب الانضمام*\n\nعذراً د. ${traineeObj ? traineeObj.name : ''}، تعذر قبول طلب الانضمام في الوقت الحالي.\nالسبب: ${params.rejectReason || "عدم استيفاء شروط الانضمام"}.`;
-        
-        if (traineeObj && traineeObj.telegram_chat_id) {
-          sendTelegramNotification(notifText, traineeObj.telegram_chat_id).catch(e => console.error(e));
+        if (traineeObj) {
+          const targetWhatsApp = traineeObj.whatsapp || traineeObj.phone;
+          const waMsgs = formatTraineeWhatsAppMsg(traineeObj, false, reason);
+          if (Array.isArray(waMsgs)) {
+            (async () => {
+              for (const m of waMsgs) {
+                await sendWhatsAppDirectNotification(targetWhatsApp, m);
+              }
+            })();
+          }
         }
-        sendTelegramNotification(`⚠️ تم رفض طلب الانضمام لرقم ${params.phone}. السبب: ${params.rejectReason || 'غير محدد'}`, DEFAULT_TELEGRAM_ADMIN_CHAT_ID).catch(e => console.error(e));
+        sendTelegramNotification(`⚠️ تم رفض طلب الانضمام لرقم ${params.phone}. السبب: ${reason}`, DEFAULT_TELEGRAM_ADMIN_CHAT_ID).catch(e => console.error(e));
 
-        return { success: true, message: "تم رفض طلب المتدرب بنجاح." };
+        return { success: true, message: "تم رفض طلب المتدرب وإرسال إشعار الواتساب 💬" };
       }
       
     } else if (action === "adminEditTrainee") {
