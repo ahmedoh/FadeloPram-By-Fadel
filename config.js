@@ -250,6 +250,25 @@ async function handleDemoRequest(params) {
     saveTable("Progress", []);
     saveTable("Promotions", []);
     saveTable("Notifications", []);
+
+    // Seed default Curriculum hierarchy tree
+    saveTable("Curriculum", [
+      { id: "ent_maghawry", title: "صيدليات آل مغاوري", type: "entity", parent_id: null, sort_order: 1 },
+      
+      { id: "crs_fadel", title: "🎓 التدريب مع فاضل", type: "course", parent_id: "ent_maghawry", sort_order: 1 },
+      { id: "crs_cosmo", title: "💄 كورس الكوزماتكس مع د. نانسي", type: "course", parent_id: "ent_maghawry", sort_order: 2 },
+      { id: "crs_medical", title: "💊 كورس الميديكال مع د. عصام", type: "course", parent_id: "ent_maghawry", sort_order: 3 },
+      
+      { id: "lvl_passengers", title: "مرحلة المسافرين (Passengers)", type: "level", parent_id: "crs_fadel", level: "Passengers", sort_order: 1 },
+      { id: "lvl_starters", title: "مرحلة المبتدئين (Starters)", type: "level", parent_id: "crs_fadel", level: "Starters", sort_order: 2 },
+      { id: "lvl_movers", title: "مرحلة المتقدمين (Movers)", type: "level", parent_id: "crs_fadel", level: "Movers", sort_order: 3 },
+      
+      { id: "subj_ethics", title: "آداب المهنة والتأهيل العملي", type: "subject", parent_id: "lvl_passengers", level: "Passengers", sort_order: 1 },
+      
+      { id: "les_1", title: "آداب وأخلاقيات مهنة الصيدلة والتعامل مع الفريق", type: "video", parent_id: "subj_ethics", level: "Passengers", video_id: "d3_xQ4o6N38", video_url: "https://www.youtube.com/watch?v=d3_xQ4o6N38", sort_order: 1 },
+      { id: "les_2", title: "مقدمة التدريب العملي في صيدليات آل مغاوري", type: "video", parent_id: "subj_ethics", level: "Passengers", video_id: "w3wHwT8w-8s", video_url: "https://www.youtube.com/watch?v=w3wHwT8w-8s", sort_order: 2 }
+    ]);
+
     localStorage.setItem("maghawry_db_seeded", "true");
   }
 
@@ -565,7 +584,9 @@ async function handleDemoRequest(params) {
         CertificateUrl: x.CertificateUrl || ""
       })),
       traineePoints: t ? (t.Points || 0) : 0,
-      traineeStreak: t ? (t.StreakWeeks || 0) : 0
+      traineeStreak: t ? (t.StreakWeeks || 0) : 0,
+      selectedCourses: t ? (t.selected_courses || t.SelectedCourses || '[]') : '[]',
+      pharmacyGroup: t ? (t.pharmacy_group || t.PharmacyGroup || '') : ''
     };
     
   } else if (action === "updateProgress") {
@@ -1429,21 +1450,15 @@ async function handleDemoRequest(params) {
     saveTable("LevelsContent", list);
     return { success: true, message: "تم حفظ المحتوى بنجاح." };
 
-  } else if (action === "adminGetCurriculumTree") {
+  } else if (action === "adminGetCurriculumTree" || action === "adminGetCurriculum") {
     if (!await verifyLocalAdmin(params.adminPassword)) {
       return { success: false, message: "غير مصرح." };
     }
     const list = getTable("Curriculum") || [];
-    const filtered = list.filter(x => String(x.level || x.Level || "Passengers").trim() === String(params.level).trim());
-    return { success: true, nodes: filtered };
-
-  } else if (action === "adminGetCurriculum") {
-    // Keep backward compat alias
-    if (!await verifyLocalAdmin(params.adminPassword)) {
-      return { success: false, message: "غير مصرح." };
+    let filtered = list;
+    if (params.level && params.level !== "all") {
+      filtered = list.filter(x => String(x.level || x.Level || "").trim() === String(params.level).trim());
     }
-    const list = getTable("Curriculum") || [];
-    const filtered = list.filter(x => String(x.level || x.Level || "Passengers").trim() === String(params.level).trim());
     return { success: true, curriculum: filtered, nodes: filtered };
 
   } else if (action === "adminGetCurriculumItem") {
@@ -1991,7 +2006,9 @@ async function handleSupabaseRequest(params) {
         lockoutUntil: lockoutUntil,
         completedPromotions: completedPromotions,
         traineePoints: t ? (t.points || 0) : 0,
-        traineeStreak: t ? (t.streak_weeks || 0) : 0
+        traineeStreak: t ? (t.streak_weeks || 0) : 0,
+        selectedCourses: t ? (t.selected_courses || '[]') : '[]',
+        pharmacyGroup: t ? (t.pharmacy_group || '') : ''
       };
 
     } else if (action === "checkStatus") {
@@ -3477,28 +3494,15 @@ async function handleSupabaseRequest(params) {
       }
       return { success: true, message: "تم حفظ المحتوى بنجاح." };
 
-    } else if (action === "adminGetCurriculumTree") {
+    } else if (action === "adminGetCurriculumTree" || action === "adminGetCurriculum") {
       if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
         return { success: false, message: "غير مصرح." };
       }
-      const { data, error } = await supabaseClient
-        .from('curriculum')
-        .select('*')
-        .eq('level', params.level)
-        .order('sort_order', { ascending: true });
-      if (error) throw error;
-      return { success: true, nodes: data };
-
-    } else if (action === "adminGetCurriculum") {
-      // Backward compat alias
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
+      let query = supabaseClient.from('curriculum').select('*').order('sort_order', { ascending: true });
+      if (params.level && params.level !== "all") {
+        query = query.eq('level', params.level);
       }
-      const { data, error } = await supabaseClient
-        .from('curriculum')
-        .select('*')
-        .eq('level', params.level)
-        .order('sort_order', { ascending: true });
+      const { data, error } = await query;
       if (error) throw error;
       return { success: true, curriculum: data, nodes: data };
 
