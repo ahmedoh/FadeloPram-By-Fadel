@@ -1373,8 +1373,9 @@
     const now = Date.now();
     const isExpired = loginTime && (now - parseInt(loginTime) > maxSessionDuration);
 
-    if (!traineeLoggedIn || !traineeEmail || !traineePassword || isExpired) {
+    if (!traineeLoggedIn || !traineeEmail || isExpired) {
       sessionStorage.clear();
+      localStorage.removeItem("trainee_logged_in");
       window.location.href = "index.html";
     }
 

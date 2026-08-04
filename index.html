@@ -969,16 +969,22 @@
     };
 
     if (sessionStorage.getItem("trainee_logged_in") === "true" || localStorage.getItem("trainee_logged_in") === "true") {
-      if (localStorage.getItem("trainee_logged_in") === "true") {
-        sessionStorage.setItem("trainee_logged_in", "true");
-        sessionStorage.setItem("trainee_email", localStorage.getItem("trainee_email") || "");
-        sessionStorage.setItem("trainee_password", localStorage.getItem("trainee_password") || "");
-        sessionStorage.setItem("trainee_name", localStorage.getItem("trainee_name") || "");
-        sessionStorage.setItem("trainee_branch", localStorage.getItem("trainee_branch") || "");
-        sessionStorage.setItem("trainee_level", localStorage.getItem("trainee_level") || "");
-        sessionStorage.setItem("login_timestamp", localStorage.getItem("login_timestamp") || Date.now().toString());
+      const checkEmail = sessionStorage.getItem("trainee_email") || localStorage.getItem("trainee_email");
+      if (checkEmail) {
+        if (localStorage.getItem("trainee_logged_in") === "true") {
+          sessionStorage.setItem("trainee_logged_in", "true");
+          sessionStorage.setItem("trainee_email", localStorage.getItem("trainee_email") || "");
+          sessionStorage.setItem("trainee_password", localStorage.getItem("trainee_password") || "");
+          sessionStorage.setItem("trainee_name", localStorage.getItem("trainee_name") || "");
+          sessionStorage.setItem("trainee_branch", localStorage.getItem("trainee_branch") || "");
+          sessionStorage.setItem("trainee_level", localStorage.getItem("trainee_level") || "");
+          sessionStorage.setItem("login_timestamp", localStorage.getItem("login_timestamp") || Date.now().toString());
+        }
+        window.location.href = "dashboard.html";
+      } else {
+        sessionStorage.clear();
+        localStorage.removeItem("trainee_logged_in");
       }
-      window.location.href = "dashboard.html";
     }
 
     let currentLang = localStorage.getItem("app_lang") || "ar";
