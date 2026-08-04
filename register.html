@@ -191,28 +191,22 @@
           <div class="wizard-step" id="step-2">
             <h3 class="card-title" style="margin-bottom: 15px;"><i class="fa-solid fa-store"></i> <span data-i18n="step2_title">جهة التدريب والصيدلية والجامعة</span></h3>
 
-            <!-- Searchable Pharmacy Group Selector -->
-            <div class="form-group" style="margin-bottom: 18px; position: relative;">
-              <label for="pharmacy-search-input" style="font-weight: bold; color: var(--color-primary); display: flex; align-items: center; gap: 6px;">
-                <i class="fa-solid fa-magnifying-glass"></i> ابحث عن جهة / سلسلة الصيدليات التابع لها <span class="required">*</span>
+            <!-- Pharmacy / Entity Dropdown Selector -->
+            <div class="form-group" style="margin-bottom: 18px;">
+              <label for="pharmacy-search-input" style="font-weight: bold; color: var(--color-primary); display: flex; align-items: center; gap: 6px; font-size: 14px;">
+                <i class="fa-solid fa-store"></i> اختر جهة / سلسلة الصيدليات التابع لها <span class="required">*</span>
               </label>
-              <div style="position: relative;">
-                <input type="text" id="pharmacy-search-input" required placeholder="🔍 اكتب لبحث أو اختيار الصيدلية (مثال: صيدليات آل مغاوري...)" autocomplete="off" style="width: 100%; padding: 12px 40px 12px 12px; font-weight: bold; border: 2px solid var(--color-primary);">
-                <i class="fa-solid fa-prescription-bottle-medical" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--color-primary); font-size: 18px;"></i>
-              </div>
-
-              <!-- Search dropdown options list -->
-              <div id="pharmacy-dropdown-menu" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-secondary); border: 2px solid var(--color-primary); border-radius: 0 0 12px 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); z-index: 1000; max-height: 220px; overflow-y: auto;">
-                <div class="pharm-opt" data-value="صيدليات آل مغاوري" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color); font-weight: bold; color: var(--color-gold);"><i class="fa-solid fa-star"></i> 🏥 صيدليات آل مغاوري (الفرع الرئيسي)</div>
-                <div class="pharm-opt" data-value="صيدليات العزبي" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات العزبي</div>
-                <div class="pharm-opt" data-value="صيدليات 19701" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات 19701</div>
-                <div class="pharm-opt" data-value="صيدليات مصر" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات مصر</div>
-                <div class="pharm-opt" data-value="صيدليات الطارش" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات الطارش</div>
-                <div class="pharm-opt" data-value="صيدليات الإيمان" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات الإيمان</div>
-                <div class="pharm-opt" data-value="صيدليات الشفاء" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-store"></i> صيدليات الشفاء</div>
-                <div class="pharm-opt" data-value="مستشفى / صيدلية تدريب جامعي" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px dashed var(--border-color);"><i class="fa-solid fa-hospital"></i> مستشفى / صيدلية تدريب جامعي</div>
-                <div class="pharm-opt" data-value="صيدلية خاصة مستقلة / متدرب حر" style="padding: 10px 15px; cursor: pointer;"><i class="fa-solid fa-user-doctor"></i> صيدلية خاصة مستقلة / متدرب حر</div>
-              </div>
+              <select id="pharmacy-search-input" required style="width: 100%; padding: 12px; font-weight: bold; border: 2px solid var(--color-primary); border-radius: 10px; background: var(--bg-primary); color: var(--text-main); font-size: 14px;">
+                <option value="Fadelopram Rx Academy — صيدليات آل مغاوري" selected>🏥 Fadelopram Rx Academy — صيدليات آل مغاوري (الافتراضي)</option>
+                <option value="صيدليات العزبي">🏪 صيدليات العزبي</option>
+                <option value="صيدليات 19701">🏪 صيدليات 19701</option>
+                <option value="صيدليات مصر">🏪 صيدليات مصر</option>
+                <option value="صيدليات الطارش">🏪 صيدليات الطارش</option>
+                <option value="صيدليات الإيمان">🏪 صيدليات الإيمان</option>
+                <option value="صيدليات الشفاء">🏪 صيدليات الشفاء</option>
+                <option value="مستشفى / صيدلية تدريب جامعي">🏥 مستشفى / صيدلية تدريب جامعي</option>
+                <option value="صيدلية خاصة مستقلة / متدرب حر">🩺 صيدلية خاصة مستقلة / متدرب حر</option>
+              </select>
             </div>
 
             <!-- El-Maghawry Training Group Selector Box (Shows when El-Maghawry Pharmacies is selected) -->
@@ -315,7 +309,7 @@
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js?v=8.0"></script>
+  <script src="config.js?v=9.0"></script>
   <script>
     const langData = {
       ar: {
@@ -495,50 +489,22 @@
     const ageInput = document.getElementById("reg-age");
     const birthyearInput = document.getElementById("reg-birthyear");
 
-    // Searchable Pharmacy Group dropdown logic
+    // Pharmacy selection logic
     const pharmInput = document.getElementById("pharmacy-search-input");
-    const pharmMenu = document.getElementById("pharmacy-dropdown-menu");
-    const pharmOpts = document.querySelectorAll(".pharm-opt");
-
-    if (pharmInput && pharmMenu) {
-      pharmInput.addEventListener("focus", () => {
-        pharmMenu.style.display = "block";
-      });
+    if (pharmInput) {
       function checkMaghawrySelection() {
         const box = document.getElementById("maghawry-group-selector-box");
         if (!box) return;
         const val = (pharmInput.value || "").trim();
-        if (val.includes("آل مغاوري") || val.includes("مغاوري")) {
+        if (val.includes("آل مغاوري") || val.includes("مغاوري") || val.includes("Fadelopram")) {
           box.style.display = "block";
         } else {
           box.style.display = "none";
         }
       }
-      pharmInput.addEventListener("input", () => {
-        pharmMenu.style.display = "block";
-        const filter = pharmInput.value.trim().toLowerCase();
-        pharmOpts.forEach(opt => {
-          const val = opt.getAttribute("data-value").toLowerCase();
-          if (!filter || val.includes(filter)) {
-            opt.style.display = "block";
-          } else {
-            opt.style.display = "none";
-          }
-        });
-        checkMaghawrySelection();
-      });
-      pharmOpts.forEach(opt => {
-        opt.addEventListener("click", () => {
-          pharmInput.value = opt.getAttribute("data-value");
-          pharmMenu.style.display = "none";
-          checkMaghawrySelection();
-        });
-      });
-      document.addEventListener("click", (e) => {
-        if (!pharmInput.contains(e.target) && !pharmMenu.contains(e.target)) {
-          pharmMenu.style.display = "none";
-        }
-      });
+      pharmInput.addEventListener("change", checkMaghawrySelection);
+      pharmInput.addEventListener("input", checkMaghawrySelection);
+      checkMaghawrySelection();
     }
 
     // Helper function to extract and format clean Telegram handle from any URL or input
