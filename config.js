@@ -3685,14 +3685,15 @@ async function handleSupabaseRequest(params) {
         return { success: false, message: "غير مصرح." };
       }
       const insertPayload = {
-        level: params.level,
+        level: params.level || "Passengers",
         title: params.title || "",
         content_html: params.content_html || "",
         sort_order: parseInt(params.sort_order) || 1
       };
-      // parent_id and type are optional new columns — use try/catch for backward compat
       if (params.parent_id !== undefined) insertPayload.parent_id = params.parent_id || null;
       if (params.type !== undefined) insertPayload.type = params.type || "folder";
+      if (params.video_url !== undefined) insertPayload.video_url = params.video_url || "";
+      if (params.video_id !== undefined) insertPayload.video_id = params.video_id || "";
       const { data: ins, error } = await supabaseClient
         .from('curriculum')
         .insert([insertPayload])
@@ -3707,13 +3708,15 @@ async function handleSupabaseRequest(params) {
         return { success: false, message: "غير مصرح." };
       }
       const insertPayload = {
-        level: params.level,
-        title: params.title,
-        content_html: params.content_html,
+        level: params.level || "Passengers",
+        title: params.title || "",
+        content_html: params.content_html || "",
         sort_order: parseInt(params.sort_order) || 1
       };
       if (params.parent_id !== undefined) insertPayload.parent_id = params.parent_id || null;
       if (params.type !== undefined) insertPayload.type = params.type || "folder";
+      if (params.video_url !== undefined) insertPayload.video_url = params.video_url || "";
+      if (params.video_id !== undefined) insertPayload.video_id = params.video_id || "";
       const { error } = await supabaseClient.from('curriculum').insert([insertPayload]);
       if (error) throw error;
       return { success: true, message: "تم إضافة الموضوع بنجاح." };
@@ -3727,6 +3730,10 @@ async function handleSupabaseRequest(params) {
       if (params.content_html !== undefined) updatePayload.content_html = params.content_html;
       if (params.sort_order !== undefined) updatePayload.sort_order = parseInt(params.sort_order) || 1;
       if (params.type !== undefined) updatePayload.type = params.type;
+      if (params.video_url !== undefined) updatePayload.video_url = params.video_url;
+      if (params.video_id !== undefined) updatePayload.video_id = params.video_id;
+      if (params.parent_id !== undefined) updatePayload.parent_id = params.parent_id;
+      if (params.level !== undefined) updatePayload.level = params.level;
       const { error } = await supabaseClient
         .from('curriculum')
         .update(updatePayload)
@@ -3739,17 +3746,21 @@ async function handleSupabaseRequest(params) {
       if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
         return { success: false, message: "غير مصرح." };
       }
+      const updatePayload = {};
+      if (params.title !== undefined) updatePayload.title = params.title;
+      if (params.content_html !== undefined) updatePayload.content_html = params.content_html;
+      if (params.sort_order !== undefined) updatePayload.sort_order = parseInt(params.sort_order) || 1;
+      if (params.type !== undefined) updatePayload.type = params.type;
+      if (params.video_url !== undefined) updatePayload.video_url = params.video_url;
+      if (params.video_id !== undefined) updatePayload.video_id = params.video_id;
+      if (params.parent_id !== undefined) updatePayload.parent_id = params.parent_id;
+      if (params.level !== undefined) updatePayload.level = params.level;
       const { error } = await supabaseClient
         .from('curriculum')
-        .update({
-          level: params.level,
-          title: params.title,
-          content_html: params.content_html,
-          sort_order: parseInt(params.sort_order) || 1
-        })
+        .update(updatePayload)
         .eq('id', params.id);
       if (error) throw error;
-      return { success: true, message: "تم تحديث الموضوع بنجاح." };
+      return { success: true, message: "تم تحديث العنصر بنجاح." };
 
     } else if (action === "adminDeleteCurriculumNode") {
       if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
