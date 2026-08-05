@@ -968,24 +968,13 @@
       }
     };
 
-    if (sessionStorage.getItem("trainee_logged_in") === "true" || localStorage.getItem("trainee_logged_in") === "true") {
-      const checkEmail = sessionStorage.getItem("trainee_email") || localStorage.getItem("trainee_email");
-      if (checkEmail) {
-        if (localStorage.getItem("trainee_logged_in") === "true") {
-          sessionStorage.setItem("trainee_logged_in", "true");
-          sessionStorage.setItem("trainee_email", localStorage.getItem("trainee_email") || "");
-          sessionStorage.setItem("trainee_password", localStorage.getItem("trainee_password") || "");
-          sessionStorage.setItem("trainee_name", localStorage.getItem("trainee_name") || "");
-          sessionStorage.setItem("trainee_branch", localStorage.getItem("trainee_branch") || "");
-          sessionStorage.setItem("trainee_level", localStorage.getItem("trainee_level") || "");
-          sessionStorage.setItem("login_timestamp", localStorage.getItem("login_timestamp") || Date.now().toString());
-        }
-        window.location.href = "dashboard.html";
-      } else {
-        sessionStorage.clear();
-        localStorage.removeItem("trainee_logged_in");
-      }
-    }
+    // Auto-fill credentials if trainee was previously logged in
+    setTimeout(() => {
+      const savedEmail = localStorage.getItem("trainee_email");
+      const savedPassword = localStorage.getItem("trainee_password");
+      if (savedEmail && emailInput) emailInput.value = savedEmail;
+      if (savedPassword && passInput) passInput.value = savedPassword;
+    }, 100);
 
     let currentLang = localStorage.getItem("app_lang") || "ar";
     let currentTheme = localStorage.getItem("app_theme") || "sand"; // sand, green, dark
