@@ -729,30 +729,25 @@
       <form id="curr-form" class="modal-body">
         <input type="hidden" id="curr-id">
         <input type="hidden" id="curr-parent-id">
+        <input type="hidden" id="curr-level">
+        <input type="hidden" id="curr-video-id">
 
         <label>نوع العنصر</label>
         <select id="curr-type" onchange="toggleCurrFields()">
-          <option value="entity">🏢 مكان / جهة</option>
-          <option value="course">📚 كورس</option>
-          <option value="level">📊 مرحلة (Level)</option>
-          <option value="subject">📂 مادة / مجلد</option>
           <option value="video">🎬 فيديو / محاضرة</option>
+          <option value="subject">📂 مادة / مجلد</option>
+          <option value="course">📚 كورس</option>
+          <option value="level">📊 مرحلة</option>
+          <option value="entity">🏢 مكان / جهة</option>
           <option value="folder">📁 مجلد فرعي</option>
         </select>
 
         <label>العنوان *</label>
-        <input type="text" id="curr-title" required placeholder="مثال: صيدليات آل مغاوري">
+        <input type="text" id="curr-title" required placeholder="مثال: عنوان الفيديو أو الكورس">
 
-        <div id="curr-level-row">
-          <label>المرحلة (Level Key)</label>
-          <input type="text" id="curr-level" placeholder="Passengers / Starters / Movers">
-        </div>
-
-        <div id="curr-video-row" style="display:none;">
+        <div id="curr-video-row" style="display:block;">
           <label>رابط الفيديو</label>
           <input type="text" id="curr-video-url" placeholder="https://www.youtube.com/watch?v=...">
-          <label>Video ID</label>
-          <input type="text" id="curr-video-id" placeholder="d3_xQ4o6N38">
         </div>
 
         <label>الترتيب</label>
@@ -1321,8 +1316,10 @@
 
     function toggleCurrFields() {
       const type = document.getElementById('curr-type').value;
-      document.getElementById('curr-video-row').style.display = (type === 'video') ? 'block' : 'none';
-      document.getElementById('curr-level-row').style.display = (type === 'level' || type === 'video' || type === 'subject') ? 'block' : 'none';
+      const vRow = document.getElementById('curr-video-row');
+      if (vRow) vRow.style.display = (type === 'video') ? 'block' : 'none';
+      const lRow = document.getElementById('curr-level-row');
+      if (lRow) lRow.style.display = (type === 'level' || type === 'video' || type === 'subject') ? 'block' : 'none';
     }
 
     function editCurrNode(id) {
@@ -1330,11 +1327,11 @@
       if (!node) return;
       document.getElementById('curr-id').value = id;
       document.getElementById('curr-parent-id').value = node.parent_id || '';
-      document.getElementById('curr-type').value = node.type || 'folder';
+      document.getElementById('curr-type').value = node.type || 'video';
       document.getElementById('curr-title').value = node.title || node.Title || '';
-      document.getElementById('curr-level').value = node.level || node.Level || '';
-      document.getElementById('curr-video-url').value = node.video_url || '';
-      document.getElementById('curr-video-id').value = node.video_id || '';
+      if (document.getElementById('curr-level')) document.getElementById('curr-level').value = node.level || node.Level || '';
+      if (document.getElementById('curr-video-url')) document.getElementById('curr-video-url').value = node.video_url || '';
+      if (document.getElementById('curr-video-id')) document.getElementById('curr-video-id').value = node.video_id || '';
       document.getElementById('curr-sort').value = node.sort_order || 1;
       document.getElementById('curr-modal-title').innerHTML = `<i class="fa-solid fa-pen"></i> تعديل: ${node.title||''}`;
       toggleCurrFields();
@@ -1347,16 +1344,19 @@
       const parentId = document.getElementById('curr-parent-id').value || null;
       const type = document.getElementById('curr-type').value;
       const title = document.getElementById('curr-title').value.trim();
-      const level = document.getElementById('curr-level').value.trim();
-      const videoUrl = document.getElementById('curr-video-url').value.trim();
-      const videoId = document.getElementById('curr-video-id').value.trim();
+      const level = document.getElementById('curr-level') ? document.getElementById('curr-level').value.trim() : '';
+      const videoUrl = document.getElementById('curr-video-url') ? document.getElementById('curr-video-url').value.trim() : '';
+      let videoId = document.getElementById('curr-video-id') ? document.getElementById('curr-video-id').value.trim() : '';
+      if (videoUrl && !videoId && typeof extractYouTubeId === 'function') {
+        videoId = extractYouTubeId(videoUrl);
+      }
       const sortOrder = parseInt(document.getElementById('curr-sort').value) || 1;
 
       if (!title) { alert('يجب إدخال العنوان!'); return; }
 
       const payload = {
-        adminPassword, title, type, parent_id: parentId,
-        level: level || '', video_url: videoUrl, video_id: videoId, sort_order: sortOrder
+        adminUsername, adminPassword, title, type, parent_id: parentId,
+        level: level || '', video_url: videoUrl, video_id: videoId || videoUrl, sort_order: sortOrder
       };
 
       let r;
