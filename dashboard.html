@@ -3422,7 +3422,13 @@
     // Logout
     function logout() {
       sessionStorage.clear();
-      window.location.href = "index.html";
+      localStorage.removeItem("trainee_logged_in");
+      localStorage.removeItem("trainee_email");
+      localStorage.removeItem("trainee_password");
+      localStorage.removeItem("trainee_name");
+      localStorage.removeItem("trainee_branch");
+      localStorage.removeItem("trainee_level");
+      window.location.replace("index.html");
     }
     document.getElementById("btn-logout").addEventListener("click", logout);
 

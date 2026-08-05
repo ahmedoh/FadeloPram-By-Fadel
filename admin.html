@@ -1314,6 +1314,19 @@
     }
     function closeCurrModal() { document.getElementById('curr-modal').classList.remove('active'); }
 
+    function extractYouTubeId(input) {
+      if (!input) return "";
+      const str = String(input).trim();
+      if (/^[\w-]{11}$/.test(str)) return str;
+      const vMatch = str.match(/[?&]v=([\w-]{11})/);
+      if (vMatch) return vMatch[1];
+      const pathMatch = str.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|shorts\/|live\/|watch\?v=))([\w-]{11})/);
+      if (pathMatch) return pathMatch[1];
+      const fallback = str.match(/(?:[\/=]|^)([\w-]{11})(?:[?&#]|$)/);
+      if (fallback && fallback[1] !== 'watch' && fallback[1] !== 'embed') return fallback[1];
+      return "";
+    }
+
     function toggleCurrFields() {
       const type = document.getElementById('curr-type').value;
       const vRow = document.getElementById('curr-video-row');
@@ -1330,7 +1343,7 @@
       document.getElementById('curr-type').value = node.type || 'video';
       document.getElementById('curr-title').value = node.title || node.Title || '';
       if (document.getElementById('curr-level')) document.getElementById('curr-level').value = node.level || node.Level || '';
-      if (document.getElementById('curr-video-url')) document.getElementById('curr-video-url').value = node.video_url || '';
+      if (document.getElementById('curr-video-url')) document.getElementById('curr-video-url').value = node.video_url || node.content_html || '';
       if (document.getElementById('curr-video-id')) document.getElementById('curr-video-id').value = node.video_id || '';
       document.getElementById('curr-sort').value = node.sort_order || 1;
       document.getElementById('curr-modal-title').innerHTML = `<i class="fa-solid fa-pen"></i> تعديل: ${node.title||''}`;
