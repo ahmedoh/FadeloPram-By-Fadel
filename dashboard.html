@@ -460,7 +460,7 @@
 
         <!-- Dashboard Navigation Menu -->
         <div style="margin-top: 5px; display: flex; flex-direction: column; gap: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
-          <button class="btn btn-primary" id="btn-sidebar-lectures" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
+          <button class="btn btn-primary" id="btn-sidebar-lectures" onclick="resetViewport()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
             <i class="fa-solid fa-graduation-cap"></i> المحاضرات التعليمية
           </button>
           
@@ -476,7 +476,7 @@
           <button class="btn btn-secondary" id="btn-sidebar-request-group" onclick="openRequestGroupModal()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px; border: 1px dashed var(--color-gold); background: rgba(251,191,36,0.03); color: var(--color-gold);">
             <i class="fa-solid fa-layer-group"></i> طلب انضمام لجروب آخر
           </button>
-          <button class="btn btn-secondary" id="btn-sidebar-profile" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
+          <button class="btn btn-secondary" id="btn-sidebar-profile" onclick="openProfileModal()" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px;">
             <i class="fa-solid fa-user-gear"></i> ملفي الشخصي
           </button>
           <button class="btn btn-secondary" id="btn-sidebar-guide" onclick="showAcademicGuideModal(true)" style="width: 100%; text-align: start; gap: 10px; cursor: pointer; display: flex; align-items: center; justify-content: flex-start; padding: 10px 14px; font-size: 13px; border: 1px dashed var(--color-gold); background: rgba(251,191,36,0.02); color: var(--color-gold);">
@@ -623,25 +623,7 @@
             " allowfullscreen></iframe>
           </div>
 
-          <div style="text-align: center; margin-bottom: 20px;">
-            <button id="btn-open-drive-lecture" onclick="openDriveLecture()" class="btn btn-secondary" style="
-              font-size: 13px;
-              padding: 8px 24px;
-              border-radius: 20px;
-              cursor: pointer;
-              display: inline-flex;
-              align-items: center;
-              gap: 8px;
-              font-weight: bold;
-              box-shadow: 0 4px 12px rgba(var(--color-primary-rgb), 0.15);
-              background: rgba(var(--color-primary-rgb), 0.08);
-              color: var(--color-primary);
-              border: 1px solid rgba(var(--color-primary-rgb), 0.2);
-            ">
-              <i class="fa-solid fa-up-right-from-square"></i>
-              فتح المحاضرة في نافذة خارجية ↗
-            </button>
-          </div>
+
 
 
           <!-- Inline AI Quiz Section right in the page! -->
@@ -2177,9 +2159,10 @@
 
     function getEmbedUrl(url) {
       if (!url) return "";
-      // Check if it is a Google Drive link
-      if (url.includes("drive.google.com")) {
-        let embedUrl = url;
+      const str = String(url).trim();
+
+      if (str.includes("drive.google.com")) {
+        let embedUrl = str;
         if (embedUrl.includes("/view")) {
           embedUrl = embedUrl.replace("/view", "/preview");
         } else if (embedUrl.includes("/edit")) {
@@ -2189,15 +2172,18 @@
         }
         return embedUrl;
       }
-      
-      // Check if it is a YouTube link/ID
-      const ytId = extractYouTubeId(url);
+
+      const ytId = extractYouTubeId(str);
       if (ytId) {
-        return `https://www.youtube-nocookie.com/embed/${ytId}?rel=0&modestbranding=1`;
+        return `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0&modestbranding=1&enablejsapi=1`;
       }
-      
-      // Fallback
-      return url;
+
+      const vimeoMatch = str.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+      if (vimeoMatch) {
+        return `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`;
+      }
+
+      return str;
     }
 
     function selectVideo(videoId, title) {
@@ -2295,14 +2281,19 @@
 
     function extractYouTubeId(input) {
       if (!input) return "";
-      const patterns = [
-        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/,
-        /^([\w-]{11})$/
-      ];
-      for (const p of patterns) {
-        const m = input.match(p);
-        if (m) return m[1];
-      }
+      const str = String(input).trim();
+
+      if (/^[\w-]{11}$/.test(str)) return str;
+
+      const vMatch = str.match(/[?&]v=([\w-]{11})/);
+      if (vMatch) return vMatch[1];
+
+      const pathMatch = str.match(/(?:youtu\.be\/|youtube(?:-nocookie)?\.com\/(?:embed\/|v\/|shorts\/|live\/|watch\?v=))([\w-]{11})/);
+      if (pathMatch) return pathMatch[1];
+
+      const fallback = str.match(/(?:[\/=]|^)([\w-]{11})(?:[?&#]|$)/);
+      if (fallback && fallback[1] !== 'watch' && fallback[1] !== 'embed') return fallback[1];
+
       return "";
     }
 
