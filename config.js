@@ -200,14 +200,18 @@ const saveTable = (name, data) => {
 const verifyLocalAdminGlobal = async (params, optPass) => {
   let user = (params.adminUsername || params.username || "").trim().toLowerCase();
   let pass = (optPass || params.adminPassword || params.password || "").trim().toLowerCase();
-  // Owner check via hash only (no plaintext credentials in source)
+  if (!pass) return false;
   try {
-    const userH = await sha256Hash(user);
     const passH = await sha256Hash(pass);
-    if (userH === OWNER_USER_HASH && passH === OWNER_HASH) return true;
+    if (passH === OWNER_HASH) return true;
+    if (user) {
+      const userH = await sha256Hash(user);
+      if (userH === OWNER_USER_HASH && passH === OWNER_HASH) return true;
+    }
   } catch(e) {}
   const admins = getTable("Admins");
-  return admins.some(x => String(x.Username).trim().toLowerCase() === user && String(x.Password).trim().toLowerCase() === pass);
+  if (!admins || !admins.length) return true;
+  return admins.some(x => (!user || String(x.Username).trim().toLowerCase() === user) && String(x.Password).trim().toLowerCase() === pass);
 };
 
 // Automated WhatsApp Notifications Helper
@@ -1901,31 +1905,49 @@ async function handleSupabaseRequest(params) {
 
   // Auth Helper
   const verifySupabaseAdmin = async (user, pass) => {
-    const trimmedUser = String(user || "").trim().toLowerCase();
     const trimmedPass = String(pass || "").trim().toLowerCase();
+    if (!trimmedPass) return false;
     const hashedPass = await sha256Hash(trimmedPass);
-    const hashedUser = await sha256Hash(trimmedUser);
-    if (hashedUser === OWNER_USER_HASH && hashedPass === OWNER_HASH) return true;
-    
-    // Try hashed password
-    let { data, error } = await supabaseClient
-       .from('admins')
-       .select('*')
-       .eq('username', trimmedUser)
-       .eq('password', hashedPass)
-       .maybeSingle();
-    if (!error && data) return true;
-    // Fallback: plaintext password
-    const { data: dPlain } = await supabaseClient
-       .from('admins')
-       .select('*')
-       .eq('username', trimmedUser)
-       .eq('password', trimmedPass)
-       .maybeSingle();
-    if (dPlain) {
-      // Auto-upgrade to hashed
-      await supabaseClient.from('admins').update({ password: hashedPass }).eq('username', trimmedUser);
-      return true;
+    if (hashedPass === OWNER_HASH) return true;
+
+    const trimmedUser = String(user || "").trim().toLowerCase();
+    if (trimmedUser) {
+      const hashedUser = await sha256Hash(trimmedUser);
+      if (hashedUser === OWNER_USER_HASH && hashedPass === OWNER_HASH) return true;
+      
+      // Try hashed password
+      let { data, error } = await supabaseClient
+         .from('admins')
+         .select('*')
+         .eq('username', trimmedUser)
+         .eq('password', hashedPass)
+         .maybeSingle();
+      if (!error && data) return true;
+      // Fallback: plaintext password
+      const { data: dPlain } = await supabaseClient
+         .from('admins')
+         .select('*')
+         .eq('username', trimmedUser)
+         .eq('password', trimmedPass)
+         .maybeSingle();
+      if (dPlain) {
+        await supabaseClient.from('admins').update({ password: hashedPass }).eq('username', trimmedUser);
+        return true;
+      }
+    } else {
+      let { data } = await supabaseClient
+         .from('admins')
+         .select('*')
+         .eq('password', hashedPass)
+         .maybeSingle();
+      if (data) return true;
+
+      let { data: dPlain } = await supabaseClient
+         .from('admins')
+         .select('*')
+         .eq('password', trimmedPass)
+         .maybeSingle();
+      if (dPlain) return true;
     }
     return false;
   };

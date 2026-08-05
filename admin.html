@@ -912,11 +912,11 @@
     /* ===== PARALLEL DATA LOADING FOR ALL PANELS ===== */
     async function loadAll() {
       const [traineesRes, annRes, currRes, promoRes, qRes] = await Promise.all([
-        apiRequest({ action:'adminGetTrainees', adminPassword }),
+        apiRequest({ action:'adminGetTrainees', adminUsername, adminPassword }),
         apiRequest({ action:'adminGetAnnouncements' }),
-        apiRequest({ action:'adminGetCurriculumTree', adminPassword, level:'all' }),
-        apiRequest({ action:'adminGetPromotions', adminPassword }),
-        apiRequest({ action:'adminGetQuestions', adminPassword })
+        apiRequest({ action:'adminGetCurriculumTree', adminUsername, adminPassword, level:'all' }),
+        apiRequest({ action:'adminGetPromotions', adminUsername, adminPassword }),
+        apiRequest({ action:'adminGetQuestions', adminUsername, adminPassword })
       ]);
 
       if (traineesRes.success && traineesRes.trainees) { allTrainees=traineesRes.trainees; renderPending(); renderApproved(); }
