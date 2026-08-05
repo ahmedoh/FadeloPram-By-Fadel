@@ -1776,7 +1776,7 @@
       }
 
       // Build hierarchy, excluding video nodes from tree list
-      const roots = allCurriculumData.filter(n => !n.parent_id && n.type !== 'video');
+      const roots = allCurriculumData.filter(n => (!n.parent_id || n.parent_id === 'null' || n.parent_id === 'undefined') && n.type !== 'video');
       roots.sort((a,b) => (parseInt(a.sort_order) || 0) - (parseInt(b.sort_order) || 0));
 
       if (roots.length === 0) {
