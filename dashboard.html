@@ -3478,30 +3478,25 @@
       }
     });
 
-    // REPORTS WORKFLOW & TABS TOGGLING
+    // SIDEBAR TABS TOGGLING
     const btnLectures = document.getElementById("btn-sidebar-lectures");
-    const btnReports = document.getElementById("btn-sidebar-reports");
     const btnProfile = document.getElementById("btn-sidebar-profile");
 
-    btnLectures.addEventListener("click", () => {
-      btnLectures.className = "btn btn-primary";
-      btnReports.className = "btn btn-secondary";
-      btnProfile.className = "btn btn-secondary";
-      resetViewport();
-    });
+    if (btnLectures) {
+      btnLectures.addEventListener("click", () => {
+        if (btnLectures) btnLectures.className = "btn btn-primary";
+        if (btnProfile) btnProfile.className = "btn btn-secondary";
+        resetViewport();
+      });
+    }
 
-    btnReports.addEventListener("click", () => {
-      btnLectures.className = "btn btn-secondary";
-      btnReports.className = "btn btn-gold";
-      btnProfile.className = "btn btn-secondary";
-      
-      const setDisplay = (id, val) => { const el = document.getElementById(id); if (el) el.style.display = val; };
-      setDisplay("player-placeholder", "none");
-      setDisplay("player-viewport", "none");
-      setDisplay("exam-viewport", "none");
-      setDisplay("promo-pending-viewport", "none");
-      setDisplay("certificate-viewport", "none");
-    });
+    if (btnProfile) {
+      btnProfile.addEventListener("click", () => {
+        if (btnLectures) btnLectures.className = "btn btn-secondary";
+        if (btnProfile) btnProfile.className = "btn btn-primary";
+        openProfileModal();
+      });
+    }
 
     // PROFILE WORKFLOW
     const profileModal = document.getElementById("profile-modal");
@@ -3652,88 +3647,12 @@
     });
 
     async function loadTraineeReports() {
-      try {
-        const response = await apiRequest({
-          action: "getTraineeReports",
-          email: traineeEmail,
-          password: traineePassword
-        });
-        if (response.success) {
-          traineeReports = response.reports || [];
-          renderTraineeReportsList();
-          checkExamEligibility();
-        }
-      } catch (err) {
-        console.error(err);
-      }
+      // Trainee reports has been removed.
     }
 
     function renderTraineeReportsList() {
-      const tbody = document.getElementById("trainee-reports-table-body");
-      if (!tbody) return;
-      if (traineeReports.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted); font-size: 13px; padding: 20px;">لا توجد تقارير أو مهام مقدمة حالياً.</td></tr>`;
-        return;
-      }
-      tbody.innerHTML = "";
-      traineeReports.forEach(r => {
-        const tr = document.createElement("tr");
-        const dateStr = new Date(r.Timestamp).toLocaleDateString("ar-EG", {month: 'short', day: 'numeric'});
-        const levelText = langData[currentLang][`level_${r.Level}`] || r.Level;
-
-        let statusBadge = "";
-        if (r.Status === "pending") {
-          statusBadge = `<span class="status-badge status-pending">معلق</span>`;
-        } else if (r.Status === "accepted") {
-          statusBadge = `<span class="status-badge status-completed" style="background-color: var(--color-primary-glow); color: var(--color-primary);">مقبول</span>`;
-        } else if (r.Status === "needs_revision") {
-          statusBadge = `<span class="status-badge status-rejected" style="background-color: var(--color-gold-glow); color: var(--color-gold);">تعديل مطلوب</span>`;
-        } else {
-          statusBadge = `<span class="status-badge status-rejected">مرفوض</span>`;
-        }
-
-        let attachmentHTML = "";
-        if (r.Attachment && r.AttachmentName) {
-          attachmentHTML = `<br><a href="${r.Attachment}" download="${r.AttachmentName}" style="font-size: 11px; color: var(--color-primary); text-decoration: underline; font-weight: bold;"><i class="fa-solid fa-download"></i> تحميل المرفق</a>`;
-        }
-
-        tr.innerHTML = `
-          <td><strong>${r.Title}</strong>${attachmentHTML}</td>
-          <td><span class="status-badge level-badge-${r.Level}">${levelText}</span></td>
-          <td style="font-size: 11px; color: var(--text-muted);">${dateStr}</td>
-          <td>${statusBadge}</td>
-          <td style="font-size: 12px; color: var(--text-muted); font-weight: 600;">${r.AdminComment || "بانتظار المراجعة والتقييم..."}</td>
-        `;
-        tbody.appendChild(tr);
-      });
+      // Trainee reports has been removed.
     }
-
-    let reportFileBase64 = "";
-    let reportFileName = "";
-
-    document.getElementById("report-file-picker").addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        if (file.size > 2 * 1024 * 1024) {
-          showToast("عذراً، الحد الأقصى لحجم الملف هو 2 ميجابايت.", "error");
-          e.target.value = "";
-          reportFileBase64 = "";
-          reportFileName = "";
-          return;
-        }
-        reportFileName = file.name;
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          reportFileBase64 = event.target.result;
-        };
-        reader.readAsDataURL(file);
-      } else {
-        reportFileBase64 = "";
-        reportFileName = "";
-      }
-    });
-
-    // Trainee Form logic has been removed.
 
     // ==========================================================================
     // OVERHAUL & GAMIFICATION HANDLERS
