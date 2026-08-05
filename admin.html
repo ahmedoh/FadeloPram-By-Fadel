@@ -760,6 +760,60 @@
     </div>
   </div>
 
+  <!-- VIDEO QUESTIONS MODAL -->
+  <div class="modal-overlay" id="video-questions-modal">
+    <div class="modal-box" style="max-width: 750px; width: 100%;">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-brain"></i> أسئلة المحاضرة: <span id="vq-modal-video-title" style="color: var(--gold);">...</span></h3>
+        <button class="btn btn-outline btn-sm" onclick="closeVideoQuestionsModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 70vh; overflow-y: auto;">
+        <input type="hidden" id="vq-modal-video-id">
+        
+        <div id="vq-list-container" style="margin-bottom: 20px;">
+          <!-- Questions list rendered here -->
+        </div>
+
+        <div style="background: var(--input-bg); padding: 15px; border-radius: 10px; border: 1px dashed var(--card-border); margin-top: 15px;">
+          <h4 style="margin-top: 0; color: var(--gold); font-size: 14px; margin-bottom: 10px;"><i class="fa-solid fa-circle-plus"></i> إضافة سؤال جديد للمحاضرة</h4>
+          
+          <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">نص السؤال *</label>
+          <input type="text" id="new-vq-question" placeholder="مثال: ما هو دور العلاج الدوائي المساعد؟" style="width: 100%; margin-bottom: 12px; padding: 8px;">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+            <div>
+              <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;">الخيار الأول *</label>
+              <input type="text" id="new-vq-opt1" placeholder="الخيار الأول" style="width: 100%; padding: 8px;">
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;">الخيار الثاني *</label>
+              <input type="text" id="new-vq-opt2" placeholder="الخيار الثاني" style="width: 100%; padding: 8px;">
+            </div>
+            <div>
+              <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;">الخيار الثالث *</label>
+              <input type="text" id="new-vq-opt3" placeholder="الخيار الثالث" style="width: 100%; padding: 8px;">
+            </div>
+          </div>
+
+          <label style="font-size: 12px; font-weight: bold; display: block; margin-bottom: 4px;">الخيار الصحيح *</label>
+          <select id="new-vq-correct" style="width: 100%; margin-bottom: 12px; padding: 8px;">
+            <option value="0">الخيار الأول</option>
+            <option value="1">الخيار الثاني</option>
+            <option value="2">الخيار الثالث</option>
+          </select>
+
+          <button type="button" class="btn btn-outline" onclick="addNewVideoQuestionRow()" style="width: 100%; padding: 10px; font-weight: bold;">
+            <i class="fa-solid fa-plus"></i> أضف السؤال إلى القائمة المؤقتة
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-gold" onclick="saveVideoQuestions()" style="width: 100%; padding: 12px; font-weight: 900; margin-top: 20px;">
+          <i class="fa-solid fa-floppy-disk"></i> حفظ كافة الأسئلة على قاعدة البيانات 💾
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- QUESTION MODAL -->
   <div class="modal-overlay" id="question-modal">
     <div class="modal-box">
@@ -1269,6 +1323,8 @@
 
       if (type !== 'video') {
         html += `<button class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:11px;" onclick="openCurrModal('${id}','${childType}')" title="إضافة ${childLabel}"><i class="fa-solid fa-plus"></i></button>`;
+      } else {
+        html += `<button class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:11px;border-color:var(--gold);color:var(--gold);" onclick="openVideoQuestionsModal('${id}', '${title.replace(/'/g, "\\'")}')" title="أسئلة المحاضرة"><i class="fa-solid fa-brain"></i> الأسئلة</button>`;
       }
       html += `<button class="btn btn-outline btn-sm" style="padding:3px 8px;font-size:11px;" onclick="editCurrNode('${id}')" title="تعديل"><i class="fa-solid fa-pen"></i></button>`;
       html += `<button class="btn btn-danger-outline btn-sm" style="padding:3px 8px;font-size:11px;" onclick="deleteCurrNode('${id}')" title="حذف"><i class="fa-solid fa-trash"></i></button>`;
@@ -1411,6 +1467,155 @@
       await apiRequest({action:'saveSettings',adminPassword,settings:{whatsappInstance:waI,whatsappKey:waK,telegramToken:tgT,telegramChatId:tgC,customEntities:ent}});
       alert('تم حفظ الإعدادات! ⚡');
     });
+
+    /* ===== VIDEO QUESTIONS LOGIC ===== */
+    let currentVideoQuestionsList = [];
+
+    window.openVideoQuestionsModal = async function(videoId, videoTitle) {
+      document.getElementById('vq-modal-video-id').value = videoId;
+      document.getElementById('vq-modal-video-title').textContent = videoTitle;
+
+      // Clear inputs
+      document.getElementById('new-vq-question').value = '';
+      document.getElementById('new-vq-opt1').value = '';
+      document.getElementById('new-vq-opt2').value = '';
+      document.getElementById('new-vq-opt3').value = '';
+      document.getElementById('new-vq-correct').value = '0';
+
+      const container = document.getElementById('vq-list-container');
+      if (container) {
+        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;"><i class="fa-solid fa-spinner fa-spin"></i> جاري تحميل الأسئلة الحالية...</div>';
+      }
+
+      document.getElementById('video-questions-modal').classList.add('active');
+
+      try {
+        const res = await apiRequest({ action: 'adminGetVideoQuestions', adminPassword });
+        if (res.success && res.videoQuestions) {
+          // Support matching against node ID
+          currentVideoQuestionsList = res.videoQuestions.filter(x => String(x.video_id).trim().toLowerCase() === String(videoId).trim().toLowerCase());
+          renderVQList();
+        } else {
+          currentVideoQuestionsList = [];
+          renderVQList();
+        }
+      } catch (e) {
+        console.error(e);
+        currentVideoQuestionsList = [];
+        renderVQList();
+      }
+    };
+
+    window.closeVideoQuestionsModal = function() {
+      document.getElementById('video-questions-modal').classList.remove('active');
+    };
+
+    function renderVQList() {
+      const container = document.getElementById('vq-list-container');
+      if (!container) return;
+
+      if (currentVideoQuestionsList.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 15px; background: var(--input-bg); border-radius: 8px;">لا توجد أسئلة مضافة لهذه المحاضرة بعد.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+      currentVideoQuestionsList.forEach((q, idx) => {
+        const item = document.createElement('div');
+        item.style.cssText = 'background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 12px; margin-bottom: 10px; position: relative;';
+        
+        const qText = q.q || q.question_ar || '';
+        const opts = q.options || [q.option1_ar || '', q.option2_ar || '', q.option3_ar || ''];
+        const corr = q.correct !== undefined ? q.correct : q.correct_index;
+
+        let optionsHtml = '';
+        opts.forEach((o, oIdx) => {
+          const isCorrect = parseInt(corr) === oIdx;
+          optionsHtml += `
+            <div style="font-size: 11.5px; color: ${isCorrect ? '#10b981' : 'var(--text-muted)'}; font-weight: ${isCorrect ? 'bold' : 'normal'}; display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 12px;">${isCorrect ? '✅' : '•'}</span> ${o}
+            </div>
+          `;
+        });
+
+        item.innerHTML = `
+          <button onclick="removeVQRow(${idx})" style="position: absolute; top: 10px; left: 10px; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px;" title="إزالة السؤال"><i class="fa-solid fa-trash"></i></button>
+          <div style="font-size: 13px; font-weight: bold; margin-bottom: 8px; padding-left: 25px; color: var(--text-primary); text-align: right;">${idx + 1}. ${qText}</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; direction: rtl; text-align: right;">
+            ${optionsHtml}
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    window.addNewVideoQuestionRow = function() {
+      const qText = document.getElementById('new-vq-question').value.trim();
+      const o1 = document.getElementById('new-vq-opt1').value.trim();
+      const o2 = document.getElementById('new-vq-opt2').value.trim();
+      const o3 = document.getElementById('new-vq-opt3').value.trim();
+      const corr = parseInt(document.getElementById('new-vq-correct').value) || 0;
+
+      if (!qText || !o1 || !o2 || !o3) {
+        alert('يرجى ملء جميع الحقول المطلوبة للسؤال!');
+        return;
+      }
+
+      currentVideoQuestionsList.push({
+        q: qText,
+        options: [o1, o2, o3],
+        correct: corr
+      });
+
+      renderVQList();
+
+      // Reset input fields
+      document.getElementById('new-vq-question').value = '';
+      document.getElementById('new-vq-opt1').value = '';
+      document.getElementById('new-vq-opt2').value = '';
+      document.getElementById('new-vq-opt3').value = '';
+      document.getElementById('new-vq-correct').value = '0';
+    };
+
+    window.removeVQRow = function(idx) {
+      currentVideoQuestionsList.splice(idx, 1);
+      renderVQList();
+    };
+
+    window.saveVideoQuestions = async function() {
+      const videoId = document.getElementById('vq-modal-video-id').value;
+      if (!videoId) return;
+
+      const btn = document.querySelector('#video-questions-modal button.btn-gold');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الحفظ...';
+      }
+
+      try {
+        const res = await apiRequest({
+          action: 'adminSaveVideoQuestions',
+          adminPassword,
+          videoId: videoId,
+          questions: currentVideoQuestionsList
+        });
+
+        if (res.success) {
+          alert('تم حفظ أسئلة المحاضرة بنجاح!');
+          closeVideoQuestionsModal();
+        } else {
+          alert('فشل الحفظ: ' + res.message);
+        }
+      } catch (e) {
+        console.error(e);
+        alert('حدث خطأ أثناء الاتصال بالخادم.');
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> حفظ كافة الأسئلة على قاعدة البيانات 💾';
+        }
+      }
+    };
   </script>
 </body>
 </html>
