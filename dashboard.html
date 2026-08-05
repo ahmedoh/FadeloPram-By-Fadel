@@ -1944,6 +1944,29 @@
       }).join('');
     }
 
+    function getVideoWindowTier(createdAt) {
+      if (!createdAt) {
+        return { tier: 'gold', label: '🌟 نافذة التميز', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' };
+      }
+      try {
+        const created = new Date(createdAt).getTime();
+        if (isNaN(created)) {
+          return { tier: 'gold', label: '🌟 نافذة التميز', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' };
+        }
+        const now = Date.now();
+        const diffDays = (now - created) / (1000 * 60 * 60 * 24);
+        if (diffDays <= 7) {
+          return { tier: 'gold', label: '🌟 نافذة التميز', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' };
+        } else if (diffDays <= 14) {
+          return { tier: 'silver', label: '🥈 فرصة تدارك', color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.15)' };
+        } else {
+          return { tier: 'archive', label: '📖 أرشيف', color: '#64748b', bg: 'rgba(100, 116, 139, 0.15)' };
+        }
+      } catch (e) {
+        return { tier: 'gold', label: '🌟 نافذة التميز', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' };
+      }
+    }
+
     // ===== Sequential Unlocking System =====
     function isVideoUnlocked(videoId) {
       // Find the video in videosData
