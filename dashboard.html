@@ -1500,6 +1500,7 @@
             const topicVal = String(v.Topic || v.topic || 'عام');
             return {
               ...v,
+              original_id: String(v.id || ''),
               id: vidId,
               VideoId: vidId,
               url: urlVal,
@@ -2347,11 +2348,12 @@
 
       // Check if we have pre-saved questions in our loaded list set by the admin
       // Support matching by both the curriculum node ID (v.id) and the video URL / YouTube ID (v.VideoId)
-      const v = videosData.find(x => x.id === videoId || x.VideoId === videoId);
+      const v = videosData.find(x => x.id === videoId || x.VideoId === videoId || (x.original_id && x.original_id === videoId));
       const possibleIds = [];
       if (v) {
         if (v.id) possibleIds.push(String(v.id).trim().toLowerCase());
         if (v.VideoId) possibleIds.push(String(v.VideoId).trim().toLowerCase());
+        if (v.original_id) possibleIds.push(String(v.original_id).trim().toLowerCase());
       }
       possibleIds.push(String(videoId).trim().toLowerCase());
 
@@ -2360,6 +2362,7 @@
         const item = allCurriculumData.find(c =>
           c.type === 'video' &&
           (String(c.id).trim().toLowerCase() === String(videoId).trim().toLowerCase() ||
+           (c.video_id && String(c.video_id).trim().toLowerCase() === String(videoId).trim().toLowerCase()) ||
            String(c.title).trim().toLowerCase() === String(videoTitle).trim().toLowerCase())
         );
         if (item && item.id) {

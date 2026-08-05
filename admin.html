@@ -1490,7 +1490,7 @@
       document.getElementById('video-questions-modal').classList.add('active');
 
       try {
-        const res = await apiRequest({ action: 'adminGetVideoQuestions', adminPassword });
+        const res = await apiRequest({ action: 'adminGetVideoQuestions', adminUsername, adminPassword });
         if (res.success && res.videoQuestions) {
           // Support matching against node ID
           currentVideoQuestionsList = res.videoQuestions.filter(x => String(x.video_id).trim().toLowerCase() === String(videoId).trim().toLowerCase());
@@ -1595,6 +1595,7 @@
       try {
         const res = await apiRequest({
           action: 'adminSaveVideoQuestions',
+          adminUsername,
           adminPassword,
           videoId: videoId,
           questions: currentVideoQuestionsList
