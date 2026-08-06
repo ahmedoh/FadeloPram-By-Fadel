@@ -1,7 +1,67 @@
--- SQL Script to Set Up PharmReady Academy Tables in Supabase (Compatible Version)
--- Run this script in the Supabase SQL Editor (SQL Editor -> New Query)
+-- ==============================================================================
+-- Fadelopram Rx Academy — Complete & Unified SQL Database Schema & Migration Script
+-- Run this script in your Supabase SQL Editor (SQL Editor -> New Query -> Run)
+-- ==============================================================================
 
--- 1. Admins Table
+-- 1. Trainees Table
+CREATE TABLE IF NOT EXISTS trainees (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    age INTEGER DEFAULT 22,
+    phone TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    pharmacy_group TEXT DEFAULT 'صيدليات آل مغاوري',
+    training_branch TEXT DEFAULT '',
+    selected_courses TEXT DEFAULT '[]',
+    granted_courses TEXT DEFAULT '[]',
+    current_level TEXT DEFAULT 'Passengers',
+    status TEXT DEFAULT 'pending',
+    reject_reason TEXT DEFAULT '',
+    points INTEGER DEFAULT 0,
+    nickname TEXT DEFAULT '',
+    avatar TEXT DEFAULT '',
+    university TEXT DEFAULT '',
+    college TEXT DEFAULT '',
+    whatsapp TEXT DEFAULT '',
+    device_info TEXT DEFAULT '{}',
+    ip_address TEXT DEFAULT '',
+    telegram_chat_id TEXT DEFAULT '',
+    telegram_handle TEXT DEFAULT '',
+    last_activity_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- Safely add missing columns to trainees
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS training_branch TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS selected_courses TEXT DEFAULT '[]';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS granted_courses TEXT DEFAULT '[]';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS device_info TEXT DEFAULT '{}';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS ip_address TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'pending';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS reject_reason TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS points INTEGER DEFAULT 0;
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS nickname TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS avatar TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS university TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS college TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS whatsapp TEXT DEFAULT '';
+ALTER TABLE trainees ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now());
+
+-- 2. Announcements Table
+CREATE TABLE IF NOT EXISTS announcements (
+    id SERIAL PRIMARY KEY,
+    type TEXT DEFAULT 'general',
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    icon TEXT DEFAULT 'fa-bullhorn',
+    color TEXT DEFAULT 'gold',
+    link TEXT DEFAULT '',
+    active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 3. Admins Table
 CREATE TABLE IF NOT EXISTS admins (
     id SERIAL PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
@@ -10,68 +70,55 @@ CREATE TABLE IF NOT EXISTS admins (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Seed default owner admin if not exists
+-- Seed default Owner Admin securely using SHA-256 hash
 INSERT INTO admins (username, password, role)
-VALUES ('madmody', 'madmody', 'Owner')
+VALUES ('2e6fcd404b105495da8d2a76fb71879f0bc618d649de1fdb23f3ead1830513e8', '2e6fcd404b105495da8d2a76fb71879f0bc618d649de1fdb23f3ead1830513e8', 'Owner')
 ON CONFLICT (username) DO NOTHING;
 
--- 2. Trainees Table
-CREATE TABLE IF NOT EXISTS trainees (
+-- 4. Videos Table
+CREATE TABLE IF NOT EXISTS videos (
     id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL,
-    age INTEGER,
-    birth_year INTEGER,
-    phone TEXT UNIQUE NOT NULL,
-    whatsapp TEXT,
-    college TEXT,
-    squad TEXT,
-    university TEXT,
-    training_branch TEXT,
-    pharmacy_group TEXT DEFAULT 'صيدليات آل مغاوري',
-    target_level TEXT,
-    security_answer TEXT,
-    email TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    telegram_handle TEXT DEFAULT '',
-    telegram_chat_id TEXT DEFAULT '',
-    current_level TEXT DEFAULT 'Passengers',
-    status TEXT DEFAULT 'pending', -- pending, accepted, blocked, rejected
-    nickname TEXT DEFAULT '',
-    avatar TEXT DEFAULT '', -- base64 or URL
-    reject_reason TEXT DEFAULT '',
+    video_id TEXT DEFAULT '',
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    level TEXT DEFAULT 'Passengers',
+    topic TEXT DEFAULT 'عام',
+    sort_order INTEGER DEFAULT 1,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
-ALTER TABLE trainees ADD COLUMN IF NOT EXISTS pharmacy_group TEXT DEFAULT 'صيدليات آل مغاوري';
-ALTER TABLE trainees ADD COLUMN IF NOT EXISTS telegram_handle TEXT DEFAULT '';
-ALTER TABLE trainees ADD COLUMN IF NOT EXISTS telegram_chat_id TEXT DEFAULT '';
 
--- 3. Curriculum Table (Folders and Lessons)
+-- 5. Curriculum Table (Hierarchical Tree)
 CREATE TABLE IF NOT EXISTS curriculum (
     id SERIAL PRIMARY KEY,
-    level TEXT NOT NULL, -- Passengers, Starters, Movers, etc.
+    level TEXT DEFAULT '',
     title TEXT NOT NULL,
     content_html TEXT DEFAULT '',
     sort_order INTEGER DEFAULT 1,
-    parent_id INTEGER REFERENCES curriculum(id) ON DELETE CASCADE,
-    type TEXT DEFAULT 'folder', -- folder, video, content
+    parent_id INTEGER,
+    type TEXT DEFAULT 'folder',
+    icon TEXT DEFAULT '',
     video_url TEXT DEFAULT '',
     video_id TEXT DEFAULT '',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 4. Progress Table (Video watch history and exam details per level)
+ALTER TABLE curriculum ADD COLUMN IF NOT EXISTS icon TEXT DEFAULT '';
+ALTER TABLE curriculum ADD COLUMN IF NOT EXISTS video_url TEXT DEFAULT '';
+ALTER TABLE curriculum ADD COLUMN IF NOT EXISTS video_id TEXT DEFAULT '';
+
+-- 6. Progress Table
 CREATE TABLE IF NOT EXISTS progress (
     id SERIAL PRIMARY KEY,
     email TEXT NOT NULL,
     level TEXT NOT NULL,
-    watched_videos TEXT DEFAULT '', -- Comma-separated video IDs
+    watched_videos TEXT DEFAULT '',
     exam_attempts INTEGER DEFAULT 0,
     lockout_until TIMESTAMP WITH TIME ZONE,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,
     UNIQUE (email, level)
 );
 
--- 5. Promotions Table (Completed levels and certificates)
+-- 7. Promotions Table
 CREATE TABLE IF NOT EXISTS promotions (
     id SERIAL PRIMARY KEY,
     email TEXT NOT NULL,
@@ -80,11 +127,11 @@ CREATE TABLE IF NOT EXISTS promotions (
     score INTEGER DEFAULT 0,
     certificate_template TEXT DEFAULT '',
     certificate_url TEXT DEFAULT '',
-    status TEXT DEFAULT 'pending', -- pending, approved, rejected
+    status TEXT DEFAULT 'pending',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 6. Questions Table (Level exams questions)
+-- 8. Questions Table
 CREATE TABLE IF NOT EXISTS questions (
     id SERIAL PRIMARY KEY,
     level TEXT NOT NULL,
@@ -96,11 +143,11 @@ CREATE TABLE IF NOT EXISTS questions (
     option2_en TEXT,
     option3_ar TEXT,
     option3_en TEXT,
-    correct_index INTEGER NOT NULL, -- 0, 1, or 2
+    correct_index INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 7. Video Questions Table (In-video interactive questions)
+-- 9. Video Questions Table
 CREATE TABLE IF NOT EXISTS video_questions (
     id SERIAL PRIMARY KEY,
     video_id TEXT NOT NULL,
@@ -108,11 +155,11 @@ CREATE TABLE IF NOT EXISTS video_questions (
     option1_ar TEXT NOT NULL,
     option2_ar TEXT NOT NULL,
     option3_ar TEXT,
-    correct_index INTEGER NOT NULL, -- 0, 1, or 2
+    correct_index INTEGER NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 8. Video Quiz Submissions Table
+-- 10. Video Quiz Submissions Table
 CREATE TABLE IF NOT EXISTS video_quiz_submissions (
     id SERIAL PRIMARY KEY,
     email TEXT NOT NULL,
@@ -124,7 +171,20 @@ CREATE TABLE IF NOT EXISTS video_quiz_submissions (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 9. Level Content Table (Welcome messages for levels)
+-- 11. Reports Table
+CREATE TABLE IF NOT EXISTS reports (
+    id SERIAL PRIMARY KEY,
+    email TEXT NOT NULL,
+    trainee_name TEXT,
+    title TEXT NOT NULL,
+    content TEXT DEFAULT '',
+    attachment_url TEXT DEFAULT '',
+    level TEXT DEFAULT 'Passengers',
+    status TEXT DEFAULT 'accepted',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 12. Level Content Table
 CREATE TABLE IF NOT EXISTS level_content (
     id SERIAL PRIMARY KEY,
     level TEXT UNIQUE NOT NULL,
@@ -132,10 +192,42 @@ CREATE TABLE IF NOT EXISTS level_content (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- 10. Notifications Table
+-- 13. Notifications Table
 CREATE TABLE IF NOT EXISTS notifications (
     id SERIAL PRIMARY KEY,
-    email TEXT,
+    email TEXT NOT NULL,
+    title TEXT NOT NULL,
     message TEXT NOT NULL,
+    read BOOLEAN DEFAULT false,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
+
+-- 14. Course Prices Table
+CREATE TABLE IF NOT EXISTS course_prices (
+    id SERIAL PRIMARY KEY,
+    course_name TEXT UNIQUE NOT NULL,
+    price NUMERIC DEFAULT 0,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- ==============================================================================
+-- Grant Permissions & Disable Row Level Security (RLS) for API Access
+-- ==============================================================================
+
+ALTER TABLE trainees DISABLE ROW LEVEL SECURITY;
+ALTER TABLE announcements DISABLE ROW LEVEL SECURITY;
+ALTER TABLE admins DISABLE ROW LEVEL SECURITY;
+ALTER TABLE videos DISABLE ROW LEVEL SECURITY;
+ALTER TABLE curriculum DISABLE ROW LEVEL SECURITY;
+ALTER TABLE progress DISABLE ROW LEVEL SECURITY;
+ALTER TABLE promotions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE questions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE video_questions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE video_quiz_submissions DISABLE ROW LEVEL SECURITY;
+ALTER TABLE reports DISABLE ROW LEVEL SECURITY;
+ALTER TABLE level_content DISABLE ROW LEVEL SECURITY;
+ALTER TABLE notifications DISABLE ROW LEVEL SECURITY;
+ALTER TABLE course_prices DISABLE ROW LEVEL SECURITY;
+
+GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, postgres, service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO anon, authenticated, postgres, service_role;
