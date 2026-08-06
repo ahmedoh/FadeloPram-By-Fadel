@@ -822,13 +822,9 @@
         <button class="btn btn-outline btn-sm" onclick="closeQuestionModal()"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <form id="question-form" class="modal-body">
-        <label>المرحلة / المستوى *</label>
-        <select id="q-level" required>
-          <option value="Passengers">مرحلة المسافرين (Passengers)</option>
-          <option value="Starters">مرحلة المبتدئين (Starters)</option>
-          <option value="Movers">مرحلة المتقدمين (Movers)</option>
-          <option value="Flyers">مرحلة الطائرين (Flyers)</option>
-          <option value="Beast">مرحلة الوحوش (Beast)</option>
+        <label style="font-weight: bold; font-size: 13px; color: var(--text-primary); margin-bottom: 6px; display: block;">الكورس / المادة / المرحلة التابع لها السؤال *</label>
+        <select id="q-level" required style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 8px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-primary); font-size: 13px;">
+          <option value="">-- اختر الكورس أو المادة أو المرحلة من شجرة المناهج --</option>
         </select>
 
         <label>نص السؤال (بالعربية) *</label>
@@ -970,7 +966,7 @@
 
       if (traineesRes.success && traineesRes.trainees) { allTrainees=traineesRes.trainees; renderPending(); renderApproved(); }
       if (annRes.success && annRes.announcements) { allAnnouncements=annRes.announcements; renderAnns(); }
-      if (currRes.success && currRes.nodes) { allCurrNodes=currRes.nodes; renderCurrTree(); }
+      if (currRes.success && currRes.nodes) { allCurrNodes=currRes.nodes; renderCurrTree(); updateQLevelDropdown(); }
       else { document.getElementById('curriculum-tree').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد بيانات. اضغط "إضافة مكان جديد" للبدء.</p>'; }
       if (promoRes.success && promoRes.promotions) { allPromotions=promoRes.promotions; renderPromotions(); }
       else { document.getElementById('tbody-promotions').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد طلبات ترقية معلقة.</td></tr>'; }
@@ -982,7 +978,7 @@
 
     async function loadCurriculum() {
       const r = await apiRequest({ action:'adminGetCurriculumTree', adminPassword, level:'all' });
-      if (r.success && r.nodes) { allCurrNodes=r.nodes; renderCurrTree(); }
+      if (r.success && r.nodes) { allCurrNodes=r.nodes; renderCurrTree(); updateQLevelDropdown(); }
     }
 
     function updateKPIs() {
@@ -1195,41 +1191,40 @@
       container.innerHTML = html;
     }
 
+    function updateQLevelDropdown() {
+      const qLevelSelect = document.getElementById('q-level');
+      if (!qLevelSelect) return;
+
+      let optsHtml = '<option value="">-- اختر الكورس أو المادة من شجرة المناهج --</option>';
+      const relevantNodes = (allCurrNodes || []).filter(n => n.type === 'level' || n.type === 'course' || n.type === 'subject' || n.type === 'entity');
+      
+      if (relevantNodes.length > 0) {
+        relevantNodes.forEach(n => {
+          const nodeTitle = n.title || n.Title || '';
+          let typeLabel = 'مرحلة';
+          if (n.type === 'course') typeLabel = 'كورس';
+          else if (n.type === 'subject') typeLabel = 'مادة / شابتر';
+          else if (n.type === 'entity') typeLabel = 'مكان / جهة';
+          
+          optsHtml += `<option value="${nodeTitle}">${typeLabel}: ${nodeTitle}</option>`;
+        });
+      } else {
+        optsHtml += `
+          <option value="عام">عام</option>
+          <option value="امتحان الشابتر والمناهج">امتحان الشابتر والمناهج</option>
+        `;
+      }
+
+      qLevelSelect.innerHTML = optsHtml;
+    }
+
     function openAddQuestionModal() {
       document.getElementById('q-ar').value = '';
       document.getElementById('q-opt1-ar').value = '';
       document.getElementById('q-opt2-ar').value = '';
       document.getElementById('q-opt3-ar').value = '';
 
-      // Populate q-level select dynamically from curriculum tree nodes (allCurrNodes)
-      const qLevelSelect = document.getElementById('q-level');
-      if (qLevelSelect) {
-        let optsHtml = '';
-        const relevantNodes = (allCurrNodes || []).filter(n => n.type === 'level' || n.type === 'course' || n.type === 'subject');
-        
-        if (relevantNodes.length > 0) {
-          relevantNodes.forEach(n => {
-            const nodeTitle = n.title || n.Title || '';
-            const typeLabel = n.type === 'course' ? 'كورس' : (n.type === 'subject' ? 'مادة / شابتر' : 'مرحلة');
-            optsHtml += `<option value="${nodeTitle}">${typeLabel}: ${nodeTitle}</option>`;
-          });
-        }
-        
-        // Include default/legacy levels as fallback choices
-        const legacyLevels = [
-          'مرحلة المسافرين (Passengers)',
-          'مرحلة المبتدئين (Starters)',
-          'مرحلة المتقدمين (Movers)',
-          'مرحلة الطائرين (Flyers)',
-          'مرحلة الوحوش (Beast)'
-        ];
-        legacyLevels.forEach(l => {
-          optsHtml += `<option value="${l}">${l}</option>`;
-        });
-
-        qLevelSelect.innerHTML = optsHtml;
-      }
-
+      updateQLevelDropdown();
       document.getElementById('question-modal').classList.add('active');
     }
     function closeQuestionModal() { document.getElementById('question-modal').classList.remove('active'); }
@@ -1589,16 +1584,18 @@
         const isEditingThis = editingVQIndex === idx;
 
         item.innerHTML = `
-          <div style="position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; z-index: 5;">
-            <button type="button" onclick="editVQRow(${idx})" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #f59e0b; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="تعديل هذا السؤال">
-              <i class="fa-solid fa-pen-to-square"></i> تعديل
-            </button>
-            <button type="button" onclick="removeVQRow(${idx})" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="حذف هذا السؤال">
-              <i class="fa-solid fa-trash"></i> حذف
-            </button>
-          </div>
-          <div style="font-size: 13px; font-weight: bold; margin-bottom: 8px; padding-left: 140px; color: ${isEditingThis ? '#f59e0b' : 'var(--text-primary)'}; text-align: right;">
-            ${idx + 1}. ${qText} ${isEditingThis ? '<span style="font-size:11px; background:rgba(245,158,11,0.2); color:#f59e0b; padding:2px 6px; border-radius:4px; margin-right:6px;">(جاري التعديل...)</span>' : ''}
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+            <div style="font-size: 13.5px; font-weight: bold; color: ${isEditingThis ? '#f59e0b' : 'var(--text-primary)'}; text-align: right; flex: 1;">
+              ${idx + 1}. ${qText} ${isEditingThis ? '<span style="font-size:11px; background:rgba(245,158,11,0.2); color:#f59e0b; padding:2px 6px; border-radius:4px; margin-right:6px;">(جاري التعديل...)</span>' : ''}
+            </div>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button type="button" onclick="editVQRow(${idx})" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #f59e0b; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="تعديل هذا السؤال">
+                <i class="fa-solid fa-pen-to-square"></i> تعديل
+              </button>
+              <button type="button" onclick="removeVQRow(${idx})" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="حذف هذا السؤال">
+                <i class="fa-solid fa-trash"></i> حذف
+              </button>
+            </div>
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; direction: rtl; text-align: right;">
             ${optionsHtml}
