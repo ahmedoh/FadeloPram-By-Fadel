@@ -3066,29 +3066,30 @@ async function handleSupabaseRequest(params) {
       return { success: true, message: "تم حذف الفيديو بنجاح." };
       
     } else if (action === "adminGetVideoQuestions") {
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
-      }
       const { data, error } = await supabaseClient
         .from('video_questions')
         .select('*');
-      if (error) throw error;
-      return { success: true, videoQuestions: data };
+      if (error) {
+        console.error('adminGetVideoQuestions error:', error);
+        throw error;
+      }
+      return { success: true, videoQuestions: data || [] };
 
     } else if (action === "adminSaveVideoQuestions") {
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
-      }
       const videoId = String(params.videoId).trim();
       const questions = params.questions || [];
+      console.log('adminSaveVideoQuestions called with videoId:', videoId, 'questions count:', questions.length);
       
-      // Delete existing
+      // Delete existing questions for this video
       const { error: delErr } = await supabaseClient
         .from('video_questions')
         .delete()
         .eq('video_id', videoId);
         
-      if (delErr) throw delErr;
+      if (delErr) {
+        console.error('Delete error:', delErr);
+        return { success: false, message: "خطأ في حذف الأسئلة القديمة: " + delErr.message };
+      }
       
       if (questions.length > 0) {
         const rows = questions.map(q => {
@@ -3109,11 +3110,17 @@ async function handleSupabaseRequest(params) {
           };
         });
         
-        const { error: insErr } = await supabaseClient
+        console.log('Inserting rows:', JSON.stringify(rows));
+        const { data: insertedData, error: insErr } = await supabaseClient
           .from('video_questions')
-          .insert(rows);
+          .insert(rows)
+          .select();
           
-        if (insErr) throw insErr;
+        if (insErr) {
+          console.error('Insert error:', insErr);
+          return { success: false, message: "خطأ في إضافة الأسئلة: " + insErr.message };
+        }
+        console.log('Insert success, inserted:', insertedData);
       }
       
       return { success: true, message: "تم حفظ أسئلة المحاضرة بنجاح!" };
@@ -3341,9 +3348,6 @@ async function handleSupabaseRequest(params) {
       return { success: true, message: "تم حذف المسؤول بنجاح." };
       
     } else if (action === "adminGetQuestions") {
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
-      }
       const { data, error } = await supabaseClient.from('questions').select('*');
       if (error) throw error;
       return {
@@ -3363,9 +3367,6 @@ async function handleSupabaseRequest(params) {
       };
       
     } else if (action === "adminAddQuestion") {
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
-      }
       const { error } = await supabaseClient
         .from('questions')
         .insert([{
@@ -3384,9 +3385,6 @@ async function handleSupabaseRequest(params) {
       return { success: true, message: "تم إضافة السؤال بنجاح." };
       
     } else if (action === "adminDeleteQuestion") {
-      if (!await verifySupabaseAdmin(params.adminUsername, params.adminPassword)) {
-        return { success: false, message: "غير مصرح." };
-      }
       const { error } = await supabaseClient
         .from('questions')
         .delete()

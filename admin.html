@@ -1200,6 +1200,36 @@
       document.getElementById('q-opt1-ar').value = '';
       document.getElementById('q-opt2-ar').value = '';
       document.getElementById('q-opt3-ar').value = '';
+
+      // Populate q-level select dynamically from curriculum tree nodes (allCurrNodes)
+      const qLevelSelect = document.getElementById('q-level');
+      if (qLevelSelect) {
+        let optsHtml = '';
+        const relevantNodes = (allCurrNodes || []).filter(n => n.type === 'level' || n.type === 'course' || n.type === 'subject');
+        
+        if (relevantNodes.length > 0) {
+          relevantNodes.forEach(n => {
+            const nodeTitle = n.title || n.Title || '';
+            const typeLabel = n.type === 'course' ? 'كورس' : (n.type === 'subject' ? 'مادة / شابتر' : 'مرحلة');
+            optsHtml += `<option value="${nodeTitle}">${typeLabel}: ${nodeTitle}</option>`;
+          });
+        }
+        
+        // Include default/legacy levels as fallback choices
+        const legacyLevels = [
+          'مرحلة المسافرين (Passengers)',
+          'مرحلة المبتدئين (Starters)',
+          'مرحلة المتقدمين (Movers)',
+          'مرحلة الطائرين (Flyers)',
+          'مرحلة الوحوش (Beast)'
+        ];
+        legacyLevels.forEach(l => {
+          optsHtml += `<option value="${l}">${l}</option>`;
+        });
+
+        qLevelSelect.innerHTML = optsHtml;
+      }
+
       document.getElementById('question-modal').classList.add('active');
     }
     function closeQuestionModal() { document.getElementById('question-modal').classList.remove('active'); }
@@ -1207,16 +1237,18 @@
     document.getElementById('question-form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const r = await apiRequest({
-        action: 'adminAddQuestion', adminPassword,
+        action: 'adminAddQuestion',
+        adminUsername,
+        adminPassword,
         level: document.getElementById('q-level').value,
         questionAr: document.getElementById('q-ar').value.trim(),
         option1Ar: document.getElementById('q-opt1-ar').value.trim(),
         option2Ar: document.getElementById('q-opt2-ar').value.trim(),
         option3Ar: document.getElementById('q-opt3-ar').value.trim(),
-        correctIndex: document.getElementById('q-correct').value
+        correctIndex: parseInt(document.getElementById('q-correct').value)
       });
       if (r.success) {
-        alert('تم إضافة السؤال بنجاح!');
+        alert('تم إضافة السؤال بنجاح إلى بنك أسئلة الامتحانات! 🎯');
         closeQuestionModal();
         loadAll();
       } else {
@@ -1225,9 +1257,18 @@
     });
 
     async function delQuestion(index) {
-      if (confirm('هل أنت متأكد من حذف هذا السؤال؟')) {
-        const r = await apiRequest({ action:'adminDeleteQuestion', adminPassword, index });
-        if (r.success) { alert('تم الحذف.'); loadAll(); }
+      const q = (allQuestions || [])[index];
+      if (!q) return;
+      const qText = q.QuestionAr || q.question_ar || '';
+      if (confirm(`هل أنت متأكد من حذف هذا السؤال من بنك الأسئلة؟\n"${qText}"`)) {
+        const r = await apiRequest({
+          action: 'adminDeleteQuestion',
+          adminUsername,
+          adminPassword,
+          questionAr: qText
+        });
+        if (r.success) { alert('تم الحذف بنجاح.'); loadAll(); }
+        else { alert(r.message || 'حدث خطأ أثناء الحذف'); }
       }
     }
 
@@ -1548,12 +1589,16 @@
         const isEditingThis = editingVQIndex === idx;
 
         item.innerHTML = `
-          <div style="position: absolute; top: 10px; left: 10px; display: flex; gap: 8px;">
-            <button onclick="editVQRow(${idx})" style="background: none; border: none; color: var(--gold, #f59e0b); cursor: pointer; font-size: 14px;" title="تعديل السؤال"><i class="fa-solid fa-pen"></i></button>
-            <button onclick="removeVQRow(${idx})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px;" title="إزالة السؤال"><i class="fa-solid fa-trash"></i></button>
+          <div style="position: absolute; top: 10px; left: 10px; display: flex; gap: 6px; z-index: 5;">
+            <button type="button" onclick="editVQRow(${idx})" style="background: rgba(245, 158, 11, 0.15); border: 1px solid #f59e0b; color: #f59e0b; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="تعديل هذا السؤال">
+              <i class="fa-solid fa-pen-to-square"></i> تعديل
+            </button>
+            <button type="button" onclick="removeVQRow(${idx})" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; border-radius: 5px; padding: 4px 10px; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="حذف هذا السؤال">
+              <i class="fa-solid fa-trash"></i> حذف
+            </button>
           </div>
-          <div style="font-size: 13px; font-weight: bold; margin-bottom: 8px; padding-left: 50px; color: ${isEditingThis ? 'var(--gold, #f59e0b)' : 'var(--text-primary)'}; text-align: right;">
-            ${idx + 1}. ${qText} ${isEditingThis ? '<span style="font-size:11px; background:var(--gold-glow); padding:2px 6px; border-radius:4px;">(جاري التعديل...)</span>' : ''}
+          <div style="font-size: 13px; font-weight: bold; margin-bottom: 8px; padding-left: 140px; color: ${isEditingThis ? '#f59e0b' : 'var(--text-primary)'}; text-align: right;">
+            ${idx + 1}. ${qText} ${isEditingThis ? '<span style="font-size:11px; background:rgba(245,158,11,0.2); color:#f59e0b; padding:2px 6px; border-radius:4px; margin-right:6px;">(جاري التعديل...)</span>' : ''}
           </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; direction: rtl; text-align: right;">
             ${optionsHtml}
