@@ -2372,7 +2372,9 @@
 
       const saved = allVideoQuestions.filter(x => {
         const targetId = String(x.video_id).trim().toLowerCase();
-        return possibleIds.includes(targetId);
+        if (possibleIds.includes(targetId)) return true;
+        if (videoTitle && targetId === String(videoTitle).trim().toLowerCase()) return true;
+        return false;
       });
 
       if (saved && saved.length > 0) {
