@@ -802,7 +802,7 @@
             <option value="2">الخيار الثالث</option>
           </select>
 
-          <button type="button" class="btn btn-outline" onclick="addNewVideoQuestionRow()" style="width: 100%; padding: 10px; font-weight: bold;">
+          <button type="button" class="btn btn-outline" id="btn-add-vq" onclick="addNewVideoQuestionRow()" style="width: 100%; padding: 10px; font-weight: bold;">
             <i class="fa-solid fa-plus"></i> أضف السؤال إلى القائمة المؤقتة
           </button>
         </div>
@@ -1476,11 +1476,7 @@
       document.getElementById('vq-modal-video-title').textContent = videoTitle;
 
       // Clear inputs
-      document.getElementById('new-vq-question').value = '';
-      document.getElementById('new-vq-opt1').value = '';
-      document.getElementById('new-vq-opt2').value = '';
-      document.getElementById('new-vq-opt3').value = '';
-      document.getElementById('new-vq-correct').value = '0';
+      resetVQInputs();
 
       const container = document.getElementById('vq-list-container');
       if (container) {
@@ -1519,6 +1515,8 @@
       document.getElementById('video-questions-modal').classList.remove('active');
     };
 
+    let editingVQIndex = null;
+
     function renderVQList() {
       const container = document.getElementById('vq-list-container');
       if (!container) return;
@@ -1547,9 +1545,16 @@
           `;
         });
 
+        const isEditingThis = editingVQIndex === idx;
+
         item.innerHTML = `
-          <button onclick="removeVQRow(${idx})" style="position: absolute; top: 10px; left: 10px; background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px;" title="إزالة السؤال"><i class="fa-solid fa-trash"></i></button>
-          <div style="font-size: 13px; font-weight: bold; margin-bottom: 8px; padding-left: 25px; color: var(--text-primary); text-align: right;">${idx + 1}. ${qText}</div>
+          <div style="position: absolute; top: 10px; left: 10px; display: flex; gap: 8px;">
+            <button onclick="editVQRow(${idx})" style="background: none; border: none; color: var(--gold, #f59e0b); cursor: pointer; font-size: 14px;" title="تعديل السؤال"><i class="fa-solid fa-pen"></i></button>
+            <button onclick="removeVQRow(${idx})" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 14px;" title="إزالة السؤال"><i class="fa-solid fa-trash"></i></button>
+          </div>
+          <div style="font-size: 13px; font-weight: bold; margin-bottom: 8px; padding-left: 50px; color: ${isEditingThis ? 'var(--gold, #f59e0b)' : 'var(--text-primary)'}; text-align: right;">
+            ${idx + 1}. ${qText} ${isEditingThis ? '<span style="font-size:11px; background:var(--gold-glow); padding:2px 6px; border-radius:4px;">(جاري التعديل...)</span>' : ''}
+          </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; direction: rtl; text-align: right;">
             ${optionsHtml}
           </div>
@@ -1557,6 +1562,30 @@
         container.appendChild(item);
       });
     }
+
+    window.editVQRow = function(idx) {
+      const q = currentVideoQuestionsList[idx];
+      if (!q) return;
+
+      editingVQIndex = idx;
+      const qText = q.q || q.question_ar || '';
+      const opts = q.options || [q.option1_ar || '', q.option2_ar || '', q.option3_ar || ''];
+      const corr = q.correct !== undefined ? q.correct : q.correct_index;
+
+      document.getElementById('new-vq-question').value = qText;
+      document.getElementById('new-vq-opt1').value = opts[0] || '';
+      document.getElementById('new-vq-opt2').value = opts[1] || '';
+      document.getElementById('new-vq-opt3').value = opts[2] || '';
+      document.getElementById('new-vq-correct').value = String(corr || 0);
+
+      const addBtn = document.getElementById('btn-add-vq');
+      if (addBtn) {
+        addBtn.innerHTML = '<i class="fa-solid fa-check"></i> تحديث السؤال في القائمة';
+        addBtn.className = 'btn btn-gold';
+      }
+
+      renderVQList();
+    };
 
     window.addNewVideoQuestionRow = function() {
       const qText = document.getElementById('new-vq-question').value.trim();
@@ -1570,25 +1599,44 @@
         return;
       }
 
-      currentVideoQuestionsList.push({
-        q: qText,
-        options: [o1, o2, o3],
-        correct: corr
-      });
+      if (editingVQIndex !== null && editingVQIndex >= 0) {
+        currentVideoQuestionsList[editingVQIndex] = {
+          q: qText,
+          options: [o1, o2, o3],
+          correct: corr
+        };
+        editingVQIndex = null;
+      } else {
+        currentVideoQuestionsList.push({
+          q: qText,
+          options: [o1, o2, o3],
+          correct: corr
+        });
+      }
 
       renderVQList();
+      resetVQInputs();
+    };
 
-      // Reset input fields
+    function resetVQInputs() {
+      editingVQIndex = null;
       document.getElementById('new-vq-question').value = '';
       document.getElementById('new-vq-opt1').value = '';
       document.getElementById('new-vq-opt2').value = '';
       document.getElementById('new-vq-opt3').value = '';
       document.getElementById('new-vq-correct').value = '0';
-    };
+      const addBtn = document.getElementById('btn-add-vq');
+      if (addBtn) {
+        addBtn.innerHTML = '<i class="fa-solid fa-plus"></i> أضف السؤال إلى القائمة المؤقتة';
+        addBtn.className = 'btn btn-outline';
+      }
+    }
 
     window.removeVQRow = function(idx) {
+      if (editingVQIndex === idx) editingVQIndex = null;
       currentVideoQuestionsList.splice(idx, 1);
       renderVQList();
+      resetVQInputs();
     };
 
     window.saveVideoQuestions = async function() {
