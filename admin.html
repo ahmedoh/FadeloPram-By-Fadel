@@ -475,7 +475,7 @@
         <li class="nav-item" onclick="switchTab('curriculum',this)"><span><i class="fa-solid fa-book-bookmark"></i> المناهج والكورسات</span></li>
         <li class="nav-item" onclick="switchTab('promotions',this)"><span><i class="fa-solid fa-award"></i> الترقيات والشهادات</span></li>
         <li class="nav-item" onclick="switchTab('announcements',this)"><span><i class="fa-solid fa-bullhorn"></i> الإعلانات</span></li>
-        <li class="nav-item" onclick="switchTab('questions',this)"><span><i class="fa-solid fa-file-circle-question"></i> بنك الأسئلة</span></li>
+        <li class="nav-item" onclick="switchTab('questions',this)"><span><i class="fa-solid fa-file-circle-question"></i> بنك أسئلة الامتحانات</span></li>
         <li class="nav-item" onclick="switchTab('settings',this)"><span><i class="fa-solid fa-sliders"></i> الإعدادات</span></li>
       </ul>
 
@@ -1492,8 +1492,17 @@
       try {
         const res = await apiRequest({ action: 'adminGetVideoQuestions', adminUsername, adminPassword });
         if (res.success && res.videoQuestions) {
-          // Support matching against node ID
-          currentVideoQuestionsList = res.videoQuestions.filter(x => String(x.video_id).trim().toLowerCase() === String(videoId).trim().toLowerCase());
+          const node = allCurrNodes.find(n => String(n.id || n.Id) === String(videoId));
+          const possibleVideoIds = [String(videoId).trim().toLowerCase()];
+          if (node) {
+            if (node.video_id) possibleVideoIds.push(String(node.video_id).trim().toLowerCase());
+            if (node.content_html) possibleVideoIds.push(String(node.content_html).trim().toLowerCase());
+          }
+
+          currentVideoQuestionsList = res.videoQuestions.filter(x => {
+            const targetId = String(x.video_id).trim().toLowerCase();
+            return possibleVideoIds.includes(targetId);
+          });
           renderVQList();
         } else {
           currentVideoQuestionsList = [];
@@ -1586,6 +1595,32 @@
       const videoId = document.getElementById('vq-modal-video-id').value;
       if (!videoId) return;
 
+      // Auto-add any question typed in the fields if not added yet
+      const qText = document.getElementById('new-vq-question').value.trim();
+      const o1 = document.getElementById('new-vq-opt1').value.trim();
+      const o2 = document.getElementById('new-vq-opt2').value.trim();
+      const o3 = document.getElementById('new-vq-opt3').value.trim();
+      const corr = parseInt(document.getElementById('new-vq-correct').value) || 0;
+
+      if (qText && o1 && o2 && o3) {
+        currentVideoQuestionsList.push({
+          q: qText,
+          options: [o1, o2, o3],
+          correct: corr
+        });
+        document.getElementById('new-vq-question').value = '';
+        document.getElementById('new-vq-opt1').value = '';
+        document.getElementById('new-vq-opt2').value = '';
+        document.getElementById('new-vq-opt3').value = '';
+        document.getElementById('new-vq-correct').value = '0';
+        renderVQList();
+      }
+
+      if (currentVideoQuestionsList.length === 0) {
+        alert('يرجى إضافة سؤال واحد على الأقل وإثباته بالقائمة قبل الضغط على حفظ!');
+        return;
+      }
+
       const btn = document.querySelector('#video-questions-modal button.btn-gold');
       if (btn) {
         btn.disabled = true;
@@ -1602,7 +1637,7 @@
         });
 
         if (res.success) {
-          alert('تم حفظ أسئلة المحاضرة بنجاح!');
+          alert('🎉 تم حفظ أسئلة المحاضرة بنجاح على قاعدة البيانات!');
           closeVideoQuestionsModal();
         } else {
           alert('فشل الحفظ: ' + res.message);
