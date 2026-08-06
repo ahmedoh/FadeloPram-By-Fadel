@@ -722,6 +722,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=2.1"></script>
   <script>
+    let currentLang = localStorage.getItem("app_lang") || "ar";
+    let currentTheme = localStorage.getItem("app_theme") || "sand"; // sand, green, dark
+
     // Translation dictionary for Trainee login page
     const langData = {
       ar: {
@@ -968,6 +971,9 @@
       }
     };
 
+    const emailInput = document.getElementById("trainee-email");
+    const passInput = document.getElementById("trainee-password");
+
     // Auto-fill credentials if trainee was previously logged in
     setTimeout(() => {
       const savedEmail = localStorage.getItem("trainee_email");
@@ -975,12 +981,6 @@
       if (savedEmail && emailInput) emailInput.value = savedEmail;
       if (savedPassword && passInput) passInput.value = savedPassword;
     }, 100);
-
-    let currentLang = localStorage.getItem("app_lang") || "ar";
-    let currentTheme = localStorage.getItem("app_theme") || "sand"; // sand, green, dark
-
-    const emailInput = document.getElementById("trainee-email");
-    const passInput = document.getElementById("trainee-password");
 
     function applySettings() {
       // Theme cycling
@@ -1084,7 +1084,7 @@
 
     // Modal popup triggers
     const loginModal = document.getElementById("login-modal");
-    document.getElementById("btn-show-login").addEventListener("click", () => {
+    document.getElementById("btn-show-login")?.addEventListener("click", () => {
       loginModal.classList.add("active");
       loadSavedCredentials();
     });
@@ -1290,6 +1290,16 @@
       }
     }
 
+    function checkActiveIndexSession() {
+      const email = localStorage.getItem("trainee_email");
+      const name = localStorage.getItem("trainee_name");
+      const btnNav = document.getElementById("btn-show-login");
+      if (email && btnNav) {
+        btnNav.outerHTML = `<a href="dashboard.html" class="btn btn-gold" style="padding: 8px 18px; font-size: 13px; font-weight: 800; background: var(--color-gold); color: #000; text-decoration: none; border-radius: 8px;"><i class="fa-solid fa-gauge-high"></i> العودة للوحة التحكم (${name || 'دكتور'}) 🚀</a>`;
+      }
+    }
+    checkActiveIndexSession();
+
     // Trainee Login Submission
     document.getElementById("trainee-login-form").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1351,27 +1361,14 @@
           sessionStorage.setItem("trainee_level", response.trainee.level);
           sessionStorage.setItem("login_timestamp", Date.now().toString());
 
-          // Handle Remember Me persistent storage
-          const isRemembered = document.getElementById("remember-me")?.checked;
-          if (isRemembered) {
-            localStorage.setItem("remember_trainee", "true");
-            localStorage.setItem("saved_trainee_email", email);
-            localStorage.setItem("saved_trainee_password", password);
-            localStorage.setItem("trainee_logged_in", "true");
-            localStorage.setItem("trainee_email", email);
-            localStorage.setItem("trainee_password", password);
-            localStorage.setItem("trainee_name", response.trainee.name);
-            localStorage.setItem("trainee_branch", response.trainee.branch);
-            localStorage.setItem("trainee_level", response.trainee.level);
-            localStorage.setItem("login_timestamp", Date.now().toString());
-          } else {
-            localStorage.removeItem("remember_trainee");
-            localStorage.removeItem("saved_trainee_email");
-            localStorage.removeItem("saved_trainee_password");
-            localStorage.removeItem("trainee_logged_in");
-            localStorage.removeItem("trainee_email");
-            localStorage.removeItem("trainee_password");
-          }
+          // Persistent domain-wide session storage
+          localStorage.setItem("trainee_logged_in", "true");
+          localStorage.setItem("trainee_email", email);
+          localStorage.setItem("trainee_password", password);
+          localStorage.setItem("trainee_name", response.trainee.name);
+          localStorage.setItem("trainee_branch", response.trainee.branch || "");
+          localStorage.setItem("trainee_level", response.trainee.level || "");
+          localStorage.setItem("login_timestamp", Date.now().toString());
 
           const welcomeMsg = currentLang === "ar" 
             ? `🎉 تم تسجيل الدخول بنجاح! مرحباً دكتور: ${response.trainee.name}` 

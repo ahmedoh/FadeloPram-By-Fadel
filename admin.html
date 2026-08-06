@@ -470,11 +470,14 @@
 
       <ul class="nav-menu">
         <li class="nav-item active" onclick="switchTab('overview',this)"><span><i class="fa-solid fa-chart-pie"></i> النظرة العامة</span></li>
+        <li class="nav-item" onclick="switchTab('analytics',this)"><span><i class="fa-solid fa-chart-line"></i> تحليلات المحاضرات والأسئلة</span></li>
         <li class="nav-item" onclick="switchTab('pending',this)"><span><i class="fa-solid fa-user-clock"></i> طلبات الاشتراك</span><span class="badge-count badge-danger" id="badge-pending">0</span></li>
         <li class="nav-item" onclick="switchTab('trainees',this)"><span><i class="fa-solid fa-user-graduate"></i> المتدربين المقبولين</span><span class="badge-count badge-gold" id="badge-trainees">0</span></li>
         <li class="nav-item" onclick="switchTab('curriculum',this)"><span><i class="fa-solid fa-book-bookmark"></i> المناهج والكورسات</span></li>
         <li class="nav-item" onclick="switchTab('promotions',this)"><span><i class="fa-solid fa-award"></i> الترقيات والشهادات</span></li>
-        <li class="nav-item" onclick="switchTab('announcements',this)"><span><i class="fa-solid fa-bullhorn"></i> الإعلانات</span></li>
+        <li class="nav-item" onclick="switchTab('ads',this)"><span><i class="fa-solid fa-rectangle-ad"></i> وحدة الإعلانات المستقلة</span></li>
+        <li class="nav-item" onclick="switchTab('welcome',this)"><span><i class="fa-solid fa-bell"></i> رسائل الترحيب التلقائية</span></li>
+        <li class="nav-item" onclick="switchTab('announcements',this)"><span><i class="fa-solid fa-bullhorn"></i> الإعلانات العامة</span></li>
         <li class="nav-item" onclick="switchTab('questions',this)"><span><i class="fa-solid fa-file-circle-question"></i> بنك أسئلة الامتحانات</span></li>
         <li class="nav-item" onclick="switchTab('settings',this)"><span><i class="fa-solid fa-sliders"></i> الإعدادات</span></li>
       </ul>
@@ -622,6 +625,70 @@
         </div>
       </div>
 
+
+      <!-- PANEL: Detailed Analytics -->
+      <div class="admin-panel" id="panel-analytics">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-chart-line"></i> تحليلات المحاضرات والأسئلة المفصّلة</h3>
+            <div style="display:flex;gap:8px;">
+              <select id="analytics-video-filter" onchange="renderAnalyticsReport()" style="padding:6px 12px;border-radius:8px;border:1px solid var(--card-border);background:var(--input-bg);color:var(--text-primary);">
+                <option value="all">جميع المحاضرات</option>
+              </select>
+              <button class="btn btn-gold btn-sm" onclick="loadAnalyticsData()"><i class="fa-solid fa-rotate"></i> تحديث</button>
+            </div>
+          </div>
+
+          <!-- Video Watching & Quiz Solving Stats -->
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:20px;">
+            <div style="background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:16px;">
+              <h4 style="margin:0 0 10px;color:var(--gold);font-size:14px;"><i class="fa-solid fa-circle-play"></i> نسبة مشاهدات المحاضرات</h4>
+              <div id="analytics-video-summary" style="font-size:24px;font-weight:900;color:var(--text-primary);">0%</div>
+              <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">إجمالي الفيديوهات المشاهدة بواسطة الطلاب المقبولين</p>
+            </div>
+            <div style="background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:16px;">
+              <h4 style="margin:0 0 10px;color:var(--success);font-size:14px;"><i class="fa-solid fa-circle-check"></i> نسبة حل أسئلة الفيديوهات</h4>
+              <div id="analytics-quiz-summary" style="font-size:24px;font-weight:900;color:var(--success);">0%</div>
+              <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">إجمالي الأسئلة المجابة بنجاح أسفل المحاضرات</p>
+            </div>
+          </div>
+
+          <!-- Analytics Table -->
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr>
+                <th>المتدرب</th><th>المحاضرة / الفيديو</th><th>حالة المشاهدة 🎬</th><th>حالة حل الأسئلة 🧠</th><th>التشخيص</th>
+              </tr></thead>
+              <tbody id="tbody-analytics"><tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">جاري تحميل التحليلات...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PANEL: Standalone Ads -->
+      <div class="admin-panel" id="panel-ads">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-rectangle-ad"></i> وحدة الإعلانات التجاريّة المستقلة</h3>
+            <button class="btn btn-gold" onclick="openAdModal()"><i class="fa-solid fa-plus"></i> إضافة إعلان تجاري جديد</button>
+          </div>
+          <div id="ads-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">جاري التحميل...</div>
+        </div>
+      </div>
+
+      <!-- PANEL: Standalone Welcome Popup Messages -->
+      <div class="admin-panel" id="panel-welcome">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <h3 class="card-title" style="margin:0;"><i class="fa-solid fa-bell"></i> رسائل الترحيب والتنبيهات التلقائية (بعد الدخول)</h3>
+            <button class="btn btn-gold" onclick="openWelcomeMsgModal()"><i class="fa-solid fa-plus"></i> إنشاء رسالة ترحيب جديدة</button>
+          </div>
+          <p style="color:var(--text-muted);font-size:13px;margin-bottom:15px;">
+            هذه الرسائل تظهر كـ Popup للمتدرب فور تسجيل دخوله، مع مؤشر زمني ذكي يُحسب بناءً على طول الرسالة لضمان قراءتها ثم تختفي تلقائياً.
+          </p>
+          <div id="welcome-msgs-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">جاري التحميل...</div>
+        </div>
+      </div>
 
       <!-- PANEL: Settings -->
       <div class="admin-panel" id="panel-settings">
@@ -897,12 +964,214 @@
     </div>
   </div>
 
+  <!-- CERTIFICATE BUILDER MODAL -->
+  <div class="modal-overlay" id="cert-builder-modal">
+    <div class="modal-box" style="max-width: 520px;">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-graduation-cap"></i> إصدار شهادة فاخرة جديدة</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeCertBuilderModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="cert-builder-form" class="modal-body">
+        <label>اختيار المتدرب المقبول *</label>
+        <select id="cert-trainee-select" onchange="autoFillCertTrainee()" style="width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-primary);">
+          <option value="">-- اختر المتدرب من القائمة --</option>
+        </select>
+
+        <label>البريد الإلكتروني / الهاتف للطالب *</label>
+        <input type="text" id="cert-email" required placeholder="مثال: student@gmail.com أو 01107118948" style="width: 100%; margin-bottom: 12px; padding: 10px;">
+
+        <label>اسم التخصص / الكورس / المسار التدريبي *</label>
+        <input type="text" id="cert-course" required placeholder="مثال: دبلومة العلاج الصيدلاني المساعد والـ OTC" style="width: 100%; margin-bottom: 12px; padding: 10px;">
+
+        <label>التقدير الأكاديمي / الدرجة *</label>
+        <select id="cert-grade" style="width: 100%; padding: 10px; margin-bottom: 12px; border-radius: 8px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-primary);">
+          <option value="امتياز مع مرتبة الشرف 🏆">🏆 امتياز مع مرتبة الشرف (Excellent with Honors)</option>
+          <option value="ممتاز مرتفع (High Excellent) ⭐">⭐ ممتاز مرتفع (High Excellent)</option>
+          <option value="جيد جداً مرتفع 🌟">🌟 جيد جداً مرتفع (Very Good)</option>
+          <option value="اجتياز التقييم النهائي والتطبيقي 🎯">🎯 اجتياز التقييم النهائي والتطبيقي</option>
+        </select>
+
+        <label>كود التوثيق الرقمي للشهادة (Serial Code)</label>
+        <input type="text" id="cert-code" placeholder="سيتم إنشاؤه تلقائياً..." style="width: 100%; margin-bottom: 16px; padding: 10px; font-family: monospace;">
+
+        <button type="submit" class="btn btn-gold" style="width:100%; padding:13px; font-weight:900; font-size: 15px;">
+          <i class="fa-solid fa-award"></i> إصدار وحفظ الشهادة الرسمية 🎓
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ROYAL LUXURY CERTIFICATE VIEW MODAL -->
+  <div class="modal-overlay" id="cert-view-modal">
+    <div class="modal-box" style="max-width: 850px; width: 95%; background: transparent; border: none; box-shadow: none; padding: 0;">
+      <div style="text-align: left; margin-bottom: 10px;" class="no-print">
+        <button class="btn btn-gold btn-sm" onclick="printRoyalCertificate()"><i class="fa-solid fa-print"></i> طباعة الشهادة / حفظ كـ PDF 🖨️</button>
+        <button class="btn btn-outline btn-sm" onclick="closeCertViewModal()"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+      </div>
+
+      <!-- PRINTABLE ROYAL CERTIFICATE CONTAINER -->
+      <div id="cert-print-area" style="background: linear-gradient(135deg, #0b1120 0%, #1e293b 50%, #0f172a 100%); border: 12px double #d4af37; border-radius: 16px; padding: 40px 30px; position: relative; color: #ffffff; text-align: center; box-shadow: 0 0 50px rgba(212,175,55,0.3); overflow: hidden; direction: rtl;">
+        
+        <!-- Watermark Background Logo -->
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.05; pointer-events: none;">
+          <img src="fadelopram_logo.jpg" style="width: 420px; filter: grayscale(100%);">
+        </div>
+
+        <!-- Gold Corner Filigree Ornaments -->
+        <div style="position: absolute; top: 12px; right: 15px; color: #d4af37; font-size: 24px;">⚜️</div>
+        <div style="position: absolute; top: 12px; left: 15px; color: #d4af37; font-size: 24px;">⚜️</div>
+        <div style="position: absolute; bottom: 12px; right: 15px; color: #d4af37; font-size: 24px;">⚜️</div>
+        <div style="position: absolute; bottom: 12px; left: 15px; color: #d4af37; font-size: 24px;">⚜️</div>
+
+        <!-- Header Logos & Branding -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(212,175,55,0.4); padding-bottom: 20px; margin-bottom: 25px;">
+          <div style="text-align: right;">
+            <div style="font-size: 18px; font-weight: 900; color: #d4af37; letter-spacing: 1px;">Fadelopram Rx Academy</div>
+            <div style="font-size: 12px; color: #94a3b8;">أكاديمية فضل الصيدلية المعتمدة</div>
+          </div>
+          <div>
+            <img src="fadelopram_logo.jpg" style="height: 65px; border-radius: 50%; border: 3px solid #d4af37; box-shadow: 0 0 15px rgba(212,175,55,0.5);">
+          </div>
+          <div style="text-align: left;">
+            <div style="font-size: 17px; font-weight: 900; color: #d4af37;">صيدليات آل مغاوري</div>
+            <div style="font-size: 12px; color: #94a3b8;">Al-Maghwry Pharmacy Group</div>
+          </div>
+        </div>
+
+        <!-- Certificate Title -->
+        <div style="margin-bottom: 20px;">
+          <div style="font-size: 13px; color: #d4af37; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; margin-bottom: 5px;">CERTIFICATE OF EXCELLENCE & ACHIEVEMENT</div>
+          <h2 style="font-family: 'Amiri', 'Cairo', serif; font-size: 34px; color: #f59e0b; margin: 0; text-shadow: 0 3px 10px rgba(0,0,0,0.8); font-weight: 900;">شـهـادة تـقـديـر وتـخـرّج مـعـتـمـدة 🎓</h2>
+        </div>
+
+        <!-- Body Content -->
+        <p style="font-size: 15px; color: #cbd5e1; margin-bottom: 10px; line-height: 1.6;">
+          تشهد إدارة المنصة الصيدلية التعليمية بالشراكة مع المجموعة الطبية بأن المتدرب/ة:
+        </p>
+
+        <div id="cert-view-name" style="font-family: 'Amiri', 'Cairo', serif; font-size: 36px; font-weight: 900; color: #facc15; text-shadow: 0 2px 8px rgba(0,0,0,0.7); margin: 12px 0; letter-spacing: 1px;">
+          [اسم الطالب]
+        </div>
+
+        <p style="font-size: 15px; color: #cbd5e1; margin-bottom: 10px;">
+          قد أتم/ت بنجاح ومتطلبات التقييم النهائي في المسار الأكاديمي والتطبيقي المعتمد:
+        </p>
+
+        <div id="cert-view-course" style="font-size: 22px; font-weight: 800; color: #ffffff; background: rgba(212,175,55,0.15); border: 1px dashed rgba(212,175,55,0.6); padding: 10px 25px; border-radius: 10px; display: inline-block; margin: 10px 0; box-shadow: inset 0 0 15px rgba(212,175,55,0.1);">
+          [اسم التخصص / الكورس]
+        </div>
+
+        <div style="margin-top: 12px; margin-bottom: 25px;">
+          <span style="font-size: 14px; color: #94a3b8;">وبتقدير عام: </span>
+          <span id="cert-view-grade" style="font-size: 17px; font-weight: 800; color: #10b981; background: rgba(16,185,129,0.1); padding: 4px 14px; border-radius: 20px; border: 1px solid #10b981;">
+            [التقدير]
+          </span>
+        </div>
+
+        <!-- Footer Signatures & Official Stamp -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; border-top: 1px solid rgba(212,175,55,0.3); padding-top: 20px;">
+          
+          <!-- Signature Left -->
+          <div style="text-align: right; width: 30%;">
+            <div style="font-size: 12px; color: #94a3b8;">التاريخ والإصدار:</div>
+            <div id="cert-view-date" style="font-size: 14px; font-weight: bold; color: #ffffff; margin-top: 2px;">2026/08/06</div>
+            <div style="margin-top: 15px; border-top: 1px dashed #d4af37; padding-top: 5px; font-size: 13px; font-weight: bold; color: #d4af37;">
+              التوثيق الأكاديمي ✍️
+            </div>
+          </div>
+
+          <!-- Gold Medal / Stamp Center -->
+          <div style="text-align: center; width: 35%;">
+            <div style="width: 75px; height: 75px; margin: 0 auto; background: radial-gradient(circle, #f59e0b 0%, #b45309 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid #fef08a; box-shadow: 0 0 20px rgba(245,158,11,0.6); position: relative;">
+              <i class="fa-solid fa-award" style="font-size: 38px; color: #ffffff;"></i>
+            </div>
+            <div style="font-size: 11px; font-weight: 900; color: #facc15; margin-top: 6px; letter-spacing: 1px;">معتمدة رسمياً 🎖️</div>
+            <div id="cert-view-code" style="font-size: 10px; color: #94a3b8; font-family: monospace; margin-top: 2px;">PR-CERT-88192</div>
+          </div>
+
+          <!-- Signature Right -->
+          <div style="text-align: left; width: 30%;">
+            <div style="font-size: 14px; font-weight: 900; color: #facc15;">د. فضل مغاوري</div>
+            <div style="font-size: 11px; color: #94a3b8;">رئيس مجلس الإدارة والمشرف العام</div>
+            <div style="margin-top: 15px; border-top: 1px dashed #d4af37; padding-top: 5px; font-size: 13px; font-weight: bold; color: #d4af37;">
+              توقيع الاعتماد ✒️
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  <!-- ADS MODAL -->
+  <div class="modal-overlay" id="ad-modal">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-rectangle-ad"></i> إضافة / تعديل إعلان تجاري مستقل</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeAdModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="ad-form" class="modal-body">
+        <input type="hidden" id="ad-id">
+        <label>عنوان الإعلان *</label>
+        <input type="text" id="ad-title" required placeholder="مثال: خصم خاص على كورس التجميل" style="width:100%;margin-bottom:10px;padding:8px;">
+
+        <label>تفاصيل الإعلان *</label>
+        <textarea id="ad-content" required placeholder="تفاصيل العرض أو التنبيه..." style="width:100%;margin-bottom:10px;padding:8px;height:80px;"></textarea>
+
+        <label>رابط صورة الإعلان (اختياري)</label>
+        <input type="text" id="ad-image-url" placeholder="https://example.com/banner.jpg" style="width:100%;margin-bottom:10px;padding:8px;">
+
+        <label>رابط الوجهة عند النقر (اختياري)</label>
+        <input type="text" id="ad-link-url" placeholder="https://wa.me/2011..." style="width:100%;margin-bottom:10px;padding:8px;">
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+          <input type="checkbox" id="ad-active" checked style="width:18px;height:18px;">
+          <label for="ad-active" style="font-weight:bold;cursor:pointer;">تفعيل الإعلان فوراً للمستخدمين 🟢</label>
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width:100%;padding:12px;font-weight:900;margin-top:15px;">
+          <i class="fa-solid fa-check"></i> حفظ الإعلان التجاري
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- WELCOME POPUP MESSAGE MODAL -->
+  <div class="modal-overlay" id="welcome-msg-modal">
+    <div class="modal-box" style="max-width: 500px;">
+      <div class="modal-head">
+        <h3><i class="fa-solid fa-bell"></i> إنشاء / تعديل رسالة ترحيب دخول</h3>
+        <button class="btn btn-outline btn-sm" onclick="closeWelcomeMsgModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="welcome-msg-form" class="modal-body">
+        <input type="hidden" id="wm-id">
+        <label>عنوان الرسالة *</label>
+        <input type="text" id="wm-title" required placeholder="مثال: أهلاً بك في الدورة الصيدلية الجديدة!" style="width:100%;margin-bottom:10px;padding:8px;">
+
+        <label>نص الرسالة الترحيبية *</label>
+        <textarea id="wm-content" required placeholder="اكتب الرسالة التي تظهر للمتدرب بعد الدخول..." style="width:100%;margin-bottom:10px;padding:8px;height:100px;"></textarea>
+
+        <label>وقت القراءة المخصص (بالثواني) - اتركه فارغاً للحساب التلقائي</label>
+        <input type="number" id="wm-seconds" placeholder="مثال: 7 (أو سيُحسب حسب عدد الكلمات)" min="3" max="60" style="width:100%;margin-bottom:10px;padding:8px;">
+
+        <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
+          <input type="checkbox" id="wm-active" checked style="width:18px;height:18px;">
+          <label for="wm-active" style="font-weight:bold;cursor:pointer;">تفعيل الرسالة بعد تسجيل الدخول 🟢</label>
+        </div>
+
+        <button type="submit" class="btn btn-gold" style="width:100%;padding:12px;font-weight:900;margin-top:15px;">
+          <i class="fa-solid fa-check"></i> حفظ رسالة الترحيب
+        </button>
+      </form>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js?v=15.0"></script>
   <script>
     let adminUsername = "", adminPassword = "";
     let allTrainees = [], allAnnouncements = [], allCurrNodes = [];
     let allPromotions = [], allQuestions = [];
+    let allAds = [], allWelcomeMsgs = [], analyticsData = null;
 
     /* ===== THEME ===== */
     function toggleTheme() {
@@ -921,8 +1190,8 @@
 
     /* ===== TAB SWITCHING ===== */
     const panelTitles = {
-      overview:"النظرة العامة", pending:"طلبات الاشتراك", trainees:"المتدربين المقبولين",
-      curriculum:"المناهج والكورسات", promotions:"الترقيات والشهادات", announcements:"الإعلانات",
+      overview:"النظرة العامة", analytics:"تحليلات المحاضرات والأسئلة المفصّلة", pending:"طلبات الاشتراك", trainees:"المتدربين المقبولين",
+      curriculum:"المناهج والكورسات", promotions:"الترقيات والشهادات", ads:"وحدة الإعلانات المستقلة", welcome:"رسائل الترحيب التلقائية", announcements:"الإعلانات العامة",
       questions:"بنك الأسئلة", settings:"الإعدادات"
     };
     function switchTab(id, el) {
@@ -956,22 +1225,26 @@
 
     /* ===== PARALLEL DATA LOADING FOR ALL PANELS ===== */
     async function loadAll() {
-      const [traineesRes, annRes, currRes, promoRes, qRes] = await Promise.all([
+      const [traineesRes, annRes, currRes, promoRes, qRes, adsRes, wmRes, analyticsRes] = await Promise.all([
         apiRequest({ action:'adminGetTrainees', adminUsername, adminPassword }),
         apiRequest({ action:'adminGetAnnouncements' }),
         apiRequest({ action:'adminGetCurriculumTree', adminUsername, adminPassword, level:'all' }),
         apiRequest({ action:'adminGetPromotions', adminUsername, adminPassword }),
-        apiRequest({ action:'adminGetQuestions', adminUsername, adminPassword })
+        apiRequest({ action:'adminGetQuestions', adminUsername, adminPassword }),
+        apiRequest({ action:'adminGetAds' }),
+        apiRequest({ action:'adminGetNotificationsList' }),
+        apiRequest({ action:'adminGetDetailedAnalytics' })
       ]);
 
       if (traineesRes.success && traineesRes.trainees) { allTrainees=traineesRes.trainees; renderPending(); renderApproved(); }
       if (annRes.success && annRes.announcements) { allAnnouncements=annRes.announcements; renderAnns(); }
-      if (currRes.success && currRes.nodes) { allCurrNodes=currRes.nodes; renderCurrTree(); updateQLevelDropdown(); }
+      if (currRes.success && currRes.nodes) { allCurrNodes=currRes.nodes; renderCurrTree(); updateQLevelDropdown(); updateAnalyticsFilters(); }
       else { document.getElementById('curriculum-tree').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد بيانات. اضغط "إضافة مكان جديد" للبدء.</p>'; }
       if (promoRes.success && promoRes.promotions) { allPromotions=promoRes.promotions; renderPromotions(); }
-      else { document.getElementById('tbody-promotions').innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد طلبات ترقية معلقة.</td></tr>'; }
       if (qRes.success && qRes.questions) { allQuestions=qRes.questions; renderQuestions(); }
-      else { document.getElementById('questions-list').innerHTML='<p style="color:var(--text-muted);text-align:center;padding:20px;">لا توجد أسئلة في البنك بعد.</p>'; }
+      if (adsRes.success && adsRes.ads) { allAds=adsRes.ads; renderAds(); }
+      if (wmRes.success && wmRes.notifications) { allWelcomeMsgs=wmRes.notifications; renderWelcomeMsgs(); }
+      if (analyticsRes.success && analyticsRes.analytics) { analyticsData=analyticsRes.analytics; renderAnalyticsReport(); }
 
       updateKPIs();
     }
@@ -1101,34 +1374,44 @@
       }
     }
 
-    /* ===== RENDER PROMOTIONS ===== */
+    /* ===== RENDER PROMOTIONS & CERTIFICATES ===== */
     function renderPromotions() {
       const tbody = document.getElementById('tbody-promotions');
       if (!allPromotions || !allPromotions.length) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد طلبات ترقية أو شهادات بعد.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد طلبات ترقية أو شهادات بعد. اضغط "+ إصدار شهادة جديدة" بالتقييم الفاخر.</td></tr>';
         return;
       }
       tbody.innerHTML = allPromotions.map((p, i) => {
         const name = p.TraineeName || p.trainee_name || p.Email || p.email || 'متدرب';
-        const fromLvl = p.CurrentLevel || p.from_level || 'Passengers';
-        const toLvl = p.TargetLevel || p.to_level || 'Starters';
-        const score = p.Score || p.score || 0;
+        const course = p.TargetLevel || p.to_level || p.CurrentLevel || p.from_level || 'المسار التدريبي الشامل';
+        const grade = p.CertificateTemplate || p.certificate_template || 'امتياز مع مرتبة الشرف 🏆';
+        const certCode = p.CertificateUrl || p.certificate_url || ('PR-CERT-2026-' + (100000 + i * 19));
         const status = p.Status || p.status || 'pending';
         const isApproved = status === 'approved';
         const isRejected = status === 'rejected';
         const badgeClass = isApproved ? 'status-active' : (isRejected ? 'status-blocked' : 'status-pending');
-        const badgeText = isApproved ? 'معتمد 🟢' : (isRejected ? 'مرفوض 🔴' : 'قيد المراجعة ⏳');
+        const badgeText = isApproved ? 'معتمدة ومصدرة 🎓' : (isRejected ? 'مرفوض 🔴' : 'قيد المراجعة ⏳');
         const phone = p.TraineePhone || p.phone || p.Email || p.email;
+        const email = p.Email || p.email || '';
+        const dateStr = p.Timestamp ? new Date(p.Timestamp).toLocaleDateString('ar-EG') : new Date().toLocaleDateString('ar-EG');
 
         return `<tr>
           <td>${i+1}</td>
-          <td><strong>${name}</strong><br><small style="color:var(--text-muted);">${p.Email||p.email||''}</small></td>
-          <td><span class="status-badge" style="background:var(--input-bg);color:var(--text-muted);">${fromLvl}</span></td>
-          <td><span class="status-badge status-pending" style="color:var(--gold);">${toLvl}</span></td>
-          <td><strong>${score}%</strong></td>
+          <td><strong>${name}</strong><br><small style="color:var(--text-muted);">${email}</small></td>
+          <td><span class="status-badge" style="background:rgba(212,175,55,0.1);color:var(--gold);font-weight:bold;"><i class="fa-solid fa-graduation-cap"></i> ${course}</span></td>
+          <td><strong style="color:var(--success);font-size:12px;">${grade}</strong></td>
+          <td><code style="background:rgba(212,175,55,0.15);color:#d4af37;padding:3px 6px;border-radius:4px;font-family:monospace;font-size:11px;">${certCode}</code></td>
           <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
           <td>
-            ${!isApproved ? `<button class="btn btn-gold btn-sm" onclick="approvePromo('${phone}','${toLvl}')"><i class="fa-solid fa-check"></i> ترقية وإصدار</button>` : '<span style="color:var(--success);font-size:12px;font-weight:700;">تمت الترقية 🎓</span>'}
+            ${isApproved ? `
+              <div style="display:flex;gap:6px;">
+                <button class="btn btn-gold btn-sm" style="padding:4px 8px;font-size:11.5px;font-weight:bold;" onclick="viewRoyalCertificate('${name.replace(/'/g, "\\'")}','${course.replace(/'/g, "\\'")}','${grade.replace(/'/g, "\\'")}','${certCode}','${dateStr}')">
+                  <i class="fa-solid fa-eye"></i> عرض الشهادة الفاخرة
+                </button>
+              </div>
+            ` : `
+              <button class="btn btn-gold btn-sm" onclick="approvePromo('${phone}','${course}')"><i class="fa-solid fa-check"></i> اعتماد وإصدار</button>
+            `}
           </td>
         </tr>`;
       }).join('');
@@ -1138,6 +1421,80 @@
       const r = await apiRequest({ action:'adminApprovePromotion', adminPassword, phone, targetLevel });
       if (r.success) { alert('تم ترقية المتدرب وإصدار الشهادة بنجاح! 🎓'); loadAll(); }
       else { alert(r.message || 'حدث خطأ أثناء الترقية'); }
+    }
+
+    /* ===== CERTIFICATES BUILDER & VIEWER FUNCTIONS ===== */
+    function openCertBuilderModal() {
+      const select = document.getElementById('cert-trainee-select');
+      if (select) {
+        let opts = '<option value="">-- اختر المتدرب من القائمة --</option>';
+        (allTrainees || []).forEach(t => {
+          const name = t.name || t.Name || 'طالب';
+          const email = t.email || t.Email || t.phone || t.Phone || '';
+          opts += `<option value="${email}" data-name="${name}">${name} (${email})</option>`;
+        });
+        select.innerHTML = opts;
+      }
+      document.getElementById('cert-email').value = '';
+      document.getElementById('cert-course').value = '';
+      document.getElementById('cert-code').value = 'PR-CERT-2026-' + Math.floor(100000 + Math.random() * 900000);
+      document.getElementById('cert-builder-modal').classList.add('active');
+    }
+
+    function closeCertBuilderModal() {
+      document.getElementById('cert-builder-modal').classList.remove('active');
+    }
+
+    function autoFillCertTrainee() {
+      const select = document.getElementById('cert-trainee-select');
+      if (!select) return;
+      const val = select.value;
+      if (val) {
+        document.getElementById('cert-email').value = val;
+      }
+    }
+
+    document.getElementById('cert-builder-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('cert-email').value.trim();
+      const course = document.getElementById('cert-course').value.trim();
+      const grade = document.getElementById('cert-grade').value;
+      const code = document.getElementById('cert-code').value.trim() || ('PR-CERT-2026-' + Math.floor(100000 + Math.random() * 900000));
+
+      const r = await apiRequest({
+        action: 'adminIssueCertificate',
+        adminUsername,
+        adminPassword,
+        email: email,
+        courseName: course,
+        grade: grade,
+        certCode: code
+      });
+
+      if (r.success) {
+        alert(r.message || 'تم إصدار وتوثيق الشهادة بنجاح! 🎓');
+        closeCertBuilderModal();
+        loadAll();
+      } else {
+        alert(r.message || 'حدث خطأ أثناء إصدار الشهادة');
+      }
+    });
+
+    function viewRoyalCertificate(name, course, grade, code, date) {
+      document.getElementById('cert-view-name').textContent = name || 'اسم المتدرب';
+      document.getElementById('cert-view-course').textContent = course || 'المسار التدريبي المعتمد';
+      document.getElementById('cert-view-grade').textContent = grade || 'امتياز مع مرتبة الشرف 🏆';
+      document.getElementById('cert-view-code').textContent = code || 'PR-CERT-2026-0001';
+      document.getElementById('cert-view-date').textContent = date || new Date().toLocaleDateString('ar-EG');
+      document.getElementById('cert-view-modal').classList.add('active');
+    }
+
+    function closeCertViewModal() {
+      document.getElementById('cert-view-modal').classList.remove('active');
+    }
+
+    function printRoyalCertificate() {
+      window.print();
     }
 
     /* ===== RENDER QUESTIONS ===== */
@@ -1299,6 +1656,242 @@
     function closeAnnModal(){document.getElementById('ann-modal').classList.remove('active');}
     document.getElementById('ann-form').addEventListener('submit',async(e)=>{e.preventDefault();const r=await apiRequest({action:'adminSaveAnnouncement',adminPassword,id:document.getElementById('ann-id').value,title:document.getElementById('ann-title').value.trim(),content:document.getElementById('ann-content').value.trim(),type:document.getElementById('ann-type').value,icon:document.getElementById('ann-icon').value,link:document.getElementById('ann-link').value.trim(),active:document.getElementById('ann-active').checked});if(r.success){alert('تم حفظ الإعلان!');closeAnnModal();loadAll();}});
     async function delAnn(id){if(confirm('حذف هذا الإعلان؟')){const r=await apiRequest({action:'adminDeleteAnnouncement',adminPassword,id});if(r.success){alert('تم الحذف.');loadAll();}}}
+
+    /* ===== STANDALONE ADS MODULE ===== */
+    function renderAds() {
+      const g = document.getElementById('ads-grid');
+      if (!g) return;
+      if (!allAds || !allAds.length) {
+        g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;">لا توجد إعلانات تجارية مستقلة بعد. اضغط "إضافة إعلان تجاري جديد".</div>';
+        return;
+      }
+      g.innerHTML = allAds.map(a => `
+        <div style="background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <span class="status-badge status-pending"><i class="fa-solid fa-rectangle-ad"></i> إعلان تجاري</span>
+            <span style="font-size:11px;color:${a.active?'var(--success)':'var(--danger)'};font-weight:700;">${a.active?'نشط 🟢':'معطل 🔴'}</span>
+          </div>
+          ${a.image_url ? `<img src="${a.image_url}" style="width:100%;height:100px;object-fit:cover;border-radius:8px;margin-bottom:8px;">` : ''}
+          <h4 style="color:var(--gold);margin:0 0 4px;font-size:14px;">${a.title}</h4>
+          <p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px;line-height:1.4;flex:1;">${a.content}</p>
+          <div style="border-top:1px solid var(--card-border);padding-top:8px;display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openAdModal('${a.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
+            <button class="btn btn-danger-outline btn-sm" style="flex:1;" onclick="delAd('${a.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openAdModal(id) {
+      if (id) {
+        const a = allAds.find(x => x.id === id);
+        if (a) {
+          document.getElementById('ad-id').value = a.id;
+          document.getElementById('ad-title').value = a.title || '';
+          document.getElementById('ad-content').value = a.content || '';
+          document.getElementById('ad-image-url').value = a.image_url || '';
+          document.getElementById('ad-link-url').value = a.link_url || '';
+          document.getElementById('ad-active').checked = !!a.active;
+        }
+      } else {
+        document.getElementById('ad-id').value = '';
+        document.getElementById('ad-title').value = '';
+        document.getElementById('ad-content').value = '';
+        document.getElementById('ad-image-url').value = '';
+        document.getElementById('ad-link-url').value = '';
+        document.getElementById('ad-active').checked = true;
+      }
+      document.getElementById('ad-modal').classList.add('active');
+    }
+
+    function closeAdModal() {
+      document.getElementById('ad-modal').classList.remove('active');
+    }
+
+    document.getElementById('ad-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const r = await apiRequest({
+        action: 'adminSaveAd',
+        id: document.getElementById('ad-id').value,
+        title: document.getElementById('ad-title').value.trim(),
+        content: document.getElementById('ad-content').value.trim(),
+        imageUrl: document.getElementById('ad-image-url').value.trim(),
+        linkUrl: document.getElementById('ad-link-url').value.trim(),
+        active: document.getElementById('ad-active').checked
+      });
+      if (r.success) {
+        alert(r.message || 'تم حفظ الإعلان التجاري بنجاح!');
+        closeAdModal();
+        loadAll();
+      } else {
+        alert(r.message || 'حدث خطأ في حفظ الإعلان');
+      }
+    });
+
+    async function delAd(id) {
+      if (confirm('هل أنت متأكد من حذف هذا الإعلان التجاري؟')) {
+        const r = await apiRequest({ action: 'adminDeleteAd', id });
+        if (r.success) { alert('تم الحذف بنجاح.'); loadAll(); }
+      }
+    }
+
+    /* ===== STANDALONE WELCOME POPUP MESSAGES ===== */
+    function renderWelcomeMsgs() {
+      const g = document.getElementById('welcome-msgs-grid');
+      if (!g) return;
+      if (!allWelcomeMsgs || !allWelcomeMsgs.length) {
+        g.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-muted);padding:20px;">لا توجد رسائل ترحيب تلقائية بعد. اضغط "إنشاء رسالة ترحيب جديدة".</div>';
+        return;
+      }
+      g.innerHTML = allWelcomeMsgs.map(w => {
+        const wordCount = (w.content || '').split(/\s+/).length;
+        const calcSecs = w.reading_seconds || Math.max(5, Math.min(30, Math.ceil(wordCount / 3)));
+        return `
+          <div style="background:var(--input-bg);border:1px solid var(--card-border);border-radius:12px;padding:14px;display:flex;flex-direction:column;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+              <span class="status-badge status-pending"><i class="fa-solid fa-bell"></i> رسالة ترحيب</span>
+              <span style="font-size:11px;color:${w.active?'var(--success)':'var(--danger)'};font-weight:700;">${w.active?'نشط 🟢':'معطل 🔴'}</span>
+            </div>
+            <h4 style="color:var(--gold);margin:0 0 4px;font-size:14px;">${w.title}</h4>
+            <p style="font-size:12px;color:var(--text-secondary);margin:0 0 10px;line-height:1.4;flex:1;">${w.content}</p>
+            <div style="font-size:11px;color:var(--text-muted);margin-bottom:8px;"><i class="fa-solid fa-clock"></i> زمن مؤشر القراءة: <strong>${calcSecs} ثوانٍ</strong></div>
+            <div style="border-top:1px solid var(--card-border);padding-top:8px;display:flex;gap:6px;">
+              <button class="btn btn-outline btn-sm" style="flex:1;" onclick="openWelcomeMsgModal('${w.id}')"><i class="fa-solid fa-pen"></i> تعديل</button>
+              <button class="btn btn-danger-outline btn-sm" style="flex:1;" onclick="delWelcomeMsg('${w.id}')"><i class="fa-solid fa-trash"></i> حذف</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openWelcomeMsgModal(id) {
+      if (id) {
+        const w = allWelcomeMsgs.find(x => x.id === id);
+        if (w) {
+          document.getElementById('wm-id').value = w.id;
+          document.getElementById('wm-title').value = w.title || '';
+          document.getElementById('wm-content').value = w.content || '';
+          document.getElementById('wm-seconds').value = w.reading_seconds || '';
+          document.getElementById('wm-active').checked = !!w.active;
+        }
+      } else {
+        document.getElementById('wm-id').value = '';
+        document.getElementById('wm-title').value = '';
+        document.getElementById('wm-content').value = '';
+        document.getElementById('wm-seconds').value = '';
+        document.getElementById('wm-active').checked = true;
+      }
+      document.getElementById('welcome-msg-modal').classList.add('active');
+    }
+
+    function closeWelcomeMsgModal() {
+      document.getElementById('welcome-msg-modal').classList.remove('active');
+    }
+
+    document.getElementById('welcome-msg-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const r = await apiRequest({
+        action: 'adminSaveNotification',
+        id: document.getElementById('wm-id').value,
+        title: document.getElementById('wm-title').value.trim(),
+        content: document.getElementById('wm-content').value.trim(),
+        readingSeconds: document.getElementById('wm-seconds').value,
+        active: document.getElementById('wm-active').checked
+      });
+      if (r.success) {
+        alert(r.message || 'تم حفظ رسالة الترحيب والتنبيه بنجاح!');
+        closeWelcomeMsgModal();
+        loadAll();
+      } else {
+        alert(r.message || 'حدث خطأ في حفظ رسالة الترحيب');
+      }
+    });
+
+    async function delWelcomeMsg(id) {
+      if (confirm('هل أنت متأكد من حذف هذه الرسالة الترحيبية؟')) {
+        const r = await apiRequest({ action: 'adminDeleteNotification', id });
+        if (r.success) { alert('تم الحذف بنجاح.'); loadAll(); }
+      }
+    }
+
+    /* ===== DETAILED ANALYTICS LOGIC ===== */
+    function updateAnalyticsFilters() {
+      const select = document.getElementById('analytics-video-filter');
+      if (!select) return;
+      let opts = '<option value="all">جميع المحاضرات (All Lectures)</option>';
+      const vids = (allCurrNodes || []).filter(n => (n.type || n.Type) === 'video');
+      vids.forEach(v => {
+        const title = v.title || v.Title || 'محاضرة';
+        opts += `<option value="${v.id}">${title}</option>`;
+      });
+      select.innerHTML = opts;
+    }
+
+    async function loadAnalyticsData() {
+      const res = await apiRequest({ action: 'adminGetDetailedAnalytics' });
+      if (res.success && res.analytics) {
+        analyticsData = res.analytics;
+        renderAnalyticsReport();
+      }
+    }
+
+    function renderAnalyticsReport() {
+      const tbody = document.getElementById('tbody-analytics');
+      if (!tbody) return;
+      if (!allTrainees || !allTrainees.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">لا يوجد متدربون مقبولون بعد لعرض التحليلات.</td></tr>';
+        return;
+      }
+
+      const selectedVidId = document.getElementById('analytics-video-filter') ? document.getElementById('analytics-video-filter').value : 'all';
+      const videos = (allCurrNodes || []).filter(n => (n.type || n.Type) === 'video');
+      const targetVideos = selectedVidId === 'all' ? videos : videos.filter(v => String(v.id) === String(selectedVidId));
+
+      let totalPossible = allTrainees.length * (targetVideos.length || 1);
+      let watchedCount = 0;
+      let quizCount = 0;
+
+      let rowsHtml = '';
+      allTrainees.forEach((t, idx) => {
+        const name = t.name || t.Name || 'متدرب';
+        const email = t.email || t.Email || '';
+        const phone = t.phone || t.Phone || '';
+        
+        let watchedVids = [];
+        try {
+          watchedVids = typeof t.watched_videos === 'string' ? JSON.parse(t.watched_videos) : (t.watched_videos || []);
+        } catch(e){}
+
+        targetVideos.forEach(v => {
+          const vTitle = v.title || v.Title || 'محاضرة صيدلية';
+          const isWatched = Array.isArray(watchedVids) && (watchedVids.includes(String(v.id)) || watchedVids.includes(Number(v.id)));
+          if (isWatched) watchedCount++;
+
+          // Check quiz completion for this video
+          const vqList = (allQuestions || []).filter(q => String(q.node_id) === String(v.id) || String(q.video_title) === String(vTitle));
+          const hasSolvedQuiz = isWatched && vqList.length > 0;
+          if (hasSolvedQuiz) quizCount++;
+
+          rowsHtml += `
+            <tr>
+              <td><strong>${name}</strong><br><small style="color:var(--text-muted);">${email || phone}</small></td>
+              <td><span style="font-weight:bold;color:var(--gold);"><i class="fa-solid fa-play"></i> ${vTitle}</span></td>
+              <td>${isWatched ? '<span class="status-badge status-active">تمت المشاهدة 🟢</span>' : '<span class="status-badge status-blocked">لم يشاهد بعد 🔴</span>'}</td>
+              <td>${hasSolvedQuiz ? '<span class="status-badge status-active">تم الحل بنجاح 🎯</span>' : (isWatched ? '<span class="status-badge status-pending">قيد التقييم ⏳</span>' : '<span class="status-badge status-blocked">غير مجاب 🔴</span>')}</td>
+              <td><small style="color:var(--text-muted);">${isWatched ? 'نشط مؤخراً' : 'غير متفاعل'}</small></td>
+            </tr>
+          `;
+        });
+      });
+
+      tbody.innerHTML = rowsHtml || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">لا توجد بيانات لمطابقة الفلتر المحدد.</td></tr>';
+
+      const watchPct = totalPossible > 0 ? Math.round((watchedCount / totalPossible) * 100) : 0;
+      const quizPct = totalPossible > 0 ? Math.round((quizCount / totalPossible) * 100) : 0;
+
+      if (document.getElementById('analytics-video-summary')) document.getElementById('analytics-video-summary').textContent = watchPct + '%';
+      if (document.getElementById('analytics-quiz-summary')) document.getElementById('analytics-quiz-summary').textContent = quizPct + '%';
+    }
 
     /* =========================================================
        CURRICULUM TREE — Full Hierarchical CRUD

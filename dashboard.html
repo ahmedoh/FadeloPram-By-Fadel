@@ -737,6 +737,37 @@
 
 
         <!-- 6. Default/Placeholder Viewport -->
+        <!-- Standalone Ads Banner Container -->
+        <div id="dashboard-ads-banner" style="display:none; margin-bottom: 15px;"></div>
+
+        <!-- WELCOME POPUP MODAL WITH VISUAL READING PROGRESS BAR -->
+        <div class="modal-overlay" id="welcome-popup-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); align-items: center; justify-content: center;">
+          <div class="modal-box" style="max-width: 520px; width: 92%; border: 2px solid var(--color-gold); border-radius: 20px; padding: 25px; position: relative; background: var(--bg-card); box-shadow: 0 0 40px rgba(182, 116, 28, 0.3); text-align: center;">
+            <div style="width: 60px; height: 60px; margin: 0 auto 15px; background: rgba(182, 116, 28, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--color-gold);">
+              🔔
+            </div>
+            <h3 id="welcome-popup-title" style="font-size: 20px; font-weight: 900; color: var(--color-gold); margin: 0 0 10px;">
+              مرحباً بك دكتور!
+            </h3>
+            <p id="welcome-popup-content" style="font-size: 14px; color: var(--text-main); line-height: 1.7; margin-bottom: 20px; text-align: justify; direction: rtl;">
+              نتمنى لك تجربة ممتعة ومفيدة في المنصة.
+            </p>
+
+            <!-- Visual Progress Bar for Calculated Reading Timer -->
+            <div style="background: rgba(255,255,255,0.08); border-radius: 10px; height: 8px; width: 100%; overflow: hidden; margin-bottom: 15px; border: 1px solid var(--border-color);">
+              <div id="welcome-reading-progress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #f59e0b 0%, #10b981 100%); transition: width 0.1s linear;"></div>
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; margin-bottom: 15px;">
+              <span>مؤشر القراءة التقديري 📖</span>
+              <span id="welcome-timer-text">جاري القراءة...</span>
+            </div>
+
+            <button class="btn btn-gold" onclick="dismissWelcomePopup()" style="width: 100%; padding: 12px; font-weight: 900; font-size: 14px;">
+              إغلاق وتصفح المنصة 🚀
+            </button>
+          </div>
+        </div>
+
         <div id="player-placeholder" style="display: flex; flex-direction: column; align-items: stretch; text-align: right; width: 100%; position: relative; z-index: 10;">
           
           <!-- Advanced Level Progress Card -->
@@ -2173,6 +2204,82 @@
         });
         container.appendChild(li);
       });
+
+      // Trigger Welcome Popup with reading progress timer & Standalone Ads
+      checkWelcomePopup();
+      loadActiveAds();
+    }
+
+    /* ===== WELCOME POPUP & ADS MODULE IN DASHBOARD ===== */
+    let welcomeInterval = null;
+
+    async function checkWelcomePopup() {
+      if (sessionStorage.getItem('welcome_shown')) return;
+      try {
+        const res = await apiRequest({ action: 'getWelcomeMessage' });
+        if (res.success && res.message && res.message.active) {
+          const msg = res.message;
+          document.getElementById('welcome-popup-title').textContent = msg.title || 'مرحباً بك دكتور!';
+          document.getElementById('welcome-popup-content').textContent = msg.content || '';
+          document.getElementById('welcome-popup-modal').style.display = 'flex';
+          
+          sessionStorage.setItem('welcome_shown', 'true');
+
+          const wordCount = (msg.content || '').split(/\s+/).length;
+          const durationSecs = msg.reading_seconds || Math.max(5, Math.min(30, Math.ceil(wordCount / 3)));
+          
+          let elapsed = 0;
+          const progressEl = document.getElementById('welcome-reading-progress');
+          const timerText = document.getElementById('welcome-timer-text');
+          
+          if (welcomeInterval) clearInterval(welcomeInterval);
+          
+          welcomeInterval = setInterval(() => {
+            elapsed += 0.1;
+            const pct = Math.min(100, (elapsed / durationSecs) * 100);
+            if (progressEl) progressEl.style.width = pct + '%';
+            
+            const remaining = Math.max(0, Math.ceil(durationSecs - elapsed));
+            if (timerText) timerText.textContent = `متبقي ${remaining} ثوانٍ...`;
+            
+            if (elapsed >= durationSecs) {
+              clearInterval(welcomeInterval);
+              dismissWelcomePopup();
+            }
+          }, 100);
+        }
+      } catch(e) {
+        console.warn('Welcome message error:', e);
+      }
+    }
+
+    function dismissWelcomePopup() {
+      if (welcomeInterval) clearInterval(welcomeInterval);
+      const modal = document.getElementById('welcome-popup-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function loadActiveAds() {
+      try {
+        const res = await apiRequest({ action: 'getActiveAds' });
+        const container = document.getElementById('dashboard-ads-banner');
+        if (res.success && res.ads && res.ads.length > 0 && container) {
+          const activeAd = res.ads[0];
+          container.style.display = 'block';
+          container.innerHTML = `
+            <div style="background: linear-gradient(135deg, rgba(251,191,36,0.12) 0%, rgba(16,185,129,0.06) 100%); border: 1px solid var(--color-gold); border-radius: 14px; padding: 14px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                ${activeAd.image_url ? `<img src="${activeAd.image_url}" style="width: 55px; height: 55px; object-fit: cover; border-radius: 10px;">` : '<span style="font-size: 28px;">📢</span>'}
+                <div>
+                  <h4 style="margin: 0 0 2px; color: var(--color-gold); font-size: 14px; font-weight: 800;">${activeAd.title}</h4>
+                  <p style="margin: 0; color: var(--text-main); font-size: 12px; line-height: 1.4;">${activeAd.content}</p>
+                </div>
+              </div>
+              ${activeAd.link_url ? `<a href="${activeAd.link_url}" target="_blank" class="btn btn-gold btn-sm" style="text-decoration: none;"><i class="fa-solid fa-arrow-up-right-from-square"></i> التفاصيل والتسجيل</a>` : ''}
+            </div>
+          `;
+        }
+      } catch(e) {}
     }
 
 
